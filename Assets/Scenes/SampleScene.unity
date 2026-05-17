@@ -460,18 +460,6 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &452595432
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 452595424}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0185c36ed62a548adb5780ae38116df3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NetworkObject
 --- !u!114 &452595433
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -556,6 +544,8 @@ GameObject:
   m_Component:
   - component: {fileID: 963778761}
   - component: {fileID: 963778762}
+  - component: {fileID: 963778763}
+  - component: {fileID: 963778764}
   m_Layer: 0
   m_Name: Network
   m_TagString: Untagged
@@ -593,7 +583,7 @@ MonoBehaviour:
   NetworkManagerExpanded: 0
   NetworkConfig:
     ProtocolVersion: 0
-    NetworkTransport: {fileID: 0}
+    NetworkTransport: {fileID: 963778764}
     PlayerPrefab: {fileID: 1511192111357553970, guid: af6ae2d660f5d4e5186bd478beb43edd, type: 3}
     Prefabs:
       NetworkPrefabsLists:
@@ -605,7 +595,7 @@ MonoBehaviour:
     EnableTimeResync: 0
     TimeResyncInterval: 30
     EnsureNetworkVariableLengthSafety: 0
-    EnableSceneManagement: 1
+    EnableSceneManagement: 0
     ForceSamePrefabs: 1
     RecycleNetworkIds: 1
     NetworkIdRecycleDelay: 120
@@ -620,6 +610,49 @@ MonoBehaviour:
     OldPrefabList: []
   RunInBackground: 1
   LogLevel: 1
+--- !u!114 &963778763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963778758}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6abc2007dd05844c3a2d4ee112031df7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NetcodeHUD
+--- !u!114 &963778764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963778758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6960e84d07fb87f47956e7a81d71c4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.Transports.UTP.UnityTransport
+  m_ProtocolType: 0
+  m_UseWebSockets: 0
+  m_UseEncryption: 0
+  m_MaxPacketQueueSize: 128
+  m_MaxPayloadSize: 6144
+  m_HeartbeatTimeoutMS: 500
+  m_ConnectTimeoutMS: 1000
+  m_MaxConnectAttempts: 60
+  m_DisconnectTimeoutMS: 30000
+  ConnectionData:
+    Address: 127.0.0.1
+    Port: 7777
+    WebSocketPath: /
+    ServerListenAddress: 127.0.0.1
+    ClientBindPort: 0
+  DebugSimulator:
+    PacketDelayMS: 0
+    PacketJitterMS: 0
+    PacketDropRate: 0
 --- !u!1 &1291272896
 GameObject:
   m_ObjectHideFlags: 0
@@ -690,37 +723,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15a518bcfd8c44d1ab37dc61d0846d27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ServerWorldManager
-  ShowTopMostFoldoutHeaderGroup: 1
-  globalSeed: 1337
-  sectionSize: 8
-  waveFrequency: 0.04
-  height: 12
-  waterHeight: -2
-  NetworkSeed:
-    UpdateTraits:
-      MinSecondsBetweenUpdates: 0
-      MaxSecondsBetweenUpdates: 0
-    m_InternalValue: 0
-  NetworkSectionSize:
-    UpdateTraits:
-      MinSecondsBetweenUpdates: 0
-      MaxSecondsBetweenUpdates: 0
-    m_InternalValue: 0
-  NetworkWaveFrequency:
-    UpdateTraits:
-      MinSecondsBetweenUpdates: 0
-      MaxSecondsBetweenUpdates: 0
-    m_InternalValue: 0
   NetworkHeight:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
-    m_InternalValue: 0
+    m_InternalValue: 12
   NetworkWaterHeight:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
-    m_InternalValue: 0
+    m_InternalValue: -2
+  NetworkSeed:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 1337
+  NetworkChunkSize:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 16
+  NetworkSectionSize:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 16
+  NetworkWaveFrequency:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0.04
+  preferredPort: 7777
 --- !u!1 &1656381481
 GameObject:
   m_ObjectHideFlags: 0
@@ -899,6 +932,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Capsule
       objectReference: {fileID: 0}
+    - target: {fileID: 1511192111357553970, guid: af6ae2d660f5d4e5186bd478beb43edd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4321985293354434408, guid: af6ae2d660f5d4e5186bd478beb43edd, type: 3}
       propertyPath: m_LocalPosition.x
       value: -6.64722
@@ -944,9 +981,6 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1511192111357553970, guid: af6ae2d660f5d4e5186bd478beb43edd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 452595432}
     - targetCorrespondingSourceObject: {fileID: 1511192111357553970, guid: af6ae2d660f5d4e5186bd478beb43edd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 452595433}

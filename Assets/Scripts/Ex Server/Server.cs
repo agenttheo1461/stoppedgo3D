@@ -1,70 +1,157 @@
 using UnityEngine;
-using Unity.Netcode; 
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
+using System.Diagnostics;
 
-// FIX: Change NetworkBehaviour to MonoBehaviour so this runs BEFORE Netcode boots!
 public class ServerWorldManager : MonoBehaviour
 {
+    // Global static reference for Client.cs configuration access
     public static ServerWorldManager Instance { get; private set; }
 
-    // Keep your synced variables intact
-    public NetworkVariable<int> NetworkSeed = new NetworkVariable<int>(1337);
-    public NetworkVariable<int> NetworkSectionSize = new NetworkVariable<int>(8);
-    public NetworkVariable<float> NetworkWaveFrequency = new NetworkVariable<float>(0.04f);
-    public NetworkVariable<float> NetworkHeight = new NetworkVariable<float>(12f);
-    public NetworkVariable<float> NetworkWaterHeight = new NetworkVariable<float>(-2.0f);
+    // =================================================================
+    // 🌍 WORLD GENERATION NETWORKING PROPERTIES (Type Definitions Fixed)
+    // =================================================================
+    public NetworkVariable<float> NetworkHeight = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkVariable<float> NetworkWaterHeight = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    
+    // 🛠️ FIX: Clean matching <int> type structure assignment
+    public NetworkVariable<int> NetworkSeed = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    
+    // 🛠️ FIX: Changed to <int> to match ClientWorldLoader's loops/arrays setup
+    public NetworkVariable<int> NetworkChunkSize = new NetworkVariable<int>(8, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkVariable<int> NetworkSectionSize = new NetworkVariable<int>(16, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    
+    public NetworkVariable<float> NetworkWaveFrequency = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
+    // =================================================================
+    // ⚙️ SYSTEM SETTINGS
+    // =================================================================
+    [Header("Network Port Management")]
+    [SerializeField] private ushort preferredPort = 7777;
+    
+    private int maxRetries = 1;
+    private int currentRetryCount = 0;
 
     private void Awake()
     {
-        if (Instance != null && Instance != this) 
+        // Enforce safe Singleton runtime constraints
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
     {
-        // Now this is guaranteed to run on both Main and Clone windows
-        Invoke(nameof(SmartAutoLaunch), 0.5f);
+        // Hook into the transport architecture failure event loop
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnTransportFailure += HandleTransportFailure;
+        }
+
+        SmartAutoLaunch();
+    }
+
+    private void OnDestroy()
+    {
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnTransportFailure -= HandleTransportFailure;
+        }
     }
 
     private void SmartAutoLaunch()
     {
-        if (NetworkManager.Singleton == null)
+        if (NetworkManager.Singleton == null) return;
+
+        var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        if (transport == null) return;
+
+        bool isClientInstance = false;
+
+        // Path validation mechanics to identify dynamic editor clones
+        if (Application.dataPath.ToLower().Contains("clone") || 
+            Application.dataPath.ToLower().Contains("client"))
         {
-            Debug.LogError("❌ Blocker: Could not find a NetworkManager component in the scene!");
-            return;
+            isClientInstance = true;
         }
 
-        bool isClone = Application.dataPath.ToLower().Contains("clone");
-
-        if (isClone)
+        if (isClientInstance)
         {
-            Debug.Log("🔌 Clone detected! Auto-joining as CLIENT...");
+            UnityEngine.Debug.Log($"🔌 CLIENT: Connecting to port {preferredPort}...");
+            transport.ConnectionData.Port = preferredPort;
             NetworkManager.Singleton.StartClient();
         }
         else
         {
-            Debug.Log("👑 Main Editor detected! Auto-starting as PLAYER 1 (HOST)...");
+            UnityEngine.Debug.Log($"👑 HOST: Attempting to bind port {preferredPort}...");
+            transport.ConnectionData.Port = preferredPort;
             NetworkManager.Singleton.StartHost();
         }
     }
 
-    private void OnGUI()
+    private void HandleTransportFailure()
     {
-        GUILayout.BeginArea(new Rect(10, 10, 300, 100));
-        if (NetworkManager.Singleton != null)
-        {
-            // Simple display to track state changes
-            string role = "Offline/Idle";
-            if (NetworkManager.Singleton.IsHost) role = "Host (Player 1)";
-            else if (NetworkManager.Singleton.IsClient && NetworkManager.Singleton.IsConnectedClient) role = "Client (Joined)";
-            else if (NetworkManager.Singleton.IsClient) role = "Client (Connecting...)";
+        bool isServerInstance = NetworkManager.Singleton != null && NetworkManager.Singleton.IsServer;
 
-            GUILayout.Label($"Network Role: {role}");
+        // Run port purge routine if the hosting instance fails to bind the socket
+        if (isServerInstance && currentRetryCount < maxRetries)
+        {
+            currentRetryCount++;
+            UnityEngine.Debug.LogWarning($"💥 Transport failed on port {preferredPort}. Clearing macOS sockets...");
+
+            KillPortOnMac(preferredPort);
+
+            // Brief delay allowing the OS kernel network stack to drop the interface
+            System.Threading.Thread.Sleep(200);
+
+            UnityEngine.Debug.Log($"🔄 Retrying Host startup on cleaned port {preferredPort}...");
+            NetworkManager.Singleton.StartHost();
         }
-        GUILayout.EndArea();
+        else if (currentRetryCount >= maxRetries)
+        {
+            UnityEngine.Debug.LogError("❌ Port purge executed, but socket remains occupied by an external application process.");
+        }
+    }
+
+    private void KillPortOnMac(ushort port)
+    {
+#if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+        try
+        {
+            // Execute background bash process to find and force-kill the ghost port PID
+            ProcessStartInfo procInfo = new ProcessStartInfo();
+            procInfo.FileName = "/bin/bash";
+            procInfo.Arguments = $"-c \"kill -9 $(lsof -t -i:{port})\"";
+            procInfo.RedirectStandardOutput = true;
+            procInfo.RedirectStandardError = true;
+            procInfo.UseShellExecute = false;
+            procInfo.CreateNoWindow = true;
+
+            using (Process process = Process.Start(procInfo))
+            {
+                process.WaitForExit();
+                UnityEngine.Debug.Log($"🧼 Code-level network socket purge complete for port {port}.");
+            }
+        }
+        catch (System.Exception e)
+        {
+            UnityEngine.Debug.LogError($"⚠️ Failed to execute system port-kill process sequence: {e.Message}");
+        }
+#endif
+    }
+
+    private void OnDisable() => CleanupSockets();
+    private void OnApplicationQuit() => CleanupSockets();
+
+    private void CleanupSockets()
+    {
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
+        {
+            UnityEngine.Debug.Log("🧼 Force flushing active local host ports...");
+            NetworkManager.Singleton.Shutdown();
+        }
     }
 }
