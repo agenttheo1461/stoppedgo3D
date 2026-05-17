@@ -9,8 +9,6 @@ public class SandboxController : MonoBehaviour
     [SerializeField] private float fastSpeed = 60f;
 
     private bool isFlying = false;
-    
-    // UI input fields for coordinates
     private string inputX = "0";
     private string inputY = "0";
     private string inputZ = "0";
@@ -37,15 +35,12 @@ public class SandboxController : MonoBehaviour
     {
         if (Keyboard.current == null) return;
 
-        // Press 'F' to toggle flight mode
         if (Keyboard.current.fKey.wasPressedThisFrame)
         {
             isFlying = !isFlying;
-            
-            // Toggle physics engines so gravity/ground bounds don't freeze you
             TogglePlayerPhysics(!isFlying);
 
-            Debug.Log(isFlying ? "🚀 Flight Mode Active (Mouse Unlocked)" : "🚶 Physics Mode Active");
+            Debug.Log(isFlying ? "debugFlight" : "deBugWalk");
         }
 
         if (isFlying)
@@ -57,24 +52,17 @@ public class SandboxController : MonoBehaviour
     private void HandleFlightMovement()
     {
         if (Keyboard.current == null) return;
-
-        // Boost check
         bool isShiftHeld = Keyboard.current.leftShiftKey.isPressed;
         float currentSpeed = isShiftHeld ? fastSpeed : normalSpeed;
 
         Vector3 moveDir = Vector3.zero;
-
-        // Absolute horizontal directional axes (Global World Grid)
         if (Keyboard.current.wKey.isPressed) moveDir.z += 1f;
         if (Keyboard.current.sKey.isPressed) moveDir.z -= 1f;
         if (Keyboard.current.dKey.isPressed) moveDir.x += 1f;
         if (Keyboard.current.aKey.isPressed) moveDir.x -= 1f;
 
-        // Vertical axes
         if (Keyboard.current.spaceKey.isPressed) moveDir.y += 1f;
         if (Keyboard.current.leftCtrlKey.isPressed) moveDir.y -= 1f;
-
-        // Apply clean position shifts directly to transform
         transform.position += moveDir.normalized * currentSpeed * Time.deltaTime;
     }
 
@@ -92,10 +80,9 @@ public class SandboxController : MonoBehaviour
 
     private void OnGUI()
     {
-        // Ubuntu Dark Aubergine Custom Skin
         GUIStyle panelStyle = new GUIStyle(GUI.skin.box);
         Texture2D backgroundTexture = new Texture2D(1, 1);
-        backgroundTexture.SetPixel(0, 0, new Color(0.18f, 0.04f, 0.14f, 0.85f)); 
+        backgroundTexture.SetPixel(0, 0, new Color(0.1f, 0.1f, 0.1f, 0.85f)); 
         backgroundTexture.Apply();
         panelStyle.normal.background = backgroundTexture;
 
@@ -105,13 +92,12 @@ public class SandboxController : MonoBehaviour
         GUIStyle titleStyle = new GUIStyle(textStyle);
         titleStyle.fontStyle = FontStyle.Bold;
 
-        // Terminal position box configuration
         GUILayout.BeginArea(new Rect(Screen.width - 240, 20, 220, 140), panelStyle);
         
-        GUILayout.Label("💻 terminal@sandbox:~", titleStyle);
+        GUILayout.Label("tp~", titleStyle);
         GUILayout.Space(5);
 
-        GUILayout.Label($"📍 Position: X:{Mathf.Round(transform.position.x)} Y:{Mathf.Round(transform.position.y)} Z:{Mathf.Round(transform.position.z)}", textStyle);
+        GUILayout.Label($"pos: X:{Mathf.Round(transform.position.x)} Y:{Mathf.Round(transform.position.y)} Z:{Mathf.Round(transform.position.z)}", textStyle);
         GUILayout.Space(8);
 
         GUILayout.BeginHorizontal();
@@ -127,7 +113,7 @@ public class SandboxController : MonoBehaviour
 
         GUILayout.Space(8);
 
-        if (GUILayout.Button("Warp Player", GUILayout.Height(24)))
+        if (GUILayout.Button("Teleport", GUILayout.Height(24)))
         {
             if (float.TryParse(inputX, out float targetX) &&
                 float.TryParse(inputY, out float targetY) &&
@@ -143,7 +129,7 @@ public class SandboxController : MonoBehaviour
 
                 if (cc != null && wasCcEnabled) cc.enabled = true;
                 
-                Debug.Log($"🔮 Teleported cleanly to: {destination}");
+                Debug.Log($"tp to: {destination}");
             }
         }
 

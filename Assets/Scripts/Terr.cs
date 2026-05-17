@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Terr : MonoBehaviour
 {
-    [Header("Terrain Resolution")]
+    [Header("terrain")]
     [SerializeField] int sectionSize = 8;
     [SerializeField] int seed = 0;
     [SerializeField] int viewRadius = 8;
@@ -12,21 +12,12 @@ public class Terr : MonoBehaviour
     [SerializeField] float height = 12f;
     [SerializeField] private Material chunkMaterial;
 
-    [Header("Ocean & Coastline Settings")]
+    [Header("oceans")]
     [SerializeField] private float waterHeight = -2.0f; 
     [SerializeField] private Material waterMaterial;
-    
-    [Tooltip("Lower values create much WIDER and LONGER continents.")]
     [SerializeField] float continentalScale = 0.01f; 
-    
-    [Tooltip("Deep ocean floor plunge depth below water level.")]
     [SerializeField] float deepOceanDepth = 30f;
-
-    [Header("Domain Warping (Anti-Symmetry)")]
-    [Tooltip("Controls how violently the coastlines/terrain twist and bend away from clean shapes.")]
     [SerializeField] float warpIntensity = 15.0f;
-    
-    [Tooltip("Controls the frequency of the warping patterns.")]
     [SerializeField] float warpScale = 0.008f;
 
     Transform localPLayerTransform;
@@ -156,22 +147,15 @@ public class Terr : MonoBehaviour
                 float worldXPos = (sectionCoord.x * sectionSize + x);
                 float worldZPos = (sectionCoord.y * sectionSize + z);
 
-                // --- 1. Domain Warping (Anti-Symmetry Step) ---
-                // We sample offset values to distort the clean global coordinate map.
-                // Using different sample offsets avoids cross-axis symmetry.
                 float warpOffsetX = (Mathf.PerlinNoise(worldXPos * warpScale + seed + 142.3f, worldZPos * warpScale + seed + 311.7f) * 2f - 1f) * warpIntensity;
                 float warpOffsetZ = (Mathf.PerlinNoise(worldXPos * warpScale + seed + 561.1f, worldZPos * warpScale + seed + 893.4f) * 2f - 1f) * warpIntensity;
 
-                // Create the warped coordinates used for evaluating all terrain shapes
                 float warpedX = worldXPos + warpOffsetX;
                 float warpedZ = worldZPos + warpOffsetZ;
 
-                // --- 2. Massive Continents Layer Blend (Using Warped Coordinates) ---
                 float nA = Mathf.PerlinNoise(warpedX * continentalScale + seed, warpedZ * continentalScale + seed);
                 float nB = Mathf.PerlinNoise(warpedX * (continentalScale * 0.4f) + seed + 235, warpedZ * (continentalScale * 0.4f) + seed + 711);
                 float macroNoise = (nA * 0.7f) + (nB * 0.3f);
-
-                // --- 3. Micro Detail Hills (Using Warped Coordinates) ---
                 float worldX = warpedX * waveFrequency;
                 float worldZ = warpedZ * waveFrequency;
                 float noiseY = Mathf.PerlinNoise(worldX * 0.2f + seed, worldZ * 0.2f + seed); 
@@ -182,22 +166,18 @@ public class Terr : MonoBehaviour
                 float baseLandHeight = (wave + noise) * height * subtleModifier + (waterHeight + 4.0f);
 
                 float finalHeight = 0f;
-
-                // --- 4. Beach & Deep Continental Slope Profile ---
                 if (macroNoise >= 0.48f)
                 {
                     finalHeight = baseLandHeight;
                 }
                 else if (macroNoise < 0.48f && macroNoise >= 0.38f)
                 {
-                    // Wide Beach Transition Zone
                     float tBeach = (macroNoise - 0.38f) / 0.1f; 
                     float flattenedBeaches = Mathf.Lerp(waterHeight - 0.3f, waterHeight + 2.0f, tBeach);
                     finalHeight = Mathf.Lerp(flattenedBeaches, baseLandHeight, Mathf.SmoothStep(0f, 1f, tBeach));
                 }
                 else
                 {
-                    // Deep Ocean Basins
                     float tOcean = macroNoise / 0.38f; 
                     float slopeCurve = Mathf.SmoothStep(0f, 1f, tOcean);
                     
