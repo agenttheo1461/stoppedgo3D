@@ -75,3 +75,7 @@ Thumbs.db
 .vscode/
 mono_crash.*.json
 ProfilerCaptures/
+
+# Never track a renamed-aside nested-repo .git folder again -- see the
+# "Assets/ASSETS (1)/.git.backup-do-not-delete" cleanup commit for why.
+**/.git.backup-do-not-delete/
