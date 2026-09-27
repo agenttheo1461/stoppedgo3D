@@ -8,6 +8,7 @@
     "com.unity.inputsystem": "1.19.0",
     "com.unity.memoryprofiler": "1.1.12",
     "com.unity.ml-agents": "https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents",
+    "com.unity.mobile.notifications": "2.4.1",
     "com.unity.multiplayer.center": "1.0.1",
     "com.unity.render-pipelines.universal": 
     "file:com.unity.render-pipelines.universal",
