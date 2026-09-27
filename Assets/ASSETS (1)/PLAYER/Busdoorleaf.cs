@@ -21,7 +21,7 @@ using System.Collections;
 // ═══════════════════════════════════════════════════════════════════════════════
 public class BusDoorLeaf : MonoBehaviour
 {
-    public enum DoorState { Closed, Opening, Open, Closing }
+    public enum DoorState { Closed, Opening, Open, Closing, Wedged }
 
     [Header("Open Pose (local space, relative to this object's parent)")]
     public Vector3 openLocalPosition;
@@ -63,14 +63,26 @@ public class BusDoorLeaf : MonoBehaviour
         CaptureClosedPoseIfNeeded();
         if (State == DoorState.Open || State == DoorState.Opening) return;
         if (_routine != null) StopCoroutine(_routine);
-        _routine = StartCoroutine(Animate(opening: true));
+        _routine = StartCoroutine(Animate(DoorState.Open));
     }
 
     public void Close()
     {
         if (State == DoorState.Closed || State == DoorState.Closing) return;
         if (_routine != null) StopCoroutine(_routine);
-        _routine = StartCoroutine(Animate(opening: false));
+        _routine = StartCoroutine(Animate(DoorState.Closed));
+    }
+
+    /// <summary>Forces the leaf to a halfway position between its closed and
+    /// open poses -- a purely mechanical fallback for a stuck door (see
+    /// BusDoorSet.Wedge), not a real service door state. Callable from any
+    /// current state, including mid-swing.</summary>
+    public void Wedge()
+    {
+        CaptureClosedPoseIfNeeded();
+        if (State == DoorState.Wedged) return;
+        if (_routine != null) StopCoroutine(_routine);
+        _routine = StartCoroutine(Animate(DoorState.Wedged));
     }
 
     // Snaps instantly to closed — useful at spawn/pooling time so a bus
@@ -84,14 +96,23 @@ public class BusDoorLeaf : MonoBehaviour
         State = DoorState.Closed;
     }
 
-    private IEnumerator Animate(bool opening)
+    private IEnumerator Animate(DoorState target)
     {
-        State = opening ? DoorState.Opening : DoorState.Closing;
+        State = target == DoorState.Closed ? DoorState.Closing : DoorState.Opening;
 
         Vector3 fromPos = transform.localPosition;
         Quaternion fromRot = transform.localRotation;
-        Vector3 toPos = opening ? openLocalPosition : _closedLocalPos;
-        Quaternion toRot = opening ? Quaternion.Euler(openLocalEulerAngles) : _closedLocalRot;
+        Vector3 fullOpenPos = openLocalPosition;
+        Quaternion fullOpenRot = Quaternion.Euler(openLocalEulerAngles);
+
+        Vector3 toPos;
+        Quaternion toRot;
+        switch (target)
+        {
+            case DoorState.Closed: toPos = _closedLocalPos; toRot = _closedLocalRot; break;
+            case DoorState.Wedged: toPos = Vector3.Lerp(_closedLocalPos, fullOpenPos, 0.5f); toRot = Quaternion.Slerp(_closedLocalRot, fullOpenRot, 0.5f); break;
+            default:               toPos = fullOpenPos;    toRot = fullOpenRot;    break;
+        }
 
         float t = 0f;
         while (t < 1f)
@@ -105,7 +126,7 @@ public class BusDoorLeaf : MonoBehaviour
 
         transform.localPosition = toPos;
         transform.localRotation = toRot;
-        State = opening ? DoorState.Open : DoorState.Closed;
+        State = target;
         _routine = null;
     }
 

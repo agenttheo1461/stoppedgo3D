@@ -53,6 +53,15 @@ public class BusDoorSet : MonoBehaviour
         else Open();
     }
 
+    public bool IsWedged => leaves.Count > 0 && leaves[0].State == BusDoorLeaf.DoorState.Wedged;
+
+    /// <summary>Stuck-door fallback: forces every leaf to a halfway position
+    /// instead of the normal open/closed poses. See BusDoorLeaf.Wedge.</summary>
+    public void Wedge()
+    {
+        foreach (var l in leaves) if (l != null) l.Wedge();
+    }
+
     public void SnapClosed()
     {
         foreach (var l in leaves) if (l != null) l.SnapClosed();

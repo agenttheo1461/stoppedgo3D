@@ -156,6 +156,8 @@ public class DriverConsole : MonoBehaviour
         new CmdDoc { names = "rdoor",      args = "",                  desc = "Toggle the rear door on articulated/multi-door buses." },
         new CmdDoc { names = "kneel",      args = "",                  desc = "Toggle kneeling suspension for boarding." },
         new CmdDoc { names = "ignition",   args = "",                  desc = "Toggle the engine ignition on/off." },
+        new CmdDoc { names = "quickstart / qs", args = "",             desc = "Battery on, close any open doors (front + rear), then crank and start the engine automatically -- same as pressing ignition twice, just timed for you. Doors are never reopened; do that yourself once you're ready." },
+        new CmdDoc { names = "wedge",      args = "",                  desc = "Force the front door to a halfway 'wedged' position -- a manual fallback for a door stuck open, usable only with the battery off (use ignition/quickstart normally otherwise). Type it again to release. The DOORS button/command falls back to the same thing automatically when there's no power." },
         new CmdDoc { names = "eco",        args = "",                  desc = "Toggle Eco mode (or use the ECO button). On mild-hybrid transmissions (e.g. Voith DIWA 867.8 NXT), this is also the 48V hybrid system's on/off switch — stop-start, coast, boost, and brake regen only run with Eco on." },
         new CmdDoc { names = "gauges",     args = "",                  desc = "Toggle the fuel/maintenance gauges popup." },
         new CmdDoc { names = "time",       args = "",                  desc = "Print current game time and GTST day number." },
@@ -322,6 +324,7 @@ public class DriverConsole : MonoBehaviour
         var engineState = ph?.playerBus?.audioEngine != null
             ? ph.playerBus.audioEngine.engineState : BusAudioEngine.EngineRunState.Off;
         bool ecoOn = ph?.playerBus?.audioEngine != null && ph.playerBus.audioEngine.economyMode;
+        bool batteryOn = ph?.playerBus?.audioEngine != null && ph.playerBus.audioEngine.batteryOn;
 
         var actions = new[]
         {
@@ -332,6 +335,9 @@ public class DriverConsole : MonoBehaviour
             (label:"KNEEL",   cmd:"kneel",    enabled:onDuty,           primary:kneeling),
             (label:"UNSTUCK", cmd:"unstuck",  enabled:ph != null && ph.playerBus != null, primary:false),
             (label:"IGNIT.",  cmd:"ignition", enabled:onDuty,           primary:engineState == BusAudioEngine.EngineRunState.Running),
+            (label:"Q.START", cmd:"quickstart", enabled:onDuty && engineState != BusAudioEngine.EngineRunState.Running
+                                                                    && engineState != BusAudioEngine.EngineRunState.Cranking, primary:false),
+            (label:"WEDGE",   cmd:"wedge",    enabled:onDuty && ph?.playerBus?.audioEngine != null && !batteryOn, primary:false),
             (label:"ECO",     cmd:"eco",      enabled:onDuty,           primary:ecoOn),
             (label:"RELIEF",  cmd:"relief",   enabled:CanRelief(ph),    primary:false),
             (label:"PAX",     cmd:"pax",      enabled:onDuty,           primary:false),

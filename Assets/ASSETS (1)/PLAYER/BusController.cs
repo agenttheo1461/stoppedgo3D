@@ -147,6 +147,24 @@ public class BusSimulationController : MonoBehaviour
             for (int i = 0; i < extras.Length; i++) extras[i]?.Close();
         }
     }
+    /// <summary>"wedge" command / stuck-door fallback for when the battery
+    /// (and so the normal door button) has no power to work with. Front
+    /// door only, per spec -- toggles between wedged-halfway and closed.
+    /// Never touches doorsOpen: a wedged door was never a real "open for
+    /// boarding" state, just a mechanical half-position.</summary>
+    public bool ToggleWedgeFrontDoor()
+    {
+        if (frontDoorSet != null && frontDoorSet.IsWedged)
+        {
+            CloseFrontDoors();
+            return false;
+        }
+        frontDoorSet?.Wedge();
+        var extras = ExtraDoorSets();
+        for (int i = 0; i < extras.Length; i++) extras[i]?.Wedge();
+        return true;
+    }
+
     private void OpenRearDoors()
     {
         rearDoorSet?.Open();

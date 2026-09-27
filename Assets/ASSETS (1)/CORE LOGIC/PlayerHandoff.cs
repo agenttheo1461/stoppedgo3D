@@ -1874,6 +1874,107 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         }
     }
 
+    /// <summary>Explicit "wedge" command -- same underlying toggle as the
+    /// DOORS button's own no-power fallback (see HandleDoorToggle), just
+    /// reachable by name for players who'd rather type it. Refuses while the
+    /// battery has power: wedge is a stuck-door fallback, not a shortcut
+    /// around the normal door cycle.</summary>
+    private void HandleWedgeDoor()
+    {
+        if (playerBus == null) return;
+        var audio = playerBus.audioEngine;
+        if (audio != null && audio.batteryOn)
+        {
+            PrintTagged("Wedge is a stuck-door fallback for when the battery is off -- use <b>door</b> normally while power's on.", "warn");
+            return;
+        }
+        bool nowWedged = playerBus.ToggleWedgeFrontDoor();
+        PrintTagged(nowWedged
+            ? "🚪 Front door <b>wedged halfway</b> — manual fallback for a stuck door. Type <b>wedge</b> again to release."
+            : "🚪 Front door wedge released.",
+            "system");
+    }
+
+    private bool _quickStartRunning;
+
+    /// <summary>"quickstart" command entry point -- validates then hands off
+    /// to the coroutine, same split as every other multi-step command here.</summary>
+    private void HandleQuickStart()
+    {
+        if (playerBus == null) { PrintTagged("No active bus.", "warn"); return; }
+        var audio = playerBus.audioEngine;
+        if (audio == null) { PrintTagged("No audio engine on this bus.", "error"); return; }
+        if (_quickStartRunning) { PrintTagged("Quick Start already in progress.", "warn"); return; }
+
+        if (_isBreakdown)
+        {
+            PrintTagged("⚠ Bus is broken down — type <b>recovered</b> first.", "warn");
+            return;
+        }
+        if (audio.engineState == BusAudioEngine.EngineRunState.Running)
+        {
+            PrintTagged("🚌 Engine's already running.", "info");
+            return;
+        }
+        if (audio.engineState == BusAudioEngine.EngineRunState.Cranking)
+        {
+            PrintTagged("🔑 Already cranking — let it finish, or type <b>ignition</b> once it catches.", "warn");
+            return;
+        }
+
+        StartCoroutine(QuickStartSequence(audio));
+    }
+
+    /// <summary>Battery on, close any open doors (front + rear -- never
+    /// reopened, that's a manual call once you're ready to board), then the
+    /// same two-press ignition sequence as the ENG button/"ignition"
+    /// command, just timed automatically instead of needing a second manual
+    /// press once the starter catches. Hybrid/electric buses skip straight
+    /// to Running, same as a manual ignition press does for them.</summary>
+    private IEnumerator QuickStartSequence(BusAudioEngine audio)
+    {
+        _quickStartRunning = true;
+        PrintTagged("⚡ Quick Start initiated...", "system");
+
+        if (!audio.batteryOn)
+        {
+            audio.batteryOn = true;
+            PrintTagged("🔋 Battery <b>ON</b>.", "system");
+        }
+
+        if (playerBus.doorsOpen)     HandleDoorToggle();
+        if (playerBus.rearDoorsOpen) HandleRearDoorToggle();
+
+        yield return null; // let the door-close state settle a frame before cranking
+
+        if (audio.IsHybridOrElectric())
+        {
+            audio.RequestEngineToggle(); // Off -> Running directly
+            PrintTagged("🔋 Traction system <b>ON</b>. Quick Start complete.", "success");
+            _quickStartRunning = false;
+            yield break;
+        }
+
+        audio.RequestEngineToggle(); // Off -> Cranking
+        PrintTagged("🔑 Cranking... (~8s)", "system");
+
+        while (audio.engineState == BusAudioEngine.EngineRunState.Cranking)
+            yield return null;
+
+        if (audio.engineState != BusAudioEngine.EngineRunState.ReadyToStart)
+        {
+            // Something changed state out from under the sequence -- e.g. a
+            // breakdown hit mid-crank. Bail without forcing anything further.
+            PrintTagged("Quick Start interrupted.", "warn");
+            _quickStartRunning = false;
+            yield break;
+        }
+
+        audio.RequestEngineToggle(); // ReadyToStart -> Running
+        PrintTagged("🚌 Engine <b>RUNNING</b>. Quick Start complete.", "success");
+        _quickStartRunning = false;
+    }
+
     /// <summary>Unstuck / right the bus (button, key or the "unstuck" command).</summary>
     public void HandleUnstuck()
     {
@@ -1942,7 +2043,15 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         var audio = playerBus.audioEngine;
         if (audio != null && !audio.batteryOn)
         {
-            PrintTagged("⚡ No power — doors won't move with the battery off.", "error");
+            // [ADD] With no power the real door motor/valve can't cycle at
+            // all, but a driver can still force a wedged half-open position
+            // by hand -- same DOORS button/command, no separate one to
+            // remember. See HandleWedgeDoor for the explicit "wedge" command.
+            bool nowWedged = playerBus.ToggleWedgeFrontDoor();
+            PrintTagged(nowWedged
+                ? "🚪 Front door <b>wedged halfway</b> — no power to cycle it normally. Press DOORS again to release."
+                : "🚪 Front door wedge released.",
+                "system");
             return;
         }
         if (audio != null && audio.engineState == BusAudioEngine.EngineRunState.Cranking)
@@ -2114,6 +2223,8 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
             case "kneel":     HandleKneelToggle(); break;
             case "unstuck": case "fix": case "flip": HandleUnstuck(); break;
             case "ignition":  HandleIgnitionToggle(); break;
+            case "quickstart": case "qs": HandleQuickStart(); break;
+            case "wedge":     HandleWedgeDoor(); break;
             case "continue":  ContinueAssignedChain(); break;
             case "board":
                 ShiftBoardMenu.Instance?.OpenBoard();
