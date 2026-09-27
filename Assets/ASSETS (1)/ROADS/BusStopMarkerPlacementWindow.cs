@@ -12,20 +12,26 @@ using UnityEditor;
 //  1 + Route 201) were placed by hand; the other ~550 across every other
 //  route never got one.
 //
-//  Position/rotation come straight from the same math BusStopData.GetWorldPosition()/
-//  GetWorldRotation() already use (CityManager.cs) -- centerline position +
-//  Cross(up, tangent) * lateral offset, rotated to face the tangent. That
-//  formula already gets the correct curb side on a one-way road for free
-//  (the tangent only ever points the one legal direction there) and scales
-//  the offset with each road's own roadWidth, so neither needs special-
-//  casing. What's DIFFERENT from GetWorldPosition() itself, per direct
-//  instruction: the lateral offset is a tunable margin computed FROM
+//  Position comes straight from the same math BusStopData.GetWorldPosition()
+//  already uses (CityManager.cs) -- centerline position + Cross(up, tangent)
+//  * lateral offset. That formula scales the offset with each road's own
+//  roadWidth for free, so one-way vs two-way and narrow vs wide roads never
+//  need special-casing. What's DIFFERENT from GetWorldPosition() itself, per
+//  direct instruction: the lateral offset is a tunable margin computed FROM
 //  roadWidth (not the fixed +0.5m pedestrian-line constant that method
 //  uses), and stops that land within clusterDistance of each other on the
 //  same road get spread apart along the tangent instead of stacking on the
 //  same point -- some real stop locations serve 2 close-together
 //  stopCodes, some serve 1, and this keeps either case looking right
 //  without needing to know which case it is ahead of time.
+//
+//  Every stop is DOUBLE-SIDED by default (one marker per curb), matching how
+//  the existing 44 were placed: reverse-engineering their recorded position/
+//  rotation pairs showed the "near" curb (centerline + Cross(up,tangent)*
+//  offset -- the same point GetWorldPosition() itself resolves to) always
+//  faces -tangent, and the "far" curb (centerline - that offset) always
+//  faces +tangent -- i.e. the far marker is just the near one's rotation
+//  flipped 180. Uncheck Double-Sided to place only the near curb.
 //
 //  Works in Edit Mode without BuildCity()/Play mode having ever run, same
 //  as CityManagerEditor's own stop/intersection gizmos -- builds a
@@ -51,6 +57,7 @@ public class BusStopMarkerPlacementWindow : EditorWindow
     private float _clusterDistanceMeters       = 12f;  // stops within this world distance of each other (same road) get staggered instead of stacked
     private float _staggerSpacingMeters        = 6f;   // spacing applied along the road tangent within a cluster
     private float _skipIfExistingWithinMeters  = 4f;   // don't duplicate a marker that's already sitting basically on top of the target spot
+    private bool  _doubleSided                 = true; // every stop gets a marker on BOTH curbs by default (matches the existing 44); uncheck for one side only
 
     private Vector2 _scroll;
     private List<(BusStopData stop, Vector3 pos, Quaternion rot, bool alreadyMarked)> _preview = new();
@@ -90,6 +97,7 @@ public class BusStopMarkerPlacementWindow : EditorWindow
         _clusterDistanceMeters      = EditorGUILayout.FloatField(new GUIContent("Cluster Distance (m)", "Stops on the same road within this many meters of each other get staggered instead of stacked."), _clusterDistanceMeters);
         _staggerSpacingMeters       = EditorGUILayout.FloatField(new GUIContent("Stagger Spacing (m)", "How far apart clustered stops get spread along the road."), _staggerSpacingMeters);
         _skipIfExistingWithinMeters = EditorGUILayout.FloatField(new GUIContent("Skip If Marker Within (m)", "Don't place a new marker if one already sits this close (avoids duplicating Route 1/201's existing 44)."), _skipIfExistingWithinMeters);
+        _doubleSided = EditorGUILayout.Toggle(new GUIContent("Double-Sided", "Place a marker on both curbs (one per direction of travel), like the existing 44. Uncheck to place only the resolved single side."), _doubleSided);
 
         EditorGUILayout.Space(10);
         EditorGUILayout.BeginHorizontal();
@@ -103,7 +111,7 @@ public class BusStopMarkerPlacementWindow : EditorWindow
         {
             int toPlace = _preview.Count(p => !p.alreadyMarked);
             int skipped = _preview.Count - toPlace;
-            EditorGUILayout.HelpBox($"{_preview.Count} stop(s) in the selected route(s). {toPlace} will get a new marker, {skipped} already have one nearby and will be skipped.", MessageType.None);
+            EditorGUILayout.HelpBox($"{_preview.Count} marker(s){(_doubleSided ? " (double-sided)" : "")} for the selected route(s). {toPlace} will get a new marker, {skipped} already have one nearby and will be skipped.", MessageType.None);
 
             _scroll = EditorGUILayout.BeginScrollView(_scroll, GUILayout.Height(240));
             foreach (var p in _preview)
@@ -171,7 +179,10 @@ public class BusStopMarkerPlacementWindow : EditorWindow
         var stopByCode = _city.stopDefinitions.Where(s => s != null).ToDictionary(s => s.stopCode, s => s);
 
         // Resolve base (unstaggered) position/tangent/rotation for each target stop.
-        var resolved = new List<(BusStopData stop, string roadCode, float t, Vector3 pos, Vector3 tangent)>();
+        // pos is the "primary" curb -- same side CityManager's own GetWorldPosition()
+        // resolves to (centerline + Cross(up, tangent) * offset) -- so the gameplay
+        // stop point and this marker always agree on which curb.
+        var resolved = new List<(BusStopData stop, string roadCode, float t, Vector3 pos, Vector3 tangent, float offset)>();
         foreach (var code in stopCodesByFirstSeenOrder)
         {
             if (!stopByCode.TryGetValue(code, out var stop)) { Debug.LogWarning($"[BusStopMarkerPlacement] stopCode '{code}' not found in CityManager.stopDefinitions."); continue; }
@@ -183,7 +194,7 @@ public class BusStopMarkerPlacementWindow : EditorWindow
             Vector3 right   = Vector3.Cross(Vector3.up, tangent).normalized;
             float   offset  = (def.roadWidth * 0.5f) + _extraOffsetBeyondHalfWidth;
 
-            resolved.Add((stop, stop.parentRoadCode, stop.tValue, pos + right * offset, tangent));
+            resolved.Add((stop, stop.parentRoadCode, stop.tValue, pos + right * offset, tangent, offset));
         }
 
         // Cluster stops on the same road within clusterDistanceMeters of each
@@ -208,8 +219,8 @@ public class BusStopMarkerPlacementWindow : EditorWindow
 
             if (cluster.Count == 1)
             {
-                var (stop, _, _, pos, tangent) = resolved[cluster[0]];
-                AddPreviewEntry(stop, pos, tangent);
+                var (stop, _, _, pos, tangent, offset) = resolved[cluster[0]];
+                AddPreviewEntry(stop, pos, tangent, offset);
             }
             else
             {
@@ -219,21 +230,42 @@ public class BusStopMarkerPlacementWindow : EditorWindow
                 foreach (var idx in cluster) avgPos += resolved[idx].pos;
                 avgPos /= cluster.Count;
                 Vector3 tangent = resolved[cluster[0]].tangent;
+                float   offset  = resolved[cluster[0]].offset;
 
                 float totalSpan = _staggerSpacingMeters * (cluster.Count - 1);
                 for (int k = 0; k < cluster.Count; k++)
                 {
                     float along = -totalSpan * 0.5f + k * _staggerSpacingMeters;
                     Vector3 pos = avgPos + tangent * along;
-                    AddPreviewEntry(resolved[cluster[k]].stop, pos, tangent);
+                    AddPreviewEntry(resolved[cluster[k]].stop, pos, tangent, offset);
                 }
             }
         }
     }
 
-    private void AddPreviewEntry(BusStopData stop, Vector3 pos, Vector3 tangent)
+    // pos is the primary curb (centerline + Cross(up, tangent) * offset, same
+    // side CityManager.GetWorldPosition() resolves to). Its correct facing is
+    // -tangent, not tangent -- the existing 44 markers' own position/rotation
+    // pairing confirms this (the +side always carries the 180-flipped
+    // rotation). When double-sided, the mirrored curb (centerline - offset)
+    // gets the "un-flipped" tangent rotation, i.e. the primary's rotation
+    // rotated 180 -- one marker always faces the other's back.
+    private void AddPreviewEntry(BusStopData stop, Vector3 pos, Vector3 tangent, float offset)
     {
-        Quaternion rot = Quaternion.LookRotation(tangent, Vector3.up);
+        Quaternion rot = Quaternion.LookRotation(-tangent, Vector3.up);
+        AddSingleMarker(stop, pos, rot);
+
+        if (_doubleSided)
+        {
+            Vector3    right     = Vector3.Cross(Vector3.up, tangent).normalized;
+            Vector3    mirrorPos = pos - right * (offset * 2f);
+            Quaternion mirrorRot = Quaternion.LookRotation(tangent, Vector3.up);
+            AddSingleMarker(stop, mirrorPos, mirrorRot);
+        }
+    }
+
+    private void AddSingleMarker(BusStopData stop, Vector3 pos, Quaternion rot)
+    {
         bool alreadyMarked = _parentContainer != null && HasNearbyMarker(pos);
         _preview.Add((stop, pos, rot, alreadyMarked));
     }
