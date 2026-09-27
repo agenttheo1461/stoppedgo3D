@@ -90,7 +90,7 @@ public static class SaveService
     // current one there's no remaining reason to keep its file (only
     // LoadDayAssignments(currentDay) is ever read), so prune anything more
     // than DaysToKeep behind whenever a new day is saved.
-    private const int DaysToKeep = 3;
+    private const int DaysToKeep = 10;
     private static void PruneOldDayAssignments(int currentDay)
     {
         string dir = Application.persistentDataPath;

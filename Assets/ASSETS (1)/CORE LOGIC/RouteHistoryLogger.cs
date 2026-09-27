@@ -166,7 +166,7 @@ public class RouteHistoryLogger : MonoBehaviour
         try
         {
             string tmp = FilePath + ".tmp";
-            File.WriteAllText(tmp, JsonUtility.ToJson(_data));
+            File.WriteAllText(tmp, JsonUtility.ToJson(_data, true)); // pretty-print, same as SaveService's other save files
             if (File.Exists(FilePath)) File.Delete(FilePath);
             File.Move(tmp, FilePath);
             _dirty = false;
