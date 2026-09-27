@@ -40,7 +40,13 @@ public class RouteGuideArrows : MonoBehaviour
     public float chevronThickness = 0.55f;
     public float stopRadius       = 2.8f;   // bigger than ribbonWidth/2 on purpose
     public float stopInnerRadius  = 1.5f;
-    public float heightAboveRoad  = 0.35f;
+    // [FIX] Was 0.35 (35cm) -- visibly floating above the road. Brought down
+    // close to flush; not all the way to ~0.001 as literally requested since
+    // at that thinness the road mesh and ribbon would z-fight (flicker)
+    // depending on camera distance and world-position floating point
+    // precision -- 0.02 (2cm) reads as flush from driving height while
+    // staying a safe margin above the mesh.
+    public float heightAboveRoad  = 0.02f;
 
     [Header("Look")]
     [Range(0f, 1f)] public float ribbonAlpha  = 0.50f;
