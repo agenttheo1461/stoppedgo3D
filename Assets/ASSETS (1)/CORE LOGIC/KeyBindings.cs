@@ -123,6 +123,8 @@ public class KeyBindData
     public KeyCode relief      = KeyCode.Alpha8;
     public KeyCode status      = KeyCode.Alpha9;
     public KeyCode kneel       = KeyCode.K;
+    [Tooltip("Deploys/retracts the wheelchair lift ramp. Only usable stopped, kneeling, in neutral, parking brake set, front door open, and only when a wheelchair passenger actually needs it.")]
+    public KeyCode rampDeploy  = KeyCode.R;
     public KeyCode ignition    = KeyCode.I;
     public KeyCode leftSignal  = KeyCode.Q;
     public KeyCode rightSignal = KeyCode.E;

@@ -129,6 +129,17 @@ public interface IBusDriverDisplaySource : IBusDisplaySource
     /// <summary>Most riders this bus carries (seated + standing), from its fleet series.
     /// Always &gt; 0 so a percentage never divides by zero.</summary>
     int PassengerCapacity { get; }
+
+    /// <summary>Wheelchair lift ramp status, pre-formatted for direct display
+    /// ("STOWED", "DEPLOYING 55%", "DEPLOYED — LOADING", "DEPLOYED",
+    /// "RETRACTING 30%") -- no mesh exists for the ramp itself yet, so this
+    /// (plus AdaPaxEventPending) is the only place its progress is visible.</summary>
+    string RampStateLabel { get; }
+
+    /// <summary>True while a wheelchair passenger is waiting to board or
+    /// wants off at the current stop -- drives the board's "ADA PAX"
+    /// override the same way it drives the driver console/stop pill's.</summary>
+    bool AdaPaxEventPending { get; }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -160,6 +171,8 @@ public class BusDriverDisplayState
     public bool   parkingBrakeSet;
     public int    onboardPax;
     public int    passengerCapacity = 1;
+    public string rampStateLabel = "STOWED";
+    public bool   adaPaxEventPending;
     public bool   hasDriverExtras; // false when the source only implements IBusDisplaySource
 
     /// <summary>Load as a whole percent of capacity ("35% FULL"). May exceed 100 if something over-boards.</summary>
@@ -193,6 +206,8 @@ public class BusDriverDisplayState
             parkingBrakeSet          = driverSource.ParkingBrakeSet;
             onboardPax               = driverSource.OnboardPax;
             passengerCapacity        = Mathf.Max(1, driverSource.PassengerCapacity);
+            rampStateLabel           = driverSource.RampStateLabel ?? "STOWED";
+            adaPaxEventPending       = driverSource.AdaPaxEventPending;
         }
         else
         {

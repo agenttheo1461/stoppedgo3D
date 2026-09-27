@@ -113,7 +113,7 @@ public class DriverConsole : MonoBehaviour
     private bool     _stylesReady;
     private GUIStyle _labelSecond, _labelDim, _labelCyan, _labelAmber, _labelBoard,
                      _labelGreen,  _labelRed,  _labelWhite, _labelHeading,
-                     _labelRoute,  _pillTitle, _pillBody,   _pillBracket;
+                     _labelRoute,  _pillTitle, _pillBody,   _pillBracket, _pillAda;
     private GUIStyle _btnPrimary, _btnSecond, _btnDisabled, _btnDanger,
                      _btnSuccess,  _inputStyle;
     private GUIStyle _btnIcon, _btnIconSel; // header icon buttons
@@ -158,6 +158,7 @@ public class DriverConsole : MonoBehaviour
         new CmdDoc { names = "ignition",   args = "",                  desc = "Toggle the engine ignition on/off." },
         new CmdDoc { names = "quickstart / qs", args = "",             desc = "Battery on, close any open doors (front + rear), then crank and start the engine automatically -- same as pressing ignition twice, just timed for you. Doors are never reopened; do that yourself once you're ready." },
         new CmdDoc { names = "wedge",      args = "",                  desc = "Force the front door to a halfway 'wedged' position -- a manual fallback for a door stuck open, usable only with the battery off (use ignition/quickstart normally otherwise). Type it again to release. The DOORS button/command falls back to the same thing automatically when there's no power." },
+        new CmdDoc { names = "ramp",       args = "",                  desc = "Deploy/retract the wheelchair lift ramp (also the R key). Only usable with a wheelchair passenger actually needing it, front door open, kneeling, in neutral, and parking brake set. Deploy takes ~10s (with a brief hiccup partway through), then loads/unloads the wheelchair pax over ~5s -- type ramp again once it reads 'Deployed' to raise it, which finishes over another ~10s. Regular boarding through the front door waits until the ramp is fully stowed again." },
         new CmdDoc { names = "eco",        args = "",                  desc = "Toggle Eco mode (or use the ECO button). On mild-hybrid transmissions (e.g. Voith DIWA 867.8 NXT), this is also the 48V hybrid system's on/off switch — stop-start, coast, boost, and brake regen only run with Eco on." },
         new CmdDoc { names = "gauges",     args = "",                  desc = "Toggle the fuel/maintenance gauges popup." },
         new CmdDoc { names = "time",       args = "",                  desc = "Print current game time and GTST day number." },
@@ -338,6 +339,8 @@ public class DriverConsole : MonoBehaviour
             (label:"Q.START", cmd:"quickstart", enabled:onDuty && engineState != BusAudioEngine.EngineRunState.Running
                                                                     && engineState != BusAudioEngine.EngineRunState.Cranking, primary:false),
             (label:"WEDGE",   cmd:"wedge",    enabled:onDuty && ph?.playerBus?.audioEngine != null && !batteryOn, primary:false),
+            (label:"RAMP",    cmd:"ramp",     enabled:onDuty && ph != null && (ph.AdaEventPending || ph.CurrentRampState != PlayerHandoff.RampState.Stowed),
+                                              primary:ph != null && ph.CurrentRampState != PlayerHandoff.RampState.Stowed),
             (label:"ECO",     cmd:"eco",      enabled:onDuty,           primary:ecoOn),
             (label:"RELIEF",  cmd:"relief",   enabled:CanRelief(ph),    primary:false),
             (label:"PAX",     cmd:"pax",      enabled:onDuty,           primary:false),
@@ -409,12 +412,20 @@ public class DriverConsole : MonoBehaviour
         float dist = ph.DistToNextStop;
         if (dist > pillShowRadius) return;
 
-        bool  requested = ph.StopRequested;
+        bool requested   = ph.StopRequested;
+        // [ADD] An ADA/wheelchair event at this stop overrides what the pill
+        // shows (per spec: "their stop request can override the one shown")
+        // -- regular pax still board/alight normally underneath this, only
+        // the DISPLAY changes. adaPending alone (no regular request at all)
+        // still lights the pill -- a wheelchair pax is as real a "stop
+        // requested" reason as anything else here.
+        bool adaPending  = ph.AdaEventPending;
+        bool showLit     = requested || adaPending;
         // Big stop-requested LED needs room on the left of the pill — bigger
         // version of the small header status dot (MDT_UITheme.DrawLED),
         // same helper, just a much larger radius and always amber/orange
         // rather than state-colored.
-        float dotAreaW = requested ? 34f : 0f;
+        float dotAreaW = showLit ? 34f : 0f;
 
         float x = (Screen.width - pillWidth) * 0.5f;
         var   r = new Rect(x, pillTopMargin, pillWidth, pillHeight);
@@ -425,14 +436,16 @@ public class DriverConsole : MonoBehaviour
 
         GUI.BeginGroup(r);
 
-        // Big amber/yellow-orange LED, pulsing while a stop is requested —
-        // stays lit (and the count with it) for as long as PlayerHandoff's
-        // pax plan says there's real demand here, even if you drive past
-        // without stopping; grows if more people board elsewhere first.
-        if (requested)
+        // Big LED, pulsing while a stop is requested — stays lit (and the
+        // count with it) for as long as PlayerHandoff's pax plan says
+        // there's real demand here, even if you drive past without
+        // stopping; grows if more people board elsewhere first. Blue
+        // instead of amber specifically for the ADA-override case.
+        if (showLit)
         {
             float pulse = 0.75f + 0.25f * Mathf.Abs(Mathf.Sin(_pulseTimer * 2.2f));
-            MDT_UITheme.DrawLED(new Vector2(18f, pillHeight * 0.5f), 9f, MDT_UITheme.LEDAmber * pulse);
+            Color ledColor = adaPending ? new Color(0.40f, 0.62f, 1.0f) : MDT_UITheme.LEDAmber;
+            MDT_UITheme.DrawLED(new Vector2(18f, pillHeight * 0.5f), 9f, ledColor * pulse);
         }
 
         GUI.Label(new Rect(dotAreaW, 6, pillWidth - dotAreaW, 22), $"[{ph.NextStopName}]", _pillTitle);
@@ -448,12 +461,13 @@ public class DriverConsole : MonoBehaviour
         }
         else
         {
-            string paxStr  = $"{ph.PredictedBoardingPax} on";
-            string distStr = $"[{dist:F0}m]";
-            row2 = requested
-                ? $"{paxStr} / {ph.AlightCount} off  -  [STOP REQUESTED]  -  {distStr}"
+            string paxStr   = $"{ph.PredictedBoardingPax} on";
+            string distStr  = $"[{dist:F0}m]";
+            string reasonTag = adaPending ? "[ADA PAX]" : "[STOP REQUESTED]";
+            row2 = showLit
+                ? $"{paxStr} / {ph.AlightCount} off  -  {reasonTag}  -  {distStr}"
                 : $"{paxStr} / 0 off  -  {distStr}";
-            row2Style = requested ? _pillBracket : _pillBody;
+            row2Style = adaPending ? _pillAda : (requested ? _pillBracket : _pillBody);
         }
         GUI.Label(new Rect(dotAreaW, 32, pillWidth - dotAreaW, 22), row2, row2Style);
 
@@ -543,6 +557,24 @@ public class DriverConsole : MonoBehaviour
         var bus = ph.playerBus;
         string doorsTxt = $"Doors F:{(bus.doorsOpen ? "OPEN" : "shut")} R:{(bus.rearDoorsOpen ? "OPEN" : "shut")}";
         GUIStyle doorsStyle = (bus.doorsOpen || bus.rearDoorsOpen) ? _labelGreen : _labelDim;
+
+        // [ADD] Wheelchair lift ramp readout -- no mesh yet, so this (plus
+        // the ADA override on the stop pill) is the only place its progress
+        // is visible at all. Rides in the doors column since the ramp is
+        // itself a front-door thing; only takes any space while active.
+        if (ph.CurrentRampState != PlayerHandoff.RampState.Stowed)
+        {
+            string rampTxt = ph.CurrentRampState switch
+            {
+                PlayerHandoff.RampState.Deploying  => $"  RAMP {ph.RampProgress01 * 100f:F0}%",
+                PlayerHandoff.RampState.Loading    => "  RAMP: DEPLOYED — LOADING",
+                PlayerHandoff.RampState.Deployed   => "  RAMP: DEPLOYED",
+                PlayerHandoff.RampState.Retracting => $"  RAMP {ph.RampProgress01 * 100f:F0}%",
+                _ => "",
+            };
+            doorsTxt  += rampTxt;
+            doorsStyle = _pillAda;
+        }
 
         // F1 = one decimal place on the raw lateness-minutes value, e.g. 4.1
         float lateness = ph.LatenessMinutes;
@@ -1224,6 +1256,10 @@ public class DriverConsole : MonoBehaviour
         _pillTitle   = MDT_UITheme.MakeLabel(14, FontStyle.Bold,   TextAnchor.MiddleCenter, MDT_UITheme.TextCyan);
         _pillBody    = MDT_UITheme.MakeLabel(13, FontStyle.Normal, TextAnchor.MiddleCenter, MDT_UITheme.TextPrimary);
         _pillBracket = MDT_UITheme.MakeLabel(13, FontStyle.Bold,   TextAnchor.MiddleCenter, MDT_UITheme.TextAmber);
+        // ADA/wheelchair -- blue, per spec ("they are blue"). No mesh/visual
+        // pax type exists yet, so this text color is the only place that
+        // distinction currently shows up.
+        _pillAda     = MDT_UITheme.MakeLabel(13, FontStyle.Bold,   TextAnchor.MiddleCenter, new Color(0.40f, 0.62f, 1.0f));
 
         // Buttons
         _btnPrimary  = MDT_UITheme.MakeButton(MDT_UITheme.BGDirSel, MDT_UITheme.TextCyan,   10);

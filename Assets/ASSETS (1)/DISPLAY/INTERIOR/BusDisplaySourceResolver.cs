@@ -79,4 +79,6 @@ public class BusDisplaySourceResolver : MonoBehaviour, IBusDisplaySource, IBusDr
     bool   IBusDriverDisplaySource.ParkingBrakeSet            => ActiveDriver != null && ActiveDriver.ParkingBrakeSet;
     int    IBusDriverDisplaySource.OnboardPax                 => ActiveDriver?.OnboardPax ?? 0;
     int    IBusDriverDisplaySource.PassengerCapacity          => ActiveDriver?.PassengerCapacity ?? BusCapacityDefaults.Standard40Total;
+    string IBusDriverDisplaySource.RampStateLabel             => ActiveDriver?.RampStateLabel ?? "STOWED";
+    bool   IBusDriverDisplaySource.AdaPaxEventPending          => ActiveDriver != null && ActiveDriver.AdaPaxEventPending;
 }

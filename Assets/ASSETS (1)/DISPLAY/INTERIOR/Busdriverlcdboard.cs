@@ -198,9 +198,30 @@ public class BusDriverLCDBoard : MonoBehaviour
         GUI.Label(new Rect(pad + w * 0.28f, h * 0.45f, w * 0.68f, h * 0.13f), destText, _destStyle);
 
         // Row 4: next stop + distance
-        GUI.Label(new Rect(pad, h * 0.61f, w * 0.16f, h * 0.08f), "NEXT", _nextLabelStyle);
+        // [ADD] Wheelchair lift ramp -- no mesh/dedicated readout exists yet
+        // (see IBusDriverDisplaySource.RampStateLabel), so while it's active
+        // this row takes over from the normal next-stop text entirely (the
+        // bus is dwelling at a stop with the ramp out anyway, not moving
+        // toward a next stop). An ADA pax waiting/wanting off with the ramp
+        // still stowed just tints the existing next-stop line blue instead.
+        var adaBlue = new Color(0.40f, 0.62f, 1.0f);
+        bool rampActive = _state.hasDriverExtras && _state.rampStateLabel != "STOWED";
+        GUI.Label(new Rect(pad, h * 0.61f, w * 0.16f, h * 0.08f), rampActive ? "RAMP" : "NEXT", _nextLabelStyle);
         string nextStop = string.IsNullOrEmpty(_state.nextStopName) ? "--" : _state.nextStopName;
-        _nextStopStyle.normal.textColor = _state.stopRequested ? activeStatusColor : new Color(0.9f, 0.9f, 0.9f);
+        if (rampActive)
+        {
+            nextStop = "♿ " + _state.rampStateLabel;
+            _nextStopStyle.normal.textColor = adaBlue;
+        }
+        else if (_state.hasDriverExtras && _state.adaPaxEventPending)
+        {
+            nextStop = "♿ " + nextStop;
+            _nextStopStyle.normal.textColor = adaBlue;
+        }
+        else
+        {
+            _nextStopStyle.normal.textColor = _state.stopRequested ? activeStatusColor : new Color(0.9f, 0.9f, 0.9f);
+        }
         GUI.Label(new Rect(pad, h * 0.69f, w * 0.68f, h * 0.10f), nextStop, _nextStopStyle);
         GUI.Label(new Rect(w * 0.68f, h * 0.69f, w * 0.30f, h * 0.10f), _state.hasDriverExtras ? _state.DistanceLabel() : "--", _distStyle);
 

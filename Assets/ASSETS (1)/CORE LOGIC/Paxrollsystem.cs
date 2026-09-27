@@ -175,6 +175,20 @@ public static class PaxRollPlanner
         {
             terminal[i] = isTerminalFlags != null && i < isTerminalFlags.Count && isTerminalFlags[i];
 
+            // [FIX] A terminal stop already forces every onboard pax off
+            // (GetAlightingCount below) -- but nothing stopped it from ALSO
+            // rolling new boarding demand here, which makes no sense for a
+            // real transit trip's last stop (the bus is ending service
+            // there, not picking anyone up). Skip the roll entirely instead
+            // of rolling then discarding, same end result either way but no
+            // wasted RNG draw.
+            if (terminal[i])
+            {
+                boarding[i] = 0;
+                alightingFraction[i] = 0f; // irrelevant -- GetAlightingCount ignores this for a terminal stop -- but keep it well-defined
+                continue;
+            }
+
             float[] weights;
             if (zonesApply)
             {

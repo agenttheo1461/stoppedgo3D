@@ -209,10 +209,19 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         _onboardPax = 0;
         _stopRequested = false;
         _alightCount = 0;
+        _missedAlightCarryover = 0;
         _passengerDestinations.Clear();
         _reliefRequested = false;
         _replacementBusID = -1;
         _cachedFleetNumber = displayFleetNumber >= 0 ? displayFleetNumber : _cachedFleetNumber;
+        // [ADD] A fresh possession is a different physical bus -- any
+        // wheelchair pax/lift state belonged to the old one.
+        _onboardAdaPax        = 0;
+        _adaBoardingWaiting   = false;
+        _adaAlightRequested   = false;
+        _deferredBoardingPax  = 0;
+        _rampState            = RampState.Stowed;
+        _rampProgress01       = 0f;
 
         if (displayFleetNumber >= 0)
             PrintTagged($"Player bus now set to fleet #{displayFleetNumber}.", "system");
@@ -619,13 +628,20 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         PrintTagged($"🏁 [{timeStr}] Arrived at <b>{_targetTerminal?.StopName ?? "Terminal"}</b> " +
                     $"(segment {_segmentsCompleted})", "success");
 
-        if (_onboardPax > 0)
+        if (_onboardPax > 0 || _onboardAdaPax > 0)
         {
             PrintTagged($"← All {_onboardPax} remaining passenger(s) alighted at terminus.", "info");
             _onboardPax    = 0;
             _stopRequested = false;
             _alightCount   = 0;
+            _missedAlightCarryover = 0;
             _passengerDestinations.Clear();
+            // [ADD] Terminal arrival is a full clear-out for everyone,
+            // wheelchair pax included.
+            _onboardAdaPax      = 0;
+            _adaBoardingWaiting = false;
+            _adaAlightRequested = false;
+            _deferredBoardingPax = 0;
             DriverConsole.Instance?.RefreshStopHUD();
         }
         if (_reliefRequested)
@@ -1207,6 +1223,18 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
 
     bool IBusDriverDisplaySource.ParkingBrakeSet => playerBus != null && playerBus.parkingBrake;
 
+    // [ADD] Wheelchair lift ramp -- no mesh yet, so the 2D driver LCD board
+    // and driver console are the only places this is visible at all.
+    string IBusDriverDisplaySource.RampStateLabel => _rampState switch
+    {
+        RampState.Deploying  => $"DEPLOYING {_rampProgress01 * 100f:F0}%",
+        RampState.Loading    => "DEPLOYED — LOADING",
+        RampState.Deployed   => "DEPLOYED",
+        RampState.Retracting => $"RETRACTING {_rampProgress01 * 100f:F0}%",
+        _                    => "STOWED",
+    };
+    bool IBusDriverDisplaySource.AdaPaxEventPending => AdaEventPending;
+
     // ── Inspector ─────────────────────────────────────────────────────────────
     [Header("Player Bus Reference")]
     public BusSimulationController playerBus;
@@ -1344,6 +1372,12 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
     private int  _lastDoorOpenOn       = 0;
     private int  _predictedBoardingPax = 0;
     private readonly List<int> _passengerDestinations = new List<int>();
+    // [ADD] Stop requests now stack instead of vanishing: if the bus rolls
+    // past a stop with an unmet alight request (doors never opened there),
+    // that count folds in here and gets merged into the NEXT stop's own
+    // request in UpdateStopProximity, rather than being silently overwritten
+    // and lost. See UpdateStopProximity's own comment for the merge logic.
+    private int  _missedAlightCarryover = 0;
 
     // Real pax plan for the CURRENT leg, rolled once in BeginLeg — same
     // time-band/zone-aware system NPCBusController uses, replacing the old
@@ -1357,6 +1391,50 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
     public bool StopRequested        => _stopRequested;
     public int  AlightCount          => _alightCount;
     public int  PredictedBoardingPax => _predictedBoardingPax;
+
+    // ═════════════════════════════════════════════════════════════════════════
+    //  ADA / WHEELCHAIR-LIFT PAX
+    //  No per-passenger object/type system exists anywhere in this project yet
+    //  (PaxAgent is generic, no color/type field) -- modeled here the same way
+    //  every other pax number already is, as plain counters/flags on
+    //  PlayerHandoff, rather than a bigger refactor of PaxSimManager/PaxAgent.
+    //  No mesh yet either, so the ramp itself is represented purely as state
+    //  the driver console / 2D LCD board can display (see HandleRampToggle/
+    //  UpdateRampState below and their DriverConsole/BusDriverLCDBoard hooks).
+    // ═════════════════════════════════════════════════════════════════════════
+    private const int ADA_CAPACITY = 2;
+    private int  _onboardAdaPax      = 0;     // 0..ADA_CAPACITY
+    private bool _adaBoardingWaiting = false; // an ADA pax is waiting to board at the CURRENT stop
+    private bool _adaAlightRequested = false; // an onboard ADA pax wants off at the CURRENT stop
+    // Regular boarding rolled at a stop with an ADA event pending is held
+    // here instead of applied immediately -- the wheelchair pax boards/
+    // alights first, everyone else waits for the ramp to fully stow again
+    // (see ProcessStopDoorOpen / ReleaseDeferredBoarding).
+    private int  _deferredBoardingPax = 0;
+
+    public int  OnboardAdaPax   => _onboardAdaPax;
+    /// <summary>True while there's a wheelchair pax either waiting to board
+    /// or wanting off at the CURRENT stop -- drives the "ADA Pax" override
+    /// on the stop-requested display (see DriverConsole/BusDriverLCDBoard).
+    /// Regular alighting/boarding for everyone else still happens
+    /// independently of this -- it only overrides what gets SHOWN.</summary>
+    public bool AdaEventPending => _adaBoardingWaiting || _adaAlightRequested;
+    public bool AdaAlightRequested => _adaAlightRequested;
+
+    public enum RampState { Stowed, Deploying, Loading, Deployed, Retracting }
+    private RampState _rampState      = RampState.Stowed;
+    private float     _rampProgress01 = 0f; // 0-1, meaningful only during Deploying/Retracting
+    private float     _rampTimer      = 0f;
+    private bool      _rampHiccupDone = false;
+
+    public RampState CurrentRampState => _rampState;
+    public float     RampProgress01   => _rampProgress01;
+
+    private const float RAMP_DEPLOY_SECONDS   = 10f;
+    private const float RAMP_HICCUP_AT        = 0.55f; // fraction through deploy where it pauses
+    private const float RAMP_HICCUP_PAUSE_SEC = 1.0f;
+    private const float RAMP_LOAD_SECONDS     = 5f;
+    private const float RAMP_RETRACT_SECONDS  = 10f;
 
     /// <summary>True exactly when the upcoming stop has zero predicted
     /// boarding AND zero requested alighting — i.e. the "skip" case. Exposed
@@ -1536,9 +1614,11 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
                 else
                     HandleDoorToggle();
             }
+            if (Input.GetKeyDown(KeyBindings.Current.rampDeploy)) HandleRampToggle();
         }
         UpdateBrakeHoldDoorToggle();
         UpdateStopProximity();
+        UpdateRampState();
         CheckAutoArrival();
         CheckAutoDepart();
         UpdatePlayerBreakdowns();
@@ -2092,6 +2172,11 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         {
             _hasProcessedStop = false;
             PrintTagged($"🚪 Front doors <b>OPEN</b>  |  🅿 Brake: <b>ON</b>", "system");
+            // [ADD] Covers the door-closed-when-the-ramp-finished edge case
+            // -- UpdateRampState already tries this the instant the ramp
+            // hits Stowed, but if the door wasn't open at that exact moment
+            // it no-ops; this catches it as soon as the door opens again.
+            ReleaseDeferredBoarding();
             if (AtStop) ProcessStopDoorOpen();
             else        PrintTagged("  (Not at a designated stop)", "info");
         }
@@ -2225,6 +2310,7 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
             case "ignition":  HandleIgnitionToggle(); break;
             case "quickstart": case "qs": HandleQuickStart(); break;
             case "wedge":     HandleWedgeDoor(); break;
+            case "ramp":      HandleRampToggle(); break;
             case "continue":  ContinueAssignedChain(); break;
             case "board":
                 ShiftBoardMenu.Instance?.OpenBoard();
@@ -2604,7 +2690,14 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
             for (int i = 0; i < legStops.Count; i++)
             {
                 positions[i] = legStops[i].GetWorldPosition();
-                terminals[i] = legStops[i].isTerminal;
+                // [FIX] Missing the "|| i == legStops.Count - 1" fallback
+                // NPCBusController's own pax-plan roll already has (see its
+                // BuildPaxPlan-equivalent) -- without it, the player's LAST
+                // stop on a leg only forced a full clear-out/no-boarding if
+                // that exact stop happened to also be separately flagged
+                // isTerminal in the stop data. Every leg's last stop is a
+                // terminal for pax-planning purposes regardless of that flag.
+                terminals[i] = legStops[i].isTerminal || i == legStops.Count - 1;
             }
             float nowMinutes = BusScheduler.Instance != null ? BusScheduler.Instance.GameTimeMinutes : 0f;
             _playerPaxPlan = PaxRollPlanner.RollTrip(positions, terminals, nowMinutes);
@@ -3184,19 +3277,40 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
             if (_lastProcessedStopIndex != bestIdx)
                 _hasProcessedStop = false;
 
-            int planAlighting = _playerPaxPlan?.GetAlightingCount(bestIdx, _onboardPax) ?? 0;
-            if (planAlighting > 0)
+            // [ADD] Stacking: if the request for whatever stop was current
+            // a moment ago never got served (doors never opened -- the only
+            // way _stopRequested survives to this point), fold its count in
+            // rather than let the overwrite below erase it.
+            if (_stopRequested && _alightCount > 0)
+                _missedAlightCarryover += _alightCount;
+
+            int planAlighting  = _playerPaxPlan?.GetAlightingCount(bestIdx, _onboardPax) ?? 0;
+            int totalAlighting = Mathf.Min(_onboardPax, planAlighting + _missedAlightCarryover);
+            if (totalAlighting > 0)
             {
                 _stopRequested = true;
-                _alightCount   = planAlighting;
+                _alightCount   = totalAlighting;
             }
             else
             {
                 _stopRequested = false;
                 _alightCount   = 0;
             }
+            // Folded into _alightCount above -- if THIS stop also gets
+            // missed, the merged total (not the original per-stop pieces)
+            // carries forward again next time, avoiding any double count.
+            _missedAlightCarryover = 0;
 
             _predictedBoardingPax = _playerPaxPlan?.PaxAt(bestIdx) ?? 0;
+
+            // [ADD] ADA/wheelchair pax -- independent lightweight roll (see
+            // this class's ADA fields' own header comment). Re-rolled fresh
+            // per newly-announced stop, same cadence the regular alighting/
+            // boarding rolls above use. Never at the last stop of the leg --
+            // matches "no new pax board at all there".
+            bool isLastStopOnLeg = bestIdx == routeStops.Count - 1;
+            _adaAlightRequested = _onboardAdaPax > 0 && (isLastStopOnLeg || UnityEngine.Random.value < 0.35f);
+            _adaBoardingWaiting = !isLastStopOnLeg && _onboardAdaPax < ADA_CAPACITY && UnityEngine.Random.value < 0.08f;
         }
 
         if (bestIdx >= 0 && _distToNextStop > stopDetectRadius + 10f)
@@ -3275,9 +3389,28 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
             _alightCount = 0;
         }
 
-        int boarding          = _predictedBoardingPax;
-        _onboardPax          += boarding;
+        int boarding = _predictedBoardingPax;
         _predictedBoardingPax = 0;
+
+        // [ADD] A wheelchair pax always boards/alights first -- regular
+        // boarding through this same door waits until the full ramp cycle
+        // (deploy -> load -> retract) finishes; see ReleaseDeferredBoarding,
+        // called once the ramp is back to Stowed with the door still open.
+        // Regular alighting above is untouched -- only NEW boarding waits.
+        bool holdForRamp = AdaEventPending;
+        if (holdForRamp)
+        {
+            _deferredBoardingPax = boarding;
+            boarding = 0;
+            PrintTagged(_adaAlightRequested
+                ? "♿ Wheelchair passenger requesting the lift to get off — press R once parked, kneeling, in neutral, with the front door open."
+                : "♿ Wheelchair passenger waiting to board — press R once parked, kneeling, in neutral, with the front door open.",
+                "warn");
+        }
+        else
+        {
+            _onboardPax += boarding;
+        }
         PointsManager.Instance.RegisterBoarding(boarding);
 
         var routeStops = GetActiveStops(_isOutbound);
@@ -3297,7 +3430,7 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
             _shiftScore += paxHandled;
             PrintTagged($"🧍 {stopName}: {off} off, {boarding} on (+{paxHandled} pts)", "info");
         }
-        else
+        else if (!holdForRamp)
         {
             PrintTagged($"{stopName}: no passenger activity.", "info");
         }
@@ -3323,6 +3456,189 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
             yield return BusBoardingSequencer.RunBoarding(this, stopCode, doorPos, fwd, boarding, PlayerBusID, true, _boardingHandle);
 
         _boardingInProgress = false;
+    }
+
+    /// <summary>Applies boarding that was held back by ProcessStopDoorOpen
+    /// while a wheelchair pax was being served. Called once the ramp
+    /// finishes retracting (see UpdateRampState) and again from
+    /// HandleDoorToggle whenever the front door opens, in case the door was
+    /// closed at the moment the ramp finished. If the door isn't open by
+    /// either point, the deferred pax simply never board this stop --
+    /// same as any other pax who'd have needed an open door that never came.</summary>
+    private void ReleaseDeferredBoarding()
+    {
+        if (_deferredBoardingPax <= 0) return;
+        if (playerBus == null || !playerBus.doorsOpen) return;
+
+        int boarding = _deferredBoardingPax;
+        _deferredBoardingPax = 0;
+
+        _onboardPax += boarding;
+        PointsManager.Instance.RegisterBoarding(boarding);
+
+        var routeStops = GetActiveStops(_isOutbound);
+        int stopsRemaining = routeStops != null ? routeStops.Count - _nextStopIndex - 1 : 5;
+        for (int i = 0; i < boarding; i++)
+            _passengerDestinations.Add(UnityEngine.Random.Range(1, Mathf.Max(2, stopsRemaining + 1)));
+
+        _shiftScore += boarding;
+        PrintTagged($"🧍 {boarding} boarding now that the lift is stowed.", "info");
+
+        StopHUD.Instance?.Refresh();
+        DriverConsole.Instance?.RefreshStopHUD();
+
+        string stopCode = ResolveCurrentStopCode();
+        if (PaxSimManager.Instance != null && !string.IsNullOrEmpty(stopCode))
+            StartCoroutine(RunDoorBoardingSequence(stopCode, 0, boarding));
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    //  WHEELCHAIR LIFT RAMP  ("ramp" console command / KeyBindings.rampDeploy)
+    //  No mesh yet -- see this class's ADA fields' header comment. Progress
+    //  is exposed via CurrentRampState/RampProgress01 for DriverConsole and
+    //  BusDriverLCDBoard to render as a plain readout in the meantime.
+    // ═════════════════════════════════════════════════════════════════════════
+    public void HandleRampToggle()
+    {
+        if (playerBus == null) { PrintTagged("No active bus.", "warn"); return; }
+
+        switch (_rampState)
+        {
+            case RampState.Stowed:
+                if (!AdaEventPending)
+                {
+                    PrintTagged("No wheelchair passenger needs the lift right now.", "warn");
+                    return;
+                }
+                if (!playerBus.doorsOpen)
+                {
+                    PrintTagged("Ramp needs the front door open first.", "warn");
+                    return;
+                }
+                if (PlayerSuspension == null || !PlayerSuspension.IsKneeling)
+                {
+                    PrintTagged("Ramp needs the bus kneeling first.", "warn");
+                    return;
+                }
+                if (playerBus.currentDirection != BusSimulationController.GearDirection.Neutral)
+                {
+                    PrintTagged("Ramp needs the bus in neutral first.", "warn");
+                    return;
+                }
+                if (!playerBus.parkingBrake)
+                {
+                    PrintTagged("Ramp needs the parking brake set first.", "warn");
+                    return;
+                }
+
+                _rampState      = RampState.Deploying;
+                _rampProgress01 = 0f;
+                _rampTimer      = 0f;
+                _rampHiccupDone = false;
+                PrintTagged("♿ Deploying wheelchair lift...", "system");
+                break;
+
+            case RampState.Deployed:
+                _rampState      = RampState.Retracting;
+                _rampProgress01 = 1f;
+                _rampTimer      = 0f;
+                PrintTagged("♿ Retracting wheelchair lift...", "system");
+                break;
+
+            case RampState.Deploying:
+            case RampState.Loading:
+            case RampState.Retracting:
+                PrintTagged("Lift is already in motion.", "warn");
+                break;
+        }
+    }
+
+    /// <summary>Advances the ramp's own timers. Called once per frame from
+    /// Update() regardless of hotkey state, same as UpdateStopProximity.</summary>
+    private void UpdateRampState()
+    {
+        switch (_rampState)
+        {
+            case RampState.Deploying:
+            {
+                _rampTimer += Time.deltaTime;
+                // Hiccup: pause dead at 55% for one real second before
+                // continuing on to 100%, instead of a clean linear ramp.
+                float preHiccupSeconds  = RAMP_DEPLOY_SECONDS * RAMP_HICCUP_AT;
+                float postHiccupSeconds = RAMP_DEPLOY_SECONDS * (1f - RAMP_HICCUP_AT);
+
+                if (!_rampHiccupDone)
+                {
+                    if (_rampTimer >= preHiccupSeconds)
+                    {
+                        _rampProgress01 = RAMP_HICCUP_AT;
+                        if (_rampTimer >= preHiccupSeconds + RAMP_HICCUP_PAUSE_SEC)
+                        {
+                            _rampHiccupDone = true;
+                            _rampTimer      = 0f; // restart the timer for the post-hiccup leg
+                        }
+                    }
+                    else
+                    {
+                        _rampProgress01 = _rampTimer / preHiccupSeconds * RAMP_HICCUP_AT;
+                    }
+                }
+                else
+                {
+                    float t = Mathf.Clamp01(_rampTimer / postHiccupSeconds);
+                    _rampProgress01 = Mathf.Lerp(RAMP_HICCUP_AT, 1f, t);
+                    if (t >= 1f)
+                    {
+                        _rampState      = RampState.Loading;
+                        _rampProgress01 = 1f;
+                        _rampTimer      = 0f;
+                        PrintTagged("♿ Ramp deployed — loading...", "system");
+                    }
+                }
+                break;
+            }
+
+            case RampState.Loading:
+            {
+                _rampTimer += Time.deltaTime;
+                if (_rampTimer >= RAMP_LOAD_SECONDS)
+                {
+                    // Alighting first (make room), then boarding -- matches
+                    // "wheelchair pax always boards first" relative to
+                    // regular pax without needing to touch this order for
+                    // the rare stop where both an alight and a board are
+                    // pending in the same ramp cycle.
+                    if (_adaAlightRequested)
+                    {
+                        _onboardAdaPax = Mathf.Max(0, _onboardAdaPax - 1);
+                        _adaAlightRequested = false;
+                    }
+                    if (_adaBoardingWaiting)
+                    {
+                        _onboardAdaPax = Mathf.Min(ADA_CAPACITY, _onboardAdaPax + 1);
+                        _adaBoardingWaiting = false;
+                    }
+                    _rampState = RampState.Deployed;
+                    PrintTagged("♿ Wheelchair aboard/off — press R to raise the ramp when ready.", "system");
+                }
+                break;
+            }
+
+            case RampState.Retracting:
+            {
+                _rampTimer += Time.deltaTime;
+                float t = Mathf.Clamp01(_rampTimer / RAMP_RETRACT_SECONDS);
+                _rampProgress01 = Mathf.Lerp(1f, 0f, t);
+                if (t >= 1f)
+                {
+                    _rampState      = RampState.Stowed;
+                    _rampProgress01 = 0f;
+                    PrintTagged("♿ Ramp stowed.", "system");
+                    ReleaseDeferredBoarding();
+                }
+                break;
+            }
+        }
     }
 
     private string ResolveCurrentStopCode()
