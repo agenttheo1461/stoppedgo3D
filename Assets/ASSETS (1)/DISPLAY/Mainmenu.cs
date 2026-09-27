@@ -177,6 +177,7 @@ public class MainMenu : MonoBehaviour
         TimetableOverlay.Instance?.Close();
         RouteSnapshotViewerUI.Instance?.Close();
         ShiftMakerWindow.Instance?.Close();
+        BusRosterWindow.Instance?.Close();
 
         System.GC.Collect();
     }
@@ -333,6 +334,9 @@ public class MainMenu : MonoBehaviour
         // [ADD] Shift Maker entry point -- opens the draggable day-plan window.
         if (GUI.Button(new Rect(132, footerY, 140, 34), "PLAN MY DAY", _btnSecond))
             ShiftMakerWindow.Instance?.Open();
+        // [ADD] Bus roster entry point -- star buses for the availability nudge.
+        if (GUI.Button(new Rect(280, footerY, 120, 34), "MY BUSES", _btnSecond))
+            BusRosterWindow.Instance?.Open();
     }
 
     private void DrawRouteColumn(Rect area)
