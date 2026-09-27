@@ -57,6 +57,18 @@ public class SettingsWindow : MonoBehaviour
     public void Open()  => _open = true;
     public void Close() { _open = false; _rebindingField = null; }
 
+    // [ADD] Settings doesn't touch shift state (unlike Main Menu, which now
+    // fully resets on open), so it gets its own direct key -- no need to
+    // route through Main Menu just to change a setting mid-drive. Skips
+    // firing while actively capturing a key rebind, so pressing F5 while
+    // waiting to rebind something doesn't also close the window.
+    private void Update()
+    {
+        if (_rebindingField != null) return;
+        if (Input.GetKeyDown(KeyBindings.Current.settingsMenu))
+            Toggle();
+    }
+
     private void EnsureStyles()
     {
         if (_stylesReady) return; _stylesReady = true;

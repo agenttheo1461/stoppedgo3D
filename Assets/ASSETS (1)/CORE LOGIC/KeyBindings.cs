@@ -147,6 +147,8 @@ public class KeyBindData
     public KeyCode guideArrows     = KeyCode.G;
     [Tooltip("None = no key (opened from the main menu).")]
     public KeyCode snapshotViewer  = KeyCode.None;
+    [Tooltip("Settings doesn't touch shift state, so unlike Main Menu it's safe to open with a direct key at any time, not just from the Main Menu button.")]
+    public KeyCode settingsMenu    = KeyCode.F5;
 
     [Header("Timetable (while open)")]
     public KeyCode timetablePrevRoute = KeyCode.LeftArrow;

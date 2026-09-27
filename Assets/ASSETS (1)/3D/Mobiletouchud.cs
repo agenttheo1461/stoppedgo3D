@@ -422,7 +422,7 @@ public class MobileTouchHUD : MonoBehaviour
 
     // ── Pause button + strip ─────────────────────────────────────────────
     // Strip order: 0 SHIFT BOARD, 1 MAIN MENU, 2 MAP, 3 TRACKER, 4 TIME, 5 KEYS
-    private const int StripCount = 6;
+    private const int StripCount = 7;
 
     private Rect PauseRect()
     {
@@ -487,6 +487,7 @@ public class MobileTouchHUD : MonoBehaviour
         });
         TrackTapAndFire(pointers, r[4], () => TimetableOverlay.Instance?.HandleTogglePressed());
         TrackTapAndFire(pointers, r[5], () => _keysOpen = !_keysOpen);
+        TrackTapAndFire(pointers, r[6], () => SettingsWindow.Instance?.Toggle());
     }
 
     private bool _pauseOpen, _confirmMainMenu, _keysOpen;
@@ -572,6 +573,10 @@ public class MobileTouchHUD : MonoBehaviour
             DrawToggleButton(rects[3], "TRACKER", _tracker != null && _tracker.IsOpen, suppressGuiClick: true);
             DrawToggleButton(rects[4], "TIME",    TimetableOverlay.Instance != null && TimetableOverlay.Instance.IsVisible, suppressGuiClick: true);
             DrawToggleButton(rects[5], "KEYS",    _keysOpen, suppressGuiClick: true);
+            // [ADD] Settings doesn't touch shift state (unlike Main Menu),
+            // so no confirmation dialog needed -- toggled directly like the
+            // other slots.
+            DrawToggleButton(rects[6], "SETTINGS", SettingsWindow.Instance != null && SettingsWindow.Instance.IsOpen, suppressGuiClick: true);
         }
 
         if (_keysOpen) DrawKeysPanel(sc);
