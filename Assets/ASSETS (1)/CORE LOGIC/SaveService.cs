@@ -78,8 +78,37 @@ public static class SaveService
             data.planVersion = DayAssignmentSave.CurrentPlanVersion;
             WriteAtomic(DayPath(data.dayNumber), JsonUtility.ToJson(data, true));
             Debug.Log($"[SaveService] Saved day {data.dayNumber} assignments ({data.entries.Count} slots).");
+            PruneOldDayAssignments(data.dayNumber);
         }
         catch (Exception e) { Debug.LogError($"[SaveService] SaveDayAssignments failed: {e}"); }
+    }
+
+    // [ADD FIX] One file per day (see DayPath's own comment for why) means
+    // nothing ever deleted an old one -- 60+ day_assign_*.json files (some
+    // 300-500KB) had piled up on disk after a month of testing, and that
+    // only grows the longer a save is played. Once a day is well behind the
+    // current one there's no remaining reason to keep its file (only
+    // LoadDayAssignments(currentDay) is ever read), so prune anything more
+    // than DaysToKeep behind whenever a new day is saved.
+    private const int DaysToKeep = 3;
+    private static void PruneOldDayAssignments(int currentDay)
+    {
+        string dir = Application.persistentDataPath;
+        string[] files;
+        try { files = Directory.GetFiles(dir, "day_assign_*.json"); }
+        catch (Exception e) { Debug.LogWarning($"[SaveService] PruneOldDayAssignments: couldn't list {dir}: {e.Message}"); return; }
+
+        foreach (var f in files)
+        {
+            string name = System.IO.Path.GetFileNameWithoutExtension(f); // "day_assign_NNN"
+            int idx = name.LastIndexOf('_');
+            if (idx < 0 || !int.TryParse(name.Substring(idx + 1), out int day)) continue;
+            if (currentDay - day > DaysToKeep)
+            {
+                try { File.Delete(f); }
+                catch (Exception e) { Debug.LogWarning($"[SaveService] Could not delete stale {f}: {e.Message}"); }
+            }
+        }
     }
 
     public static DayAssignmentSave LoadDayAssignments(int dayNumber)
