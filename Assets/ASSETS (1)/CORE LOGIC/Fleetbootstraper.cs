@@ -355,7 +355,16 @@ public class FleetDispatcher : MonoBehaviour
             // this would try to hand it, and forcing state on it directly
             // would reposition the bus a player might currently be sitting in.
             if (record.controller != null && !record.controller.enabled)
+            {
+                // [ADD] Left alone, a due slot this busID still legitimately
+                // holds (see BusSelectMenu.ApplyFleetPossession's own
+                // comment) would just never be served while the bus is tied
+                // up -- no bus ever shows for that departure, a real trip
+                // silently drops off the route. Hand it to a genuine spare
+                // instead, same as a relief handoff would.
+                TryReassignSlotAwayFromUnavailableBus(record);
                 continue;
+            }
 
             // First priority:
             // use a real scheduler-assigned slot belonging to this bus.
@@ -428,6 +437,44 @@ public class FleetDispatcher : MonoBehaviour
                 $"({ownSlot} via own pre-assigned slot, " +
                 $"{parkedAtTerminal} parked at terminal), " +
                 $"{leftIdle} idle.");
+        }
+    }
+
+    /// <summary>[ADD] Covers the gap left by the possessed-bus fix in
+    /// BusSelectMenu.ApplyFleetPossession/FreeAgentBusIDs: that fix correctly
+    /// stops a disabled NPCBusController from ever being dispatched (it can't
+    /// physically run the coroutine, and forcing state on it would reposition
+    /// a bus the player might be sitting in) -- but on its own that just means
+    /// whatever due slot the busID still legitimately holds silently never
+    /// gets served. Same real-world gap as an unexpected breakdown: find a
+    /// genuinely idle spare and hand the slot to it instead, via the same
+    /// TransferSlotToBus machinery an NPC-to-NPC relief handoff would use.
+    /// Only acts once the slot is actually due (IsSlotLive) -- no need to
+    /// reshuffle a bus away early just because it's momentarily possessed;
+    /// it may well be free again before its own departure time comes.</summary>
+    private void TryReassignSlotAwayFromUnavailableBus(BusRecord record)
+    {
+        if (BusScheduler.Instance == null || SimClock.Instance == null) return;
+        if (!BusScheduler.Instance.TryGetAssignedSlot(record.busID, out var slot) || slot == null) return;
+        if (slot.state != SlotState.AssignedNPC) return; // not ours to touch (InService/AssignedPlayer/etc.)
+        if (!BusScheduler.Instance.IsSlotLive(slot)) return; // not due yet -- the bus may be free again in time
+
+        int spareBusID = BusManager.Instance.GetIdleBusForRoute(slot.routeNumber);
+        if (spareBusID < 0)
+        {
+            if (logDispatch)
+                Debug.LogWarning($"[FleetDispatcher] Bus#{record.busID} can't serve its due " +
+                                  $"{slot.FullRouteLabel} {BusScheduler.MinutesToTimeString(slot.scheduledDeparture)} " +
+                                  "slot (possessed/disabled) and no spare bus is available to cover it.");
+            return;
+        }
+
+        if (BusScheduler.Instance.TransferSlotToBus(record.busID, spareBusID) != null)
+        {
+            BusManager.Instance.ClaimBusForHandoff(spareBusID); // same claim-out-of-idle-pool step a relief handoff does
+            if (logDispatch)
+                Debug.Log($"[FleetDispatcher] Bus#{record.busID} unavailable (possessed) for its due " +
+                          $"{slot.FullRouteLabel} slot -- handed off to spare Bus#{spareBusID}.");
         }
     }
 

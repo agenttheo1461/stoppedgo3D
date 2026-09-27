@@ -719,7 +719,11 @@ private void PullBusToIdle(int busID)
 
         BusScheduler.Instance?.InitiateReliefSearch(terminalCode, routeNumber);
     }
-    private int GetIdleBusForRoute(string routeNumber)
+    // [FIX] Was private -- FleetDispatcher now also needs this (to find a
+    // spare when a bus's own due slot can't be served because it's disabled/
+    // possessed, see TryReassignSlotAwayFromUnavailableBus), same policy/
+    // depot/distance-scored search everything else here already uses.
+    public int GetIdleBusForRoute(string routeNumber)
     {
         if (_idlePool.Count == 0 && _depotBoundBuses.Count == 0) return -1;
 
