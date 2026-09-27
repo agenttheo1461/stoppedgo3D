@@ -51,8 +51,26 @@ public partial class BusAudioEngine
     private float  _extendedPuffTimer   = -1f;
     private double ph_catchLo1, ph_catchWobble;
 
-    public float CATCH_IDLE_DURATION    = 2.2f;
-    public float EXTENDED_PUFF_DURATION = 3.5f;
+    // [TUNED per feedback] Was 2.2s -- read as barely there over actual
+    // engine noise. At least 5s of audible rough-catch before it settles.
+    public float CATCH_IDLE_DURATION    = 5.5f;
+    // Stretched to keep pace with the now-longer catch window instead of
+    // stopping partway through it.
+    public float EXTENDED_PUFF_DURATION = 4.5f;
+
+    // ── RPM flare (main-thread side -- Tick() runs off the game thread, the
+    //    rest of this file off the audio thread, so this needs its own
+    //    trigger/timer rather than sharing _catchEnvIdle across threads).
+    //    Armed directly from RequestEngineToggle's ReadyToStart -> Running
+    //    case (see BusAudioEngine.cs) -- the one place that transition is
+    //    unambiguous, rather than an edge-detector inferred from Tick()
+    //    only ever running while already Running. Real diesels/CNGs don't
+    //    come up dead-flat on IDLE either -- a governor overshoot is part
+    //    of what "catching" actually looks/sounds like; audio alone (the
+    //    lump/wobble above) wasn't backed by the RPM the rest of the DSP
+    //    (and the dashboard tach) actually reads.
+    private bool  _rpmCatchActive = false;
+    private float _rpmCatchTimer  = 0f;
 
     // ── Universal alternator load-in cue ────────────────────────────────────────
     private float  _alternatorTimer = -1f;
@@ -97,7 +115,10 @@ public partial class BusAudioEngine
             // around the idle firing rate rather than sitting locked to it.
             double lumpHz = (IDLE / 60.0) * (0.8 + 0.35 * (NextNoiseSample() * 0.5 + 0.5));
             double lump   = Math.Sin(2.0 * Math.PI * ph_catchLo1) * 0.5 + noise_lp * 0.5;
-            catchSample   = lump * _catchEnvIdle * 0.10 * npcVolumeScale * engVolPersonality;
+            // [TUNED per feedback] 0.10 -> 0.14 -- inaudible against the rest
+            // of the engine mix at the old level, especially now that it's
+            // stretched over CATCH_IDLE_DURATION instead of fading fast.
+            catchSample   = lump * _catchEnvIdle * 0.14 * npcVolumeScale * engVolPersonality;
             ph_catchLo1   = (ph_catchLo1 + lumpHz * invSR) % 1.0;
 
             // A light amplitude tremor on top of the core engine+tx sample --
@@ -106,7 +127,9 @@ public partial class BusAudioEngine
             // this every sample; it decays to a flat 1.0 with the same
             // envelope.
             const double wobbleHz = 6.5;
-            catchWobble = 1f + (float)Math.Sin(2.0 * Math.PI * ph_catchWobble) * _catchEnvIdle * 0.16f;
+            // [TUNED per feedback] 0.16 -> 0.22 -- same audibility reasoning
+            // as the lump volume above.
+            catchWobble = 1f + (float)Math.Sin(2.0 * Math.PI * ph_catchWobble) * _catchEnvIdle * 0.22f;
             ph_catchWobble = (ph_catchWobble + wobbleHz * invSR) % 1.0;
 
             _catchEnvIdle -= (float)invSR / Mathf.Max(0.1f, CATCH_IDLE_DURATION);

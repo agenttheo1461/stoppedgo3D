@@ -443,6 +443,14 @@ public enum EngineType { L9N, L9, B67, X10, XE40, ISL9, XE60, ISL, ISB67, ISLG, 
         // of the hybrid/electric skip-startup shortcut every other Allison
         // hybrid tx gets.
         || tx == "egenflex40" || tx == "egenflex50"
+        // [FIX] EP40/EP50 are the exact same physical Allison H40EP/H50EP
+        // drive unit under its pre-2010 name (see CalcEP40RPM/CalcEP50RPM
+        // and Tick()'s isH4xEVT, which already treat them identically to
+        // h40ep/h50ep everywhere else) -- missing here meant they alone,
+        // out of the whole EP/H4x family, still ran the full non-hybrid
+        // crank sequence instead of the same instant-run + startup windup
+        // every other member of this family gets.
+        || tx == "ep40" || tx == "ep50"
         || IsElectric();
 
     /// ENG button entry point. One state transition per call:
@@ -475,6 +483,14 @@ public enum EngineType { L9N, L9, B67, X10, XE40, ISL9, XE60, ISL, ISB67, ISLG, 
 
             case EngineRunState.ReadyToStart:
                 engineState = EngineRunState.Running;
+                // [ADD] Arm the RPM flare -- see the _rpmCatchActive field
+                // comment (BusAudioEngine.StartupSequence.cs) for why this is
+                // triggered here rather than inferred inside Tick(). Plain
+                // combustion only, same gate the audio-side rough-catch idle
+                // uses -- hybrids/electric never reach this case at all
+                // (they take the Off -> Running branch above instead).
+                _rpmCatchActive = true;
+                _rpmCatchTimer  = 0f;
                 break;
 
             case EngineRunState.Running:
@@ -2293,6 +2309,28 @@ else if (!isNeutral || spd >= 0.0000001f || accel >= 0.03f || isH4xEVT || tx == 
 // real XN40 manual: selector in N + parking brake + engine running.
 bool fastIdleActive = fastIdleRequested && isNeutral && parkingBrake && engineState == EngineRunState.Running;
 if (fastIdleActive) rpmTgt = Mathf.Max(rpmTgt, IDLE * 1.55f);
+
+// [ADD] RPM flare -- governor overshoot as combustion catches, armed from
+// RequestEngineToggle's ReadyToStart -> Running case. Quick rise to a peak
+// over IDLE, then an eased settle back down across CATCH_IDLE_DURATION --
+// see BusAudioEngine.StartupSequence.cs for the field/trigger reasoning
+// and the matching audio-side rough-catch idle this is timed to track.
+if (_rpmCatchActive)
+{
+    _rpmCatchTimer += dt;
+    if (_rpmCatchTimer < CATCH_IDLE_DURATION)
+    {
+        float catchT = _rpmCatchTimer / CATCH_IDLE_DURATION;
+        float flareShape = catchT < 0.15f
+            ? (catchT / 0.15f)
+            : 1f - Mathf.SmoothStep(0f, 1f, (catchT - 0.15f) / 0.85f);
+        rpmTgt += IDLE * 0.42f * flareShape;
+    }
+    else
+    {
+        _rpmCatchActive = false;
+    }
+}
 
 float rpmRate = rpmTgt > rpm ? (gear == 0 ? 900f : 350f) : (gear == 0 ? 700f : 280f);
 if (gear == 1 && accel > 0.10f && !economyMode)
@@ -10816,6 +10854,11 @@ private void DoEP4xDSP(ref double txSample, ref double engineSample,
                         float rn, float ld, float engMul, float engVolPersonality,
                         double noiseHp, double noiseHi, double invSR)
 {
+    // [ADD] EP40/EP50 are the same drive unit as H40EP/H50EP (see
+    // IsHybridOrElectric()'s own comment) -- same startup windup, same
+    // tuned range as DoH4xDSP's.
+    DoHybridStartupWindup(ref txSample, engineState == EngineRunState.Running, 250f, 1420f, engMul, invSR);
+
     bool isEP50 = tx == "ep50";
 
     // Same real motor ceilings as H40EP/H50EP (unchanged spec across the
