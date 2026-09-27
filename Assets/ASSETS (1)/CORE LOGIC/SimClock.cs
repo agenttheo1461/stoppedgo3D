@@ -103,4 +103,14 @@ public class SimClock : MonoBehaviour
             return $"{t / 3600:D2}:{(t % 3600) / 60:D2}:{t % 60:D2}";
         }
     }
+
+    /// <summary>[ADD] Converts an ABSOLUTE game-minutes value (same scale as
+    /// TimetableSlot.scheduledDeparture: dayNumber * 1440 + minute-of-day)
+    /// into the real-world local date/time it corresponds to. Exact, not an
+    /// estimate -- game time is a deterministic function of real UTC time
+    /// (see class comment), so this is just that formula run backwards,
+    /// then converted from UTC to whatever timezone the player's system is
+    /// set to.</summary>
+    public static DateTime AbsoluteGameMinutesToRealLocalTime(float absoluteGameMinutes) =>
+        Epoch.AddMinutes(absoluteGameMinutes / TIME_MULTIPLIER).ToLocalTime();
 }

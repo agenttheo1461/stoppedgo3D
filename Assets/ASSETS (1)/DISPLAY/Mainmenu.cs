@@ -346,7 +346,7 @@ public class MainMenu : MonoBehaviour
             return;
         }
 
-        float cardH = 96f, gap = 10f;
+        float cardH = 114f, gap = 10f; // [ADD] +18 to fit the IRL real-time line
         float contentH = Mathf.Max(listArea.height, _options.Count * (cardH + gap));
         _routeScroll = GUI.BeginScrollView(listArea, _routeScroll, new Rect(0, 0, listArea.width - 20, contentH));
         for (int i = 0; i < _options.Count; i++)
@@ -404,7 +404,13 @@ public class MainMenu : MonoBehaviour
             : default;
         string headwayStr = opt.route != null ? BusRouteData.FormatScheduleLabel(active) : "";
 
+        // [ADD] Real-world local time this departure actually happens at --
+        // game time is a deterministic function of real UTC time (2x, see
+        // SimClock), so this is exact, not a guess, letting the player plan
+        // against their actual IRL schedule.
+        string realTimeStr = SimClock.AbsoluteGameMinutesToRealLocalTime(opt.departureAbsMin).ToString("ddd h:mm tt");
         GUI.Label(new Rect(r.x + 14, r.y + 52, textW, 18), $"Departs {depStr}  ·  {LapPlanText(opt.route, opt.laps)}  ·  {headwayStr}", _lblBody);
+        GUI.Label(new Rect(r.x + 14, r.y + 92, textW, 14), $"IRL: {realTimeStr}", _lblAmber);
         string idleTag = opt.idleEligibleCount > 0 ? $"{opt.idleEligibleCount} idle at {opt.requiredDepotLabel}" : "0 idle — none available";
         GUI.Label(new Rect(r.x + 14, r.y + 72, textW, 18), idleTag, opt.idleEligibleCount > 0 ? _lblAmber : _lblError);
 

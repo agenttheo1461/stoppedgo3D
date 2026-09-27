@@ -96,7 +96,16 @@ public class ShiftMakerWindow : MonoBehaviour
             var e = entries[i];
             var row = new Rect(0, i * rowH, w - 24, rowH - 4);
             MDT_UITheme.DrawRoundedRect(row, 8f, MDT_UITheme.BGRowEven);
-            GUI.Label(new Rect(row.x + 8, row.y, row.width - 90, row.height), $"{e.RouteLabel}  {e.DirLabel}  ·  {e.DayLabel}  ·  {e.TimeLabel}", _lblBody);
+            // [ADD] Real-world local time this window's start actually falls
+            // at (exact -- see SimClock.AbsoluteGameMinutesToRealLocalTime),
+            // so the player can plan against their actual IRL schedule.
+            string irlHint = "";
+            if (SimClock.Instance != null)
+            {
+                float absMinutes = (SimClock.Instance.GameDayNumber + e.dayOffset) * 1440f + e.windowStartMinutes;
+                irlHint = "  ·  IRL " + SimClock.AbsoluteGameMinutesToRealLocalTime(absMinutes).ToString("ddd h:mm tt");
+            }
+            GUI.Label(new Rect(row.x + 8, row.y, row.width - 90, row.height), $"{e.RouteLabel}  {e.DirLabel}  ·  {e.DayLabel}  ·  {e.TimeLabel}{irlHint}", _lblBody);
             if (GUI.Button(new Rect(row.xMax - 76, row.y + 3, 70, row.height - 6), "Remove", _btnDanger))
             {
                 ShiftMakerData.Instance?.RemoveEntry(i);
