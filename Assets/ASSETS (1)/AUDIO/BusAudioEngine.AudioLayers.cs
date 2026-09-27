@@ -1195,6 +1195,14 @@ public partial class BusAudioEngine
             DoHDS300DSP(ref txSample, ref engineSample, rn, ld, engMul, engVolPersonality, noiseHp, noise_hi, invSR);
         else if (tx == "baegen3")
             DoBAEGen3DSP(ref txSample, ref engineSample, rn, ld, engMul, engVolPersonality, noiseHp, noise_hi, invSR);
+        // [ADD] Pure electric (elfa3/accelera/zfave130) previously matched
+        // NOTHING in this chain -- zero tx-level voice at all, startup
+        // included. This only adds the startup cue (contactor click + ready
+        // chime, see DoElectricStartupCue in BusAudioEngine.StartupSequence.cs)
+        // -- it does not attempt to build the driving voice these transmissions
+        // are still missing, which is a separate, bigger gap than this pass covers.
+        else if (IsElectric())
+            txSample += DoElectricStartupCue(engineState == EngineRunState.Running, invSR);
 
         // Gear-mesh "mechanical" echo whine — deliberately OUTSIDE the tx
         // if/else chain above: every one of those branches is one specific

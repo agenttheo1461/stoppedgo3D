@@ -5774,13 +5774,28 @@ private void DoDeepL9VoiceDSP(ref double voiceSample, float hz, float rn, float 
 
         // Spaced air-system puffs — "PFFT ... (1s) ... PFFT ... (1s) ..." —
         // a pneumatic pressure-release burst layered under the starter whine.
+        double puff = RenderAirPuffLayer(invSR, 0.9f, 0.2f);
+
+        return (crank + puff) * npcVolumeScale;
+    }
+
+    /// <summary>The spaced pneumatic-puff layer factored out of
+    /// RenderCrankSample so the same "PFFT" burst can also be used AFTER
+    /// cranking -- see the extended air-puff tail in
+    /// BusAudioEngine.StartupSequence.cs, which calls this with a widening
+    /// minInterval as the tail progresses (pressure building, puffs spacing
+    /// out, then stopping). minInterval/jitterRange work exactly like the
+    /// literal 0.9f/0.2f this replaced: next puff fires minInterval to
+    /// minInterval+jitterRange seconds after the previous one.</summary>
+    private double RenderAirPuffLayer(double invSR, float minInterval, float jitterRange)
+    {
         _crankPuffTimer += (float)invSR;
         if (_crankPuffNextAt <= 0f)
-            _crankPuffNextAt = 0.9f + (float)(NextNoiseSample() * 0.5 + 0.5) * 0.2f;
+            _crankPuffNextAt = minInterval + (float)(NextNoiseSample() * 0.5 + 0.5) * jitterRange;
         if (_crankPuffTimer >= _crankPuffNextAt)
         {
             _crankPuffTimer  = 0f;
-            _crankPuffNextAt = 0.9f + (float)(NextNoiseSample() * 0.5 + 0.5) * 0.2f;
+            _crankPuffNextAt = minInterval + (float)(NextNoiseSample() * 0.5 + 0.5) * jitterRange;
             ph_crankPuff     = 0.0;
         }
         double puff = 0.0;
@@ -5790,8 +5805,7 @@ private void DoDeepL9VoiceDSP(ref double voiceSample, float hz, float rn, float 
             puff = noise_hi * puffEnv * puffEnv * 0.22 + noise_lp * puffEnv * 0.10;
             ph_crankPuff += invSR;
         }
-
-        return (crank + puff) * npcVolumeScale;
+        return puff;
     }
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -5821,6 +5835,15 @@ private void DoDeepL9VoiceDSP(ref double voiceSample, float hz, float rn, float 
         {
             if (_wasPoweredForACTail) _acShutdownTailTimer = AC_SHUTDOWN_TAIL_SEC;
             _wasPoweredForACTail = false;
+            // Same reset as the isEngineRunning==false branch further down --
+            // covers the case where power cuts (battery off / breakdown)
+            // without ever passing back through that branch first.
+            v6_wasEngineRunningV6 = false;
+            hyb_wasEngineRunning  = false;
+            elec_wasEngineRunning = false;
+            _wasRunningForCatch = false;
+            _alternatorTimer    = -1f;
+            _extendedPuffTimer  = -1f;
 
             if (_acShutdownTailTimer > 0f)
             {
@@ -6029,10 +6052,51 @@ private void DoDeepL9VoiceDSP(ref double voiceSample, float hz, float rn, float 
             if (!isEngineRunning)
             {
                 // Off / ReadyToStart — caught or not, engine itself makes no
-                // sound until the player explicitly confirms Running.
+                // sound until the player explicitly confirms Running. Also
+                // where every startup-cue edge detector resets, so the NEXT
+                // Cranking/Off -> Running transition re-triggers cleanly
+                // (see BusAudioEngine.StartupSequence.cs).
+                //
+                // [FIX] v6_wasEngineRunningV6 (Voith's own windup, added
+                // first -- BusAudioEngine.d8646.cs) had no reset anywhere at
+                // all: DoVoithDSP only ever runs from inside this same
+                // isEngineRunning branch, so it never saw isEngineRunning
+                // go false to flip its own flag back -- meaning the windup
+                // could only ever fire once per bus instance, never again on
+                // a second engine restart. Same shape would've hit
+                // hyb_wasEngineRunning/elec_wasEngineRunning below without
+                // this reset, so fixing all three here together.
+                v6_wasEngineRunningV6 = false;
+                hyb_wasEngineRunning  = false;
+                elec_wasEngineRunning = false;
+                _wasRunningForCatch = false;
                 float idleOutput = (float)acSample * 0.525f * attenuation;
                 for (int c = 0; c < channels; c++) data[i + c] = idleOutput;
                 continue;
+            }
+
+            // Rough-catch idle wobble + universal alternator load-in cue --
+            // fires once on the Cranking/Off -> Running edge. See
+            // BusAudioEngine.StartupSequence.cs for the full reasoning.
+            double catchSample = UpdateStartupCatchAndAlternator(invSR, engVolPersonality, out float catchWobble);
+            double alternatorSample = UpdateAlternatorCue(invSR);
+            // Extended air-puff tail -- only for plain combustion (hybrids/
+            // electric never crank, so UpdateStartupCatchAndAlternator never
+            // arms this timer for them; see that method's own gating).
+            double extendedPuffSample = 0.0;
+            if (_extendedPuffTimer >= 0f)
+            {
+                _extendedPuffTimer += (float)invSR;
+                if (_extendedPuffTimer <= EXTENDED_PUFF_DURATION)
+                {
+                    float puffProgress = _extendedPuffTimer / EXTENDED_PUFF_DURATION;
+                    float minInterval  = Mathf.Lerp(1.0f, 2.6f, puffProgress);
+                    extendedPuffSample = RenderAirPuffLayer(invSR, minInterval, 0.35f) * 0.8 * npcVolumeScale;
+                }
+                else
+                {
+                    _extendedPuffTimer = -1f;
+                }
             }
 
             double engineSample = 0.0;
@@ -6242,10 +6306,10 @@ if (oldBusVariant > 0) DoOldBusVariantCharacter(ref variantSample, rn, ld, hz, o
             // ISL9/L9, since a turbo actuator has no physical relationship
             // to a gearbox's own gear-mesh/converter voice at all. Now only
             // engineSample is filtered; txSample passes through untouched.
-            double coreSample = (engineSample * cb_invFilterMod) + txSample;
+            double coreSample = ((engineSample * cb_invFilterMod) + txSample) * catchWobble;
             double breakdownSample = UpdateBreakdownAudio(invSR, engVolPersonality);
 
-float output = (float)(coreSample + acSample + oldBusSample + coastSample + fuzzSample + creakSample + variantSample + stallHoldSample + breakdownSample) * 0.525f * attenuation;
+float output = (float)(coreSample + acSample + oldBusSample + coastSample + fuzzSample + creakSample + variantSample + stallHoldSample + breakdownSample + catchSample + alternatorSample + extendedPuffSample) * 0.525f * attenuation;
             for (int c = 0; c < channels; c++) data[i + c] = output;
         }
     }
@@ -10126,6 +10190,12 @@ private void DoH4xDSP(ref double txSample, ref double engineSample,
                        float rn, float ld, float engMul, float engVolPersonality,
                        double noiseHp, double noiseHi, double invSR)
 {
+    // [ADD] Startup windup -- see DoHybridStartupWindup in
+    // BusAudioEngine.StartupSequence.cs (generic version of Voith's
+    // DoVoithStartupWindup, reused here per that file's own plan). Ahead of
+    // everything else so it's never gated behind gear/mode state.
+    DoHybridStartupWindup(ref txSample, engineState == EngineRunState.Running, 250f, 1420f, engMul, invSR);
+
     // ═════════════════════════════════════════════════════════════════════════
 
     //  1. SETUP + PER-INSTANCE CHARACTER
@@ -10617,6 +10687,12 @@ private void DoEGenFlexDSP(ref double txSample, ref double engineSample,
                             float rn, float ld, float engMul, float engVolPersonality,
                             double noiseHp, double noiseHi, double invSR)
 {
+    // [ADD] Startup windup -- see DoHybridStartupWindup in
+    // BusAudioEngine.StartupSequence.cs. Punchier/higher pitch than H4x's,
+    // matching eGen Flex's own higher-voltage LTO-pack character elsewhere
+    // in this function.
+    DoHybridStartupWindup(ref txSample, engineState == EngineRunState.Running, 280f, 1600f, engMul, invSR);
+
     // WEG-cooled inverter -- cleaner, steadier carrier, less noise bleed
     // than DPIM2's oil-cooled unit.
     noiseHp *= 0.55;
@@ -10915,6 +10991,14 @@ private void DoEP4xDSP(ref double txSample, ref double engineSample,
                            float rn, float ld, float engMul, float engVolPersonality,
                            double noiseHp, double noiseHi, double invSR)
     {
+        // [ADD] Startup windup -- see DoHybridStartupWindup in
+        // BusAudioEngine.StartupSequence.cs. Same tuned range
+        // DoVoithStartupWindup already validated -- that one was explicitly
+        // modeled AFTER a real BAE HybriDrive ISG windup and tried on Voith
+        // first per its own header note, so BAE (the real thing it was
+        // modeling) gets the identical shape.
+        DoHybridStartupWindup(ref txSample, engineState == EngineRunState.Running, 260f, 1480f, engMul, invSR);
+
         // [FIX] Louder again -- 2.1 -> 2.8.
         const float BAE3_MASTER_VOL = 2.8f;
 
@@ -11477,6 +11561,12 @@ private void DoEP4xDSP(ref double txSample, ref double engineSample,
                               float rn, float ld, float engMul, float engVolPersonality,
                               double noiseHp, double noiseHi, double invSR)
     {
+        // [ADD] Startup windup -- see DoHybridStartupWindup in
+        // BusAudioEngine.StartupSequence.cs. Deeper/slower than HDS200's,
+        // same relationship the rest of this function already has to
+        // DoBAEDSP (bigger motor, same architecture).
+        DoHybridStartupWindup(ref txSample, engineState == EngineRunState.Running, 230f, 1320f, engMul, invSR);
+
         const float HDS300_MASTER_VOL = 3.3f; // [FIX] louder again, 2.5 -> 3.3, still ahead of HDS200's 2.8
 
         // [FIX] Same fix as HDS200: old 0.0035/0.006 coefficients were
