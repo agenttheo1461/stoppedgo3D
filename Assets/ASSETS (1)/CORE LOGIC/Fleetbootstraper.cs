@@ -343,6 +343,20 @@ public class FleetDispatcher : MonoBehaviour
             if (record.isActive)
                 continue;
 
+            // [ADD] Hard, unambiguous guard alongside isActive -- isActive
+            // is DERIVED from controller.State, which is just whatever it
+            // was frozen at the instant a player/free-agent possession
+            // disabled this component (see BusSelectMenu.ApplyFleetPossession).
+            // That's usually not Idle, so isActive usually already catches
+            // this, but .enabled is the actual, direct signal that nothing
+            // is driving this NPC right now -- no state to get out of sync,
+            // no possession path to remember to update it. A disabled
+            // controller must never be dispatched: it can't run the coroutine
+            // this would try to hand it, and forcing state on it directly
+            // would reposition the bus a player might currently be sitting in.
+            if (record.controller != null && !record.controller.enabled)
+                continue;
+
             // First priority:
             // use a real scheduler-assigned slot belonging to this bus.
             if (TryDispatchPreAssignedSlot(record))

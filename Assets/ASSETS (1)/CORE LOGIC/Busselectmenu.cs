@@ -1232,6 +1232,11 @@ NPCBusController[] controllers = UnityEngine.Object.FindObjectsByType<NPCBusCont
 
         if (_possessedNPC != null)
         {
+            // [ADD] Pairs with the FreeAgentBusIDs.Add in ApplyFleetPossession --
+            // this bus is a normal fleet spare again the instant it's handed
+            // back to AI, so the scheduler needs to be able to touch it.
+            BusScheduler.FreeAgentBusIDs.Remove(_possessedNPC.busID);
+
             _possessedNPC.enabled = true;
             BusRegistry.ActiveBuses[_possessedNPC.busID] = _possessedNPC;
 
@@ -1401,6 +1406,22 @@ NPCBusController[] controllers = UnityEngine.Object.FindObjectsByType<NPCBusCont
         _possessedNPC  = targetNPC;
         _possessedRoot = targetNPC.transform.root.gameObject;
         _savedTag      = _possessedRoot.tag;
+
+        // [ADD — root cause of the "teleported mid-drive" bug] Nothing here
+        // ever told the scheduler this physical busID is off-limits while
+        // possessed. FreeAgentBusIDs already exists for exactly this --
+        // CanAssign and BusManager's idle-bus search both refuse to touch a
+        // busID in this set -- it's just never been added to for a Fleet-tab
+        // possession, only for CHIP-type free agents. Without it, a SECOND,
+        // separate rotation this same busID picks up later (either a
+        // pre-existing one MoveChainToPlayer deliberately leaves behind, or
+        // a fresh one CompleteSlot/TopUpChain hands out while this bus reads
+        // as available) sits there fully live in the scheduler. The
+        // player's own slot (PLAYER_BUS_ID) is totally unaffected by any of
+        // this -- it's the disabled NPCBusController's OWN busID being
+        // dispatched for ITS OWN scheduled departure that hard-repositions
+        // the shared rig out from under the player once that time comes.
+        BusScheduler.FreeAgentBusIDs.Add(targetNPC.busID);
 
         targetNPC.enabled = false;
         var npcRb = targetNPC.GetComponent<Rigidbody>();
