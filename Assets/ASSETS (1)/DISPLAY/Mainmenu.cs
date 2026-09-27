@@ -595,29 +595,36 @@ public class MainMenu : MonoBehaviour
     }
 
     /// <summary>[ADD] Shift Maker integration -- resolves each of the player's
-    /// saved plan entries against whatever's actually scheduled today,
-    /// picking the Unassigned departure on that route/direction closest to
-    /// the entry's saved target time (not an exact match -- the entry is a
-    /// wish, not a literal slot, since slots are regenerated fresh each
-    /// day). Skips an entry if nothing on that route/direction is still
-    /// available, or if the nearest match is already in _options (already
-    /// offered as a normal pick).</summary>
+    /// saved plan entries against whatever's actually scheduled, picking the
+    /// Unassigned departure on that route/direction/day whose time-of-day
+    /// falls in the entry's saved window (not an exact match -- the entry is
+    /// a flexible wish, not a literal slot, since slots are regenerated
+    /// fresh each day). dayOffset is relative to TODAY so a plan replays
+    /// sensibly on a different playthrough's own day numbering. Skips an
+    /// entry if nothing matches, or if the match is already in _options
+    /// (already offered as a normal pick).</summary>
     private void AppendResolvedCustomEntries(float now)
     {
-        if (ShiftMakerData.Instance == null || BusScheduler.Instance == null) return;
+        if (ShiftMakerData.Instance == null || BusScheduler.Instance == null || SimClock.Instance == null) return;
+        int today = SimClock.Instance.GameDayNumber;
 
         foreach (var custom in ShiftMakerData.Instance.Entries)
         {
             var route = BusScheduler.Instance.managedRoutes?.FirstOrDefault(r => r != null && r.routeNumber == custom.routeNumber);
             if (route == null) continue;
 
+            int targetDay = today + Mathf.Max(0, custom.dayOffset);
+            float winStart = custom.windowStartMinutes, winEnd = custom.windowEndMinutes;
+
             var candidate = BusScheduler.Instance.AllSlots
                 .Where(s => s.routeNumber == custom.routeNumber
                             && (s.variantLetter ?? "") == (custom.variantLetter ?? "")
                             && s.isOutbound == custom.outbound
                             && s.state == SlotState.Unassigned
+                            && s.dayNumber == targetDay
                             && s.scheduledDeparture >= now + BusScheduler.BoardingLeadFor(now))
-                .OrderBy(s => Mathf.Abs((s.scheduledDeparture % 1440f) - custom.targetMinutes))
+                .Where(s => WithinWindow(s.scheduledDeparture % 1440f, winStart, winEnd))
+                .OrderBy(s => s.scheduledDeparture)
                 .FirstOrDefault();
             if (candidate == null) continue;
             if (_options.Any(o => o.routeNumber == candidate.routeNumber && o.outbound == candidate.isOutbound
@@ -654,6 +661,15 @@ public class MainMenu : MonoBehaviour
             return s;
         }
         return null;
+    }
+
+    /// <summary>[ADD] Shift Maker time-window check -- handles a window that
+    /// wraps past midnight (e.g. 22:00-01:00) the same as one that doesn't.</summary>
+    private static bool WithinWindow(float timeOfDay, float start, float end)
+    {
+        start = ((start % 1440f) + 1440f) % 1440f;
+        end = ((end % 1440f) + 1440f) % 1440f;
+        return start <= end ? (timeOfDay >= start && timeOfDay <= end) : (timeOfDay >= start || timeOfDay <= end);
     }
 
     private static bool RouteCoversNow(BusRouteData route, float nowAbsolute)

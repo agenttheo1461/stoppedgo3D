@@ -6,15 +6,21 @@ using UnityEngine;
 // ═══════════════════════════════════════════════════════════════════════════════
 //  SHIFT MAKER DATA
 //
-//  Persists the player's own hand-built day plan -- a list of (route, variant,
-//  direction, target time-of-day) entries -- to one JSON file so it survives
-//  between playthroughs. Same file-based pattern as RouteHistoryLogger (auto-
-//  creates itself, loads on Awake, saves whenever the plan actually changes).
+//  Persists the player's own hand-built multi-day plan -- a list of (route,
+//  variant, direction, which day, a flexible time-of-day WINDOW) entries --
+//  to one JSON file so it survives between playthroughs. Same file-based
+//  pattern as RouteHistoryLogger (auto-creates itself, loads on Awake, saves
+//  whenever the plan actually changes).
 //
 //  This is deliberately just the planned WISH LIST, not real TimetableSlots --
 //  slots are regenerated fresh each day, so an entry is resolved against
-//  whatever's actually running at pick time (see MainMenu.ResolveCustomSlot),
-//  same nearest-match approach the normal route picker already uses.
+//  whatever's actually running at pick time (see
+//  MainMenu.AppendResolvedCustomEntries): nearest Unassigned departure, on
+//  that route/direction, on the target day (dayOffset relative to whichever
+//  day the plan is being consulted on -- 0 = that day, 1 = the day after,
+//  etc. -- so a plan replays sensibly across a different playthrough's own
+//  day numbering instead of being pinned to one absolute day), whose
+//  time-of-day falls inside [windowStartMinutes, windowEndMinutes].
 // ═══════════════════════════════════════════════════════════════════════════════
 public class ShiftMakerData : MonoBehaviour
 {
@@ -26,9 +32,20 @@ public class ShiftMakerData : MonoBehaviour
         public string routeNumber;
         public string variantLetter = "";
         public bool   outbound;
-        public float  targetMinutes; // target time-of-day, 0-1439
+        public int    dayOffset;          // 0 = the day this is consulted on, 1 = the day after, etc.
+        public float  windowStartMinutes; // time-of-day window, 0-1439
+        public float  windowEndMinutes;
 
-        public string TimeLabel => BusScheduler.MinutesToTimeString(((targetMinutes % 1440f) + 1440f) % 1440f);
+        public string TimeLabel
+        {
+            get
+            {
+                string a = BusScheduler.MinutesToTimeString(((windowStartMinutes % 1440f) + 1440f) % 1440f);
+                string b = BusScheduler.MinutesToTimeString(((windowEndMinutes % 1440f) + 1440f) % 1440f);
+                return $"{a}–{b}";
+            }
+        }
+        public string DayLabel => dayOffset <= 0 ? "Today" : dayOffset == 1 ? "+1 day" : $"+{dayOffset} days";
         public string RouteLabel => string.IsNullOrEmpty(variantLetter) ? $"Route {routeNumber}" : $"Route {routeNumber}{variantLetter}";
         public string DirLabel => outbound ? "A → Z" : "Z → A";
     }
@@ -59,14 +76,16 @@ public class ShiftMakerData : MonoBehaviour
         Load();
     }
 
-    public void AddEntry(string routeNumber, string variantLetter, bool outbound, float targetMinutes)
+    public void AddEntry(string routeNumber, string variantLetter, bool outbound, int dayOffset, float windowStartMinutes, float windowEndMinutes)
     {
         _data.entries.Add(new CustomShiftEntry
         {
             routeNumber = routeNumber,
             variantLetter = variantLetter ?? "",
             outbound = outbound,
-            targetMinutes = targetMinutes,
+            dayOffset = Mathf.Max(0, dayOffset),
+            windowStartMinutes = windowStartMinutes,
+            windowEndMinutes = windowEndMinutes,
         });
         Save();
     }

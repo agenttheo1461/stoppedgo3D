@@ -4,11 +4,13 @@ using UnityEngine;
 //  SHIFT MAKER WINDOW
 //
 //  A small draggable planner (PC mouse-drag or mobile touch-drag, same OnGUI
-//  event handling either way) where the player builds their own day plan --
-//  route, direction, target time -- saved locally via ShiftMakerData so it's
-//  available on future playthroughs. MainMenu surfaces resolved entries
-//  alongside its normal auto-picked routes (see MainMenu.AppendResolvedCustomEntries);
-//  this window only edits the plan, it doesn't claim anything itself.
+//  event handling either way) where the player builds their own multi-day
+//  plan -- route, direction, which day (0 = the day it's consulted on, +1,
+//  +2, ... beyond), and a flexible time-of-day window rather than one exact
+//  time -- saved locally via ShiftMakerData so it's available on future
+//  playthroughs. MainMenu surfaces resolved entries alongside its normal
+//  auto-picked routes (see MainMenu.AppendResolvedCustomEntries); this
+//  window only edits the plan, it doesn't claim anything itself.
 // ═══════════════════════════════════════════════════════════════════════════════
 public class ShiftMakerWindow : MonoBehaviour
 {
@@ -17,7 +19,7 @@ public class ShiftMakerWindow : MonoBehaviour
     private bool _open;
     public bool IsOpen => _open;
 
-    private Rect _windowRect = new Rect(140, 120, 360, 420);
+    private Rect _windowRect = new Rect(140, 100, 380, 520);
     private bool _dragging;
     private Vector2 _dragOffset;
     private Vector2 _scroll;
@@ -25,7 +27,9 @@ public class ShiftMakerWindow : MonoBehaviour
     // ── New-entry builder state ─────────────────────────────────────────────
     private int _routeIndex = 0;
     private bool _outbound = true;
-    private string _timeInput = "08:00";
+    private int _dayOffset = 0;
+    private string _timeFromInput = "07:00";
+    private string _timeToInput = "09:00";
 
     private bool _stylesReady;
     private GUIStyle _lblTitle, _lblDim, _lblBody, _btnPrimary, _btnSecond, _btnDanger, _textField;
@@ -82,7 +86,7 @@ public class ShiftMakerWindow : MonoBehaviour
         GUI.Label(new Rect(x, y, w, 18), "Your saved entries — resolved against whatever's actually running when you open the Main Menu.", _lblDim);
         y += 24;
 
-        var listArea = new Rect(x, y, w, 190);
+        var listArea = new Rect(x, y, w, 150);
         var entries = ShiftMakerData.Instance != null ? ShiftMakerData.Instance.Entries : null;
         int count = entries?.Count ?? 0;
         float rowH = 30f;
@@ -92,7 +96,7 @@ public class ShiftMakerWindow : MonoBehaviour
             var e = entries[i];
             var row = new Rect(0, i * rowH, w - 24, rowH - 4);
             MDT_UITheme.DrawRoundedRect(row, 8f, MDT_UITheme.BGRowEven);
-            GUI.Label(new Rect(row.x + 8, row.y, row.width - 90, row.height), $"{e.RouteLabel}  {e.DirLabel}  ·  {e.TimeLabel}", _lblBody);
+            GUI.Label(new Rect(row.x + 8, row.y, row.width - 90, row.height), $"{e.RouteLabel}  {e.DirLabel}  ·  {e.DayLabel}  ·  {e.TimeLabel}", _lblBody);
             if (GUI.Button(new Rect(row.xMax - 76, row.y + 3, 70, row.height - 6), "Remove", _btnDanger))
             {
                 ShiftMakerData.Instance?.RemoveEntry(i);
@@ -127,17 +131,33 @@ public class ShiftMakerWindow : MonoBehaviour
             _outbound = false;
         y += 34;
 
+        // [ADD] Day picker -- 0 = the day this gets consulted on, +1/+2/... beyond.
+        var dayRow = new Rect(x, y, w, 30);
+        GUI.Label(new Rect(dayRow.x, dayRow.y, 40, dayRow.height), "Day", _lblDim);
+        if (GUI.Button(new Rect(dayRow.x + 44, dayRow.y, 30, dayRow.height), "◀", _btnSecond))
+            _dayOffset = Mathf.Max(0, _dayOffset - 1);
+        string dayLabel = _dayOffset <= 0 ? "Today" : _dayOffset == 1 ? "+1 day" : $"+{_dayOffset} days";
+        GUI.Label(new Rect(dayRow.x + 78, dayRow.y, dayRow.width - 154, dayRow.height), dayLabel, _lblBody);
+        if (GUI.Button(new Rect(dayRow.xMax - 30, dayRow.y, 30, dayRow.height), "▶", _btnSecond))
+            _dayOffset++;
+        y += 36;
+
+        // [ADD] Flexible time WINDOW instead of one exact time -- the nearest
+        // real departure inside this range gets matched (see MainMenu.WithinWindow).
         var timeRow = new Rect(x, y, w, 28);
-        GUI.Label(new Rect(timeRow.x, timeRow.y, 90, timeRow.height), "Time (HH:MM)", _lblDim);
-        _timeInput = GUI.TextField(new Rect(timeRow.x + 94, timeRow.y, timeRow.width - 94, timeRow.height), _timeInput, 5, _textField);
+        float halfW = (timeRow.width - 100f) * 0.5f;
+        GUI.Label(new Rect(timeRow.x, timeRow.y, 40, timeRow.height), "From", _lblDim);
+        _timeFromInput = GUI.TextField(new Rect(timeRow.x + 44, timeRow.y, halfW, timeRow.height), _timeFromInput, 5, _textField);
+        GUI.Label(new Rect(timeRow.x + 48 + halfW, timeRow.y, 24, timeRow.height), "to", _lblDim);
+        _timeToInput = GUI.TextField(new Rect(timeRow.x + 76 + halfW, timeRow.y, halfW, timeRow.height), _timeToInput, 5, _textField);
         y += 34;
 
         if (GUI.Button(new Rect(x, y, w, 36), "ADD TO PLAN", _btnPrimary) && routeCount > 0)
         {
-            if (TryParseTime(_timeInput, out float minutes))
+            if (TryParseTime(_timeFromInput, out float from) && TryParseTime(_timeToInput, out float to))
             {
                 var route = routes[Mathf.Clamp(_routeIndex, 0, routeCount - 1)];
-                ShiftMakerData.Instance?.AddEntry(route.routeNumber, "", _outbound, minutes);
+                ShiftMakerData.Instance?.AddEntry(route.routeNumber, "", _outbound, _dayOffset, from, to);
             }
         }
     }
