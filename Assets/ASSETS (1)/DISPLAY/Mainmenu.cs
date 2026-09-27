@@ -70,6 +70,10 @@ public class MainMenu : MonoBehaviour
         public int laps;
         public string requiredDepotLabel;
         public int idleEligibleCount;
+        // [ADD] Shift Maker integration -- true when this option came from the
+        // player's own saved plan (ShiftMakerData) rather than the normal
+        // auto-picked live routes, so the card can call that out.
+        public bool isCustomPick;
     }
 
     private class DepotBusOption
@@ -172,6 +176,7 @@ public class MainMenu : MonoBehaviour
         MDT_LiveMap.Instance?.Close();
         TimetableOverlay.Instance?.Close();
         RouteSnapshotViewerUI.Instance?.Close();
+        ShiftMakerWindow.Instance?.Close();
 
         System.GC.Collect();
     }
@@ -325,6 +330,9 @@ public class MainMenu : MonoBehaviour
 
         if (GUI.Button(new Rect(24, footerY, 100, 34), "CLOSE", _btnSecond))
             _open = false;
+        // [ADD] Shift Maker entry point -- opens the draggable day-plan window.
+        if (GUI.Button(new Rect(132, footerY, 140, 34), "PLAN MY DAY", _btnSecond))
+            ShiftMakerWindow.Instance?.Open();
     }
 
     private void DrawRouteColumn(Rect area)
@@ -378,6 +386,7 @@ public class MainMenu : MonoBehaviour
         // [ADD] Variant badge -- previously nothing on the card distinguished
         // Route 87A from Route 87B, they both just said "Route 87".
         string routeLabel = string.IsNullOrEmpty(opt.variantLetter) ? $"Route {opt.routeNumber}" : $"Route {opt.routeNumber}{opt.variantLetter}";
+        if (opt.isCustomPick) routeLabel = "★ " + routeLabel; // [ADD] Shift Maker pick, called out on the card
         string dirLabel = opt.outbound ? "A → Z" : "Z → A";
         float textW = r.width - mapSize - 24f; // leave room for the preview thumbnail on the right
         GUI.Label(new Rect(r.x + 14, r.y + 8, textW, 24), routeLabel, _lblCyan);
@@ -549,6 +558,8 @@ public class MainMenu : MonoBehaviour
             });
         }
 
+        AppendResolvedCustomEntries(now);
+
         // Keep the player's pick across the once-a-minute refresh if that
         // exact departure is still on offer.
         if (prev != null)
@@ -581,6 +592,52 @@ public class MainMenu : MonoBehaviour
             count++;
         }
         return count;
+    }
+
+    /// <summary>[ADD] Shift Maker integration -- resolves each of the player's
+    /// saved plan entries against whatever's actually scheduled today,
+    /// picking the Unassigned departure on that route/direction closest to
+    /// the entry's saved target time (not an exact match -- the entry is a
+    /// wish, not a literal slot, since slots are regenerated fresh each
+    /// day). Skips an entry if nothing on that route/direction is still
+    /// available, or if the nearest match is already in _options (already
+    /// offered as a normal pick).</summary>
+    private void AppendResolvedCustomEntries(float now)
+    {
+        if (ShiftMakerData.Instance == null || BusScheduler.Instance == null) return;
+
+        foreach (var custom in ShiftMakerData.Instance.Entries)
+        {
+            var route = BusScheduler.Instance.managedRoutes?.FirstOrDefault(r => r != null && r.routeNumber == custom.routeNumber);
+            if (route == null) continue;
+
+            var candidate = BusScheduler.Instance.AllSlots
+                .Where(s => s.routeNumber == custom.routeNumber
+                            && (s.variantLetter ?? "") == (custom.variantLetter ?? "")
+                            && s.isOutbound == custom.outbound
+                            && s.state == SlotState.Unassigned
+                            && s.scheduledDeparture >= now + BusScheduler.BoardingLeadFor(now))
+                .OrderBy(s => Mathf.Abs((s.scheduledDeparture % 1440f) - custom.targetMinutes))
+                .FirstOrDefault();
+            if (candidate == null) continue;
+            if (_options.Any(o => o.routeNumber == candidate.routeNumber && o.outbound == candidate.isOutbound
+                && (o.variantLetter ?? "") == (candidate.variantLetter ?? "") && Mathf.Approximately(o.departureAbsMin, candidate.scheduledDeparture)))
+                continue;
+
+            var depot = DepotManager.Instance != null ? DepotManager.Instance.GetDepotForRoute(route.routeNumber) : null;
+            _options.Add(new RouteOption
+            {
+                route = route,
+                routeNumber = route.routeNumber,
+                outbound = candidate.isOutbound,
+                variantLetter = candidate.variantLetter ?? "",
+                departureAbsMin = candidate.scheduledDeparture,
+                laps = EstimateLapsForBlock(route, new BusScheduler.RouteBusEntry { scheduledDeparture = candidate.scheduledDeparture, isOutbound = candidate.isOutbound, variantLetter = candidate.variantLetter, busID = -1 }),
+                requiredDepotLabel = depot != null ? depot.depotName : "Any depot",
+                idleEligibleCount = CountIdleEligibleBuses(route.routeNumber),
+                isCustomPick = true,
+            });
+        }
     }
 
     private static TimetableSlot ResolveRealSlot(RouteOption opt)
