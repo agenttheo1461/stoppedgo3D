@@ -17,39 +17,91 @@ public static class MDT_UITheme
     // providing depth instead of color. Status/semantic colors (LEDs, level bars,
     // route badges) intentionally stay saturated since those convey functional
     // meaning, not decoration.
+    //
+    // [ADD] Light theme. Every neutral/structural token below (backgrounds,
+    // borders, primary/secondary/dim text) is generated from the dark value
+    // by inverting luminance (1-r, 1-g, 1-b, same alpha) via Inv() -- since
+    // all of those are already r≈g≈b grayscale, this exactly preserves every
+    // relative relationship (row hover being brighter than the panel in dark
+    // mode becomes it being correspondingly darker than the panel in light
+    // mode, etc.) without hand-picking 20-odd new values individually.
+    // Saturated semantic colors (amber/green/red status text, the LEDs, stop
+    // dots, the player chip) are NOT inverted -- that would flip their hue
+    // entirely (amber would become blue) and break what they mean. Those
+    // either stay identical across themes (LEDs, dots, chip -- rendered as
+    // filled shapes, contrast holds up fine either way) or get a manual,
+    // hue-preserving light variant (the semantic text colors, which do need
+    // to darken for legibility on a light background).
+    private static Color Inv(Color c) => new Color(1f - c.r, 1f - c.g, 1f - c.b, c.a);
+    public static bool IsLight => SettingsData.LightTheme;
 
     // Backgrounds
-    public static readonly Color BGDeep      = new Color(0.075f, 0.075f, 0.080f, 0.98f);  // main panel
-    public static readonly Color BGMid       = new Color(0.100f, 0.100f, 0.106f, 1.00f);  // map / list area
-    public static readonly Color BGHeader    = new Color(0.050f, 0.050f, 0.054f, 1.00f);  // header bar
-    public static readonly Color BGFooter    = new Color(0.050f, 0.050f, 0.054f, 1.00f);  // footer / legend
-    public static readonly Color BGRowEven   = new Color(0.108f, 0.108f, 0.114f, 1.00f);
-    public static readonly Color BGRowOdd    = new Color(0.090f, 0.090f, 0.096f, 1.00f);
-    public static readonly Color BGRowHover  = new Color(0.190f, 0.190f, 0.200f, 1.00f);
-    public static readonly Color BGPill      = new Color(0.130f, 0.130f, 0.138f, 1.00f);
-    public static readonly Color BGPillSel   = new Color(0.400f, 0.400f, 0.415f, 1.00f);  // lighter-gray highlight
-    public static readonly Color BGDirSel    = new Color(0.340f, 0.340f, 0.355f, 1.00f);  // lighter-gray highlight
-    public static readonly Color BGButton    = new Color(0.145f, 0.145f, 0.154f, 1.00f);
-    public static readonly Color BGTooltip   = new Color(0.060f, 0.060f, 0.065f, 0.97f);
+    private static readonly Color _dBGDeep      = new Color(0.075f, 0.075f, 0.080f, 0.98f);  // main panel
+    private static readonly Color _dBGMid       = new Color(0.100f, 0.100f, 0.106f, 1.00f);  // map / list area
+    private static readonly Color _dBGHeader    = new Color(0.050f, 0.050f, 0.054f, 1.00f);  // header bar
+    private static readonly Color _dBGFooter    = new Color(0.050f, 0.050f, 0.054f, 1.00f);  // footer / legend
+    private static readonly Color _dBGRowEven   = new Color(0.108f, 0.108f, 0.114f, 1.00f);
+    private static readonly Color _dBGRowOdd    = new Color(0.090f, 0.090f, 0.096f, 1.00f);
+    private static readonly Color _dBGRowHover  = new Color(0.190f, 0.190f, 0.200f, 1.00f);
+    private static readonly Color _dBGPill      = new Color(0.130f, 0.130f, 0.138f, 1.00f);
+    private static readonly Color _dBGPillSel   = new Color(0.400f, 0.400f, 0.415f, 1.00f);  // lighter-gray highlight
+    private static readonly Color _dBGDirSel    = new Color(0.340f, 0.340f, 0.355f, 1.00f);  // lighter-gray highlight
+    private static readonly Color _dBGButton    = new Color(0.145f, 0.145f, 0.154f, 1.00f);
+    private static readonly Color _dBGTooltip   = new Color(0.060f, 0.060f, 0.065f, 0.97f);
+
+    public static Color BGDeep     => IsLight ? Inv(_dBGDeep)     : _dBGDeep;
+    public static Color BGMid      => IsLight ? Inv(_dBGMid)      : _dBGMid;
+    public static Color BGHeader   => IsLight ? Inv(_dBGHeader)   : _dBGHeader;
+    public static Color BGFooter   => IsLight ? Inv(_dBGFooter)   : _dBGFooter;
+    public static Color BGRowEven  => IsLight ? Inv(_dBGRowEven)  : _dBGRowEven;
+    public static Color BGRowOdd   => IsLight ? Inv(_dBGRowOdd)   : _dBGRowOdd;
+    public static Color BGRowHover => IsLight ? Inv(_dBGRowHover) : _dBGRowHover;
+    public static Color BGPill     => IsLight ? Inv(_dBGPill)     : _dBGPill;
+    public static Color BGPillSel  => IsLight ? Inv(_dBGPillSel)  : _dBGPillSel;
+    public static Color BGDirSel   => IsLight ? Inv(_dBGDirSel)   : _dBGDirSel;
+    public static Color BGButton   => IsLight ? Inv(_dBGButton)   : _dBGButton;
+    // Tooltips deliberately stay dark-on-top in BOTH themes -- a pop-over
+    // benefits from strong, consistent contrast regardless of the base theme.
+    public static Color BGTooltip  => _dBGTooltip;
 
     // Borders & chrome
+    // Bevel hi/shadow simulate a physical top-left light source, which holds
+    // regardless of base theme, so these don't invert.
     public static readonly Color BevelHi     = new Color(1.0f, 1.0f, 1.0f, 0.10f);  // top/left highlight
     public static readonly Color BevelShadow = new Color(0.0f, 0.0f, 0.0f, 0.40f);  // bottom/right shadow
-    public static readonly Color BorderAccent= new Color(0.62f, 0.62f, 0.65f, 0.35f); // outer accent ring — lighter gray
-    public static readonly Color Divider     = new Color(0.20f, 0.20f, 0.21f, 1.00f);
-    public static readonly Color Grid        = new Color(0.30f, 0.30f, 0.32f, 0.22f);
+    private static readonly Color _dBorderAccent = new Color(0.62f, 0.62f, 0.65f, 0.35f); // outer accent ring — lighter gray
+    private static readonly Color _dDivider      = new Color(0.20f, 0.20f, 0.21f, 1.00f);
+    private static readonly Color _dGrid         = new Color(0.30f, 0.30f, 0.32f, 0.22f);
+    public static Color BorderAccent => IsLight ? Inv(_dBorderAccent) : _dBorderAccent;
+    public static Color Divider      => IsLight ? Inv(_dDivider)      : _dDivider;
+    public static Color Grid         => IsLight ? Inv(_dGrid)         : _dGrid;
 
-    // Semantic text
-    public static readonly Color TextPrimary = new Color(0.94f, 0.94f, 0.95f, 0.96f);
-    public static readonly Color TextSecond  = new Color(0.68f, 0.68f, 0.70f, 0.90f);
-    public static readonly Color TextDim     = new Color(0.48f, 0.48f, 0.50f, 0.85f);
-    public static readonly Color TextCyan    = new Color(0.80f, 0.80f, 0.83f, 1.00f);  // lighter-gray highlight text
-    public static readonly Color TextAmber   = new Color(0.98f, 0.75f, 0.20f, 1.00f);
-    public static readonly Color TextGreen   = new Color(0.22f, 0.92f, 0.50f, 1.00f);
-    public static readonly Color TextRed     = new Color(1.00f, 0.32f, 0.32f, 1.00f);
-    public static readonly Color TextWhite   = Color.white;
+    // Semantic text -- neutral tokens invert; saturated ones get a manual,
+    // hue-preserving darker variant for legibility on a light background.
+    private static readonly Color _dTextPrimary = new Color(0.94f, 0.94f, 0.95f, 0.96f);
+    private static readonly Color _dTextSecond  = new Color(0.68f, 0.68f, 0.70f, 0.90f);
+    private static readonly Color _dTextDim     = new Color(0.48f, 0.48f, 0.50f, 0.85f);
+    private static readonly Color _dTextCyan    = new Color(0.80f, 0.80f, 0.83f, 1.00f);  // lighter-gray highlight text
+    public static Color TextPrimary => IsLight ? Inv(_dTextPrimary) : _dTextPrimary;
+    public static Color TextSecond  => IsLight ? Inv(_dTextSecond)  : _dTextSecond;
+    public static Color TextDim     => IsLight ? Inv(_dTextDim)     : _dTextDim;
+    public static Color TextCyan    => IsLight ? Inv(_dTextCyan)    : _dTextCyan;
+    public static Color TextWhite   => IsLight ? new Color(0.05f, 0.05f, 0.06f, 1f) : Color.white;
 
-    // Status LED colors
+    private static readonly Color _dTextAmber = new Color(0.98f, 0.75f, 0.20f, 1.00f);
+    private static readonly Color _lTextAmber = new Color(0.62f, 0.42f, 0.02f, 1.00f);
+    private static readonly Color _dTextGreen = new Color(0.22f, 0.92f, 0.50f, 1.00f);
+    private static readonly Color _lTextGreen = new Color(0.04f, 0.48f, 0.22f, 1.00f);
+    private static readonly Color _dTextRed   = new Color(1.00f, 0.32f, 0.32f, 1.00f);
+    private static readonly Color _lTextRed   = new Color(0.72f, 0.08f, 0.08f, 1.00f);
+    public static Color TextAmber => IsLight ? _lTextAmber : _dTextAmber;
+    public static Color TextGreen => IsLight ? _lTextGreen : _dTextGreen;
+    public static Color TextRed   => IsLight ? _lTextRed   : _dTextRed;
+
+    // Status LEDs / dots / the player chip: rendered as solid filled shapes,
+    // not text-on-background, so they read fine unmodified against either
+    // theme -- and keeping the actual hue fixed means "green means good"
+    // doesn't have to be re-learned when the player switches themes.
     public static readonly Color LEDGreen    = new Color(0.20f, 1.00f, 0.40f, 1.00f);
     public static readonly Color LEDAmber    = new Color(1.00f, 0.72f, 0.10f, 1.00f);
     public static readonly Color LEDRed      = new Color(1.00f, 0.28f, 0.28f, 1.00f);
@@ -74,7 +126,12 @@ public static class MDT_UITheme
     // each hand-rolling (or not hand-rolling) their own.
     public const float MinUIScale = 0.9f;
     public const float MaxUIScale = 2.4f;
-    public static float UIScale => Mathf.Clamp(Screen.height / 1080f, MinUIScale, MaxUIScale);
+    // [ADD] SettingsData.UiScaleOverride of 0 (its default) means "auto" --
+    // the original Screen.height-based computation, untouched. A nonzero
+    // value is an explicit player override (accessibility/preference).
+    public static float UIScale => SettingsData.UiScaleOverride > 0f
+        ? Mathf.Clamp(SettingsData.UiScaleOverride, MinUIScale, MaxUIScale)
+        : Mathf.Clamp(Screen.height / 1080f, MinUIScale, MaxUIScale);
 
     // Apple/Android guidance settles around 44pt; using 44 raw pixels at the
     // 1080p reference height (same reference UIScale is computed against)
@@ -482,6 +539,72 @@ public static class MDT_UITheme
         float coreSize = radius * 2f;
         DrawRoundedRect(new Rect(centre.x - radius, centre.y - radius, coreSize, coreSize),
                          coreSize * 0.5f, col);
+    }
+
+    // ── Shape-redundant status indicator (accessibility) ─────────────────────
+    // [ADD] Green/amber/red meaning conveyed by hue alone is a real
+    // colorblindness problem for a status system this semantically loaded
+    // (breakdown vs. running vs. waiting). When SettingsData.ShapeIndicators
+    // is on, every status draw also gets a distinct SHAPE baked on top of the
+    // ordinary LED -- circle (good/running), triangle (caution/waiting),
+    // square (alert/breakdown) -- so meaning survives even with color
+    // perception that can't distinguish the hues. Off by default; when off
+    // this is identical to a plain DrawLED call.
+    public enum StatusShape { Circle, Triangle, Square }
+
+    public static void DrawStatusIndicator(Vector2 centre, float radius, Color col, StatusShape shape)
+    {
+        DrawLED(centre, radius, col);
+        if (!SettingsData.ShapeIndicators || shape == StatusShape.Circle) return; // circle IS the LED's own shape -- nothing extra to draw
+
+        Color mark = new Color(0f, 0f, 0f, 0.55f); // dark mark reads on top of any LED hue/brightness
+        float s = radius * 0.85f;
+        if (shape == StatusShape.Triangle)
+        {
+            DrawFilledTriangle(
+                new Vector2(centre.x, centre.y - s),
+                new Vector2(centre.x - s * 0.9f, centre.y + s * 0.7f),
+                new Vector2(centre.x + s * 0.9f, centre.y + s * 0.7f),
+                mark);
+        }
+        else // Square
+        {
+            float half = s * 0.62f;
+            DrawRect(new Rect(centre.x - half, centre.y - half, half * 2f, half * 2f), mark);
+        }
+    }
+
+    private static Material _glMat;
+    private static Material GLMat()
+    {
+        if (_glMat == null)
+        {
+            var shader = Shader.Find("Hidden/Internal-Colored");
+            _glMat = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
+            _glMat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            _glMat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            _glMat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+            _glMat.SetInt("_ZWrite", 0);
+        }
+        return _glMat;
+    }
+
+    /// <summary>Raw filled triangle in GUI (Rect/mouse) coordinate space --
+    /// only draws on Repaint, same convention every other GL-based OnGUI
+    /// helper follows.</summary>
+    public static void DrawFilledTriangle(Vector2 a, Vector2 b, Vector2 c, Color col)
+    {
+        if (Event.current == null || Event.current.type != EventType.Repaint) return;
+        GLMat().SetPass(0);
+        GL.PushMatrix();
+        GL.LoadPixelMatrix(0, Screen.width, Screen.height, 0); // bottom/top swapped so Y-down matches GUI Rects
+        GL.Begin(GL.TRIANGLES);
+        GL.Color(col);
+        GL.Vertex3(a.x, a.y, 0);
+        GL.Vertex3(b.x, b.y, 0);
+        GL.Vertex3(c.x, c.y, 0);
+        GL.End();
+        GL.PopMatrix();
     }
 
     // ── Divider ───────────────────────────────────────────────────────────────

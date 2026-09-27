@@ -178,6 +178,7 @@ public class MainMenu : MonoBehaviour
         RouteSnapshotViewerUI.Instance?.Close();
         ShiftMakerWindow.Instance?.Close();
         BusRosterWindow.Instance?.Close();
+        SettingsWindow.Instance?.Close();
 
         System.GC.Collect();
     }
@@ -337,6 +338,10 @@ public class MainMenu : MonoBehaviour
         // [ADD] Bus roster entry point -- star buses for the availability nudge.
         if (GUI.Button(new Rect(280, footerY, 120, 34), "MY BUSES", _btnSecond))
             BusRosterWindow.Instance?.Open();
+        // [ADD] Settings entry point. Placed after MY BUSES on the left
+        // rather than the right, which is already SERVICE SHEET + PLAY.
+        if (GUI.Button(new Rect(408, footerY, 110, 34), "SETTINGS", _btnSecond))
+            SettingsWindow.Instance?.Open();
     }
 
     private void DrawRouteColumn(Rect area)

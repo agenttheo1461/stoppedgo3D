@@ -43,6 +43,7 @@ public class ShiftCountdownNotifier : MonoBehaviour
 
     private void Update()
     {
+        if (!SettingsData.NotifyShiftCountdown) { ClearWatch(); return; }
         if (BusScheduler.Instance == null || PlayerHandoff.Instance == null || SimClock.Instance == null) return;
         if (!PlayerHandoff.Instance.IsOnDuty) { ClearWatch(); return; }
 

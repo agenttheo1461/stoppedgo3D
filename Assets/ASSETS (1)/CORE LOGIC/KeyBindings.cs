@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 /// <summary>
@@ -29,6 +31,46 @@ public class KeyBindings : MonoBehaviour
     {
         if (Instance != null && Instance != this) { Destroy(this); return; }
         Instance = this;
+        LoadRebinds();
+    }
+
+    // [ADD] In-game rebinding persistence. KeyBindData was Inspector-only
+    // before -- no runtime UI ever existed to change a binding, so nothing
+    // needed saving. Reflection over its public KeyCode fields means a
+    // future binding added to KeyBindData is automatically covered here too,
+    // no separate list to keep in sync. See SettingsWindow for the actual
+    // rebinding UI.
+    private const string PrefPrefix = "KeyBind_";
+
+    private static IEnumerable<FieldInfo> BindableFields() =>
+        typeof(KeyBindData).GetFields(BindingFlags.Public | BindingFlags.Instance);
+
+    public void SetBinding(string fieldName, KeyCode value)
+    {
+        var field = typeof(KeyBindData).GetField(fieldName, BindingFlags.Public | BindingFlags.Instance);
+        if (field == null || field.FieldType != typeof(KeyCode)) return;
+        field.SetValue(binds, value);
+        PlayerPrefs.SetInt(PrefPrefix + fieldName, (int)value);
+    }
+
+    public void ResetBindingToDefault(string fieldName)
+    {
+        var field = typeof(KeyBindData).GetField(fieldName, BindingFlags.Public | BindingFlags.Instance);
+        if (field == null || field.FieldType != typeof(KeyCode)) return;
+        var defaultValue = (KeyCode)field.GetValue(_defaults);
+        field.SetValue(binds, defaultValue);
+        PlayerPrefs.DeleteKey(PrefPrefix + fieldName);
+    }
+
+    private void LoadRebinds()
+    {
+        foreach (var field in BindableFields())
+        {
+            if (field.FieldType != typeof(KeyCode)) continue;
+            string prefKey = PrefPrefix + field.Name;
+            if (!PlayerPrefs.HasKey(prefKey)) continue;
+            field.SetValue(binds, (KeyCode)PlayerPrefs.GetInt(prefKey));
+        }
     }
 
     private void OnDestroy() { if (Instance == this) Instance = null; }

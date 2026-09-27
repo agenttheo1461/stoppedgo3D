@@ -148,10 +148,14 @@ public class BusDashboardHUD : MonoBehaviour
         DrawFilledArc( new Vector2(cx, cy), r, 180f, 180f, MDT_UITheme.BGDeep);
         DrawArcOutline(new Vector2(cx, cy), r, 180f, 180f, MDT_UITheme.BorderAccent, 2f);
 
+        // [ADD] Settings units toggle -- primary/secondary swap, mph stays
+        // the default (matches the real US-transit-dash convention this was
+        // already tuned for) unless the player opts into metric.
         float mph = bus.spd * KPH_TO_MPH;
-        GUI.Label(new Rect(cx - 80, cy - r + 24, 160, 50), $"{mph:F0}",              _styleSpeed);
-        GUI.Label(new Rect(cx - 30, cy - r + 74,  60, 16), "mph",                    _styleSpeedUnit);
-        GUI.Label(new Rect(cx - 40, cy - r + 90,  80, 16), $"{bus.spd:F0} km/h",     _styleSpeedUnit);
+        bool metric = SettingsData.UseMetricUnits;
+        GUI.Label(new Rect(cx - 80, cy - r + 24, 160, 50), metric ? $"{bus.spd:F0}" : $"{mph:F0}", _styleSpeed);
+        GUI.Label(new Rect(cx - 30, cy - r + 74,  60, 16), metric ? "km/h" : "mph",                _styleSpeedUnit);
+        GUI.Label(new Rect(cx - 40, cy - r + 90,  80, 16), metric ? $"{mph:F0} mph" : $"{bus.spd:F0} km/h", _styleSpeedUnit);
 
         for (int i = 0; i <= 10; i++)
         {

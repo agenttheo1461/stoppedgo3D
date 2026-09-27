@@ -420,8 +420,8 @@ foreach (var slot in _allSlots.Where(s => s.assignedBusID >= 0 && s.state == Slo
     {
         _completedThisFrame.Clear();
 
-        // [FIX Bug 43] don't allow debug actions behind the main menu
-        if (!MainMenu.BlocksInput && KeyBindings.DebugModifierHeld && Input.GetKeyDown(KeyBindings.Current.debugDumpSchedule))
+        // [FIX Bug 43] don't allow debug actions behind the main menu, or if developer mode is off
+        if (!MainMenu.BlocksInput && SettingsData.DeveloperMode && KeyBindings.DebugModifierHeld && Input.GetKeyDown(KeyBindings.Current.debugDumpSchedule))
             PrintFullDaySchedule();
 
         _dynamicLatenessTimer += Time.deltaTime;

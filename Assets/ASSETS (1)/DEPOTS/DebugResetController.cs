@@ -16,7 +16,7 @@ public class DebugResetController : MonoBehaviour
 {
     private void Update()
     {
-        if (MainMenu.BlocksInput) return; // [FIX Bug 43] don't allow debug actions behind the main menu
+        if (MainMenu.BlocksInput || !SettingsData.DeveloperMode) return; // [FIX Bug 43] + developer-mode setting
         if (KeyBindings.DebugModifierHeld && Input.GetKeyDown(KeyBindings.Current.debugResetBuses))
             ResetAllBuses();
     }

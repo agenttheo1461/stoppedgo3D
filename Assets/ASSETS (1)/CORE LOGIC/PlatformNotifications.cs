@@ -70,6 +70,7 @@ public static class PlatformNotifications
     /// one (e.g. re-scheduling because the player's assigned slot changed).</summary>
     public static void ScheduleAt(string identifier, string title, string body, DateTime fireAtLocal)
     {
+        if (!SettingsData.UseOsPush) return; // player opted out of real OS push -- NotificationToast still covers foreground
         Initialize();
         double secondsFromNow = (fireAtLocal - DateTime.Now).TotalSeconds;
         if (secondsFromNow <= 0) return;

@@ -54,6 +54,7 @@ public class StarredBusAvailabilityNotifier : MonoBehaviour
 
     private void CheckOnce()
     {
+        if (!SettingsData.NotifyStarredBuses) return;
         if (StarredBusData.Instance == null || BusManager.Instance == null) return;
 
         var candidates = new List<(int fleetNumber, FleetMetadata.Entry meta)>();

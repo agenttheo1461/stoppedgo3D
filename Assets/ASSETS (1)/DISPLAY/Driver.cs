@@ -1157,7 +1157,7 @@ public class DriverConsole : MonoBehaviour
         MDT_UITheme.DrawPanel(barRect);
         GUI.BeginGroup(barRect);
 
-        MDT_UITheme.DrawLED(new Vector2(16f, 16f), 5f, StateLEDColor(state));
+        MDT_UITheme.DrawStatusIndicator(new Vector2(16f, 16f), 5f, StateLEDColor(state), StateLEDShape(state));
 
         string label = ph != null && !string.IsNullOrEmpty(ph.ActiveRoute)
             ? $"{ph.ActiveRouteLabel}  |  {StateDisplayName(state)}"
@@ -1272,6 +1272,20 @@ public class DriverConsole : MonoBehaviour
         PlayerHandoff.PlayerShiftState.ReliefPending      => MDT_UITheme.LEDRed,
         PlayerHandoff.PlayerShiftState.Breakdown          => MDT_UITheme.LEDRed,
         _                                                  => MDT_UITheme.LEDOff,
+    };
+
+    // [ADD] Shape-redundant accessibility encoding, paired with StateLEDColor
+    // above -- circle for the "good/running" states, triangle for
+    // "caution/waiting", square for "alert" -- see MDT_UITheme.DrawStatusIndicator.
+    private MDT_UITheme.StatusShape StateLEDShape(PlayerHandoff.PlayerShiftState s) => s switch
+    {
+        PlayerHandoff.PlayerShiftState.InService          => MDT_UITheme.StatusShape.Circle,
+        PlayerHandoff.PlayerShiftState.WaitingToDepart    => MDT_UITheme.StatusShape.Triangle,
+        PlayerHandoff.PlayerShiftState.ArrivedAtTerminal  => MDT_UITheme.StatusShape.Triangle,
+        PlayerHandoff.PlayerShiftState.DeadrunToStart     => MDT_UITheme.StatusShape.Triangle,
+        PlayerHandoff.PlayerShiftState.ReliefPending      => MDT_UITheme.StatusShape.Square,
+        PlayerHandoff.PlayerShiftState.Breakdown          => MDT_UITheme.StatusShape.Square,
+        _                                                  => MDT_UITheme.StatusShape.Circle,
     };
 
     private string StateDisplayName(PlayerHandoff.PlayerShiftState s) => s switch
