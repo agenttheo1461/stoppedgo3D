@@ -62,6 +62,9 @@ public class RouteSnapshotViewerUI : MonoBehaviour
 
     private bool _visible = false;
 
+    /// <summary>[ADD Bug 38 fix] So MainMenu's full-reset-on-open can force this closed.</summary>
+    public void Close() => _visible = false;
+
     // Full ordered timeline: [0] = oldest (primary) ... [last] = newest.
     private readonly List<NetworkSnapshot> _timeline = new();
     private bool _timelineBuilt = false;

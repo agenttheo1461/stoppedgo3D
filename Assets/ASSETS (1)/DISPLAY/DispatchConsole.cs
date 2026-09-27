@@ -30,6 +30,9 @@ public class DispatchConsole : MonoBehaviour
     private float _panelX, _panelY;
     private float _refreshTimer;
 
+    /// <summary>[ADD Bug 38 fix] So MainMenu's full-reset-on-open can force this closed.</summary>
+    public void Close() => _open = false;
+
     private enum SortMode { Route, Lateness, FleetNumber }
     private SortMode _sortMode = SortMode.Route;
 

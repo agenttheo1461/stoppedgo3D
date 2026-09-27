@@ -171,6 +171,9 @@ private const int RECENT_BUS_CAP = 5;
     /// on the exact same keypress — see ShiftBoardMenu.Update().</summary>
     public bool IsVisible => _visible;
 
+    /// <summary>[ADD Bug 38 fix] So MainMenu's full-reset-on-open can force this closed.</summary>
+    public void Close() => _visible = false;
+
     /// <summary>[MOBILE] Same body the keyboard toggleKey handler used to
     /// run inline — pulled out so a touch "MAP" button can drive the exact
     /// open/cycle-view behavior instead of re-implementing it.</summary>

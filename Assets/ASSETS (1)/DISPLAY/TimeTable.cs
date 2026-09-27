@@ -67,6 +67,9 @@ private bool   _compactCached = false;
     private bool  _visible    = false;
     public  bool  IsVisible => _visible;
 
+    /// <summary>[ADD Bug 38 fix] So MainMenu's full-reset-on-open can force this closed.</summary>
+    public void Close() => _visible = false;
+
     /// <summary>[MOBILE] Same body the keyboard toggleKey handler used to
     /// run inline — lets a touch "TIME" button drive the same show/hide.</summary>
     public void HandleTogglePressed()

@@ -705,37 +705,20 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         // or a board pick, regardless of whether a chain leg is waiting.
         PrintTagged(hasChainedLeg
             ? "Segment complete — type <b>continue</b> for your next assigned leg, or pick a different route from the board."
-            : "This bus's scheduled run is finished — awaiting your call on the shift board.", "board");
+            : "This bus's scheduled run is finished — signing off.", "board");
 
-        var runner = ShiftRunner.Instance;
-        int finishedBlockIndex = runner != null ? runner.activeBlockIndex : -1;
-
-        // Chain-exhausted case still checks the block's own time window (a
-        // genuinely closed window shouldn't offer to re-open itself); the
-        // chained-leg case always has somewhere to go, so it always opens.
-        bool windowStillOpen = hasChainedLeg || (
-            runner != null && runner.todaysSchedule != null && SimClock.Instance != null &&
-            finishedBlockIndex >= 0 && finishedBlockIndex < runner.todaysSchedule.Count &&
-            SimClock.Instance.AbsoluteGameMinutes < runner.todaysSchedule[finishedBlockIndex].windowEndMinutes);
-
-        // [FIX] Both branches used to call EndCurrentLegForShiftAdvance()
-        // regardless of windowStillOpen -- meaning even the genuinely-
-        // nothing-left case never actually went off duty, just sat in
-        // ArrivedAtTerminal forever with the board never reopening (nothing
-        // else was going to trigger it). Now a closed window is treated as
-        // what it is: the real end.
+        // [FIX Bug 9] Was: chain-exhausted case checked whether the block's
+        // time window was still open and, if so, opened the shift board for
+        // the player to pick a brand-new route instead of ending -- so
+        // "end of shift" never actually happened as long as something was
+        // still running that day. A takeover only ever inherits the NPC's
+        // own remaining pre-assigned chain (now capped, see TopUpChain's
+        // MaxPrechainedLegsFor); once that's exhausted the shift is
+        // genuinely done -- the player isn't meant to be offered a fresh
+        // booking of their own from here (that's the separate shift-maker
+        // feature, not this auto-continue path).
         if (!hasChainedLeg)
-        {
-            if (windowStillOpen)
-                EndCurrentLegForShiftAdvance();
-            else
-                EndShiftFully();
-        }
-
-        if (!hasChainedLeg && windowStillOpen)
-        {
-            ShiftBoardMenu.Instance?.OpenForBlock(finishedBlockIndex);
-        }
+            EndShiftFully();
         // hasChainedLeg case: deliberately does nothing else here. Shift
         // state is already ArrivedAtTerminal (set by OnPlayerArrivedAtTerminal
         // before this was called) — the player now explicitly types

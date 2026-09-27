@@ -142,17 +142,39 @@ public class MainMenu : MonoBehaviour
     public void ToggleOpen()
     {
         _open = !_open;
-        if (_open) { _openedAtRealtime = Time.realtimeSinceStartup; ResnapFleetOnOpen(); RefreshRouteOptions(); }
+        if (_open) { _openedAtRealtime = Time.realtimeSinceStartup; FullResetOnOpen(); ResnapFleetOnOpen(); RefreshRouteOptions(); }
     }
 
     public void Open()
     {
         _open = true;
         _openedAtRealtime = Time.realtimeSinceStartup;
+        FullResetOnOpen();
         ResnapFleetOnOpen();
         RefreshRouteOptions();
     }
     public void Close() => _open = false;
+
+    /// <summary>[ADD Bug 38 fix] Opening this menu used to only resnap NPC
+    /// positions and refresh the route list -- everything else from a prior
+    /// session (a still-possessed bus, other popups left open, accumulated
+    /// garbage) just sat there. This is the actual full stop: releases any
+    /// possessed bus back to NPC control (EndShiftFully no-ops safely if
+    /// already off duty, so this is always safe to call), force-closes
+    /// every other toggleable popup/window, and prompts a GC pass so
+    /// nothing from the previous session lingers into this one.</summary>
+    private void FullResetOnOpen()
+    {
+        PlayerHandoff.Instance?.EndShiftFully();
+
+        ShiftBoardMenu.Instance?.Close();
+        DispatchConsole.Instance?.Close();
+        MDT_LiveMap.Instance?.Close();
+        TimetableOverlay.Instance?.Close();
+        RouteSnapshotViewerUI.Instance?.Close();
+
+        System.GC.Collect();
+    }
 
     // [ADD] The reset NPC buses used to have for testing real-time routes —
     // re-derives every active NPC bus's correct position from the timetable

@@ -1892,8 +1892,19 @@ public int CountActiveBusesOnRoute(string routeNumber)
         fromSlot.serviceMinutesAccum = accum;
         bool unlimited = ServiceBudgetFor(route) <= 0f;
 
+        // [FIX Bug 4] The service-minute budget above only counts time
+        // actually driving the route -- layover/deadhead/depot time between
+        // legs is free, so a chain of short, low-frequency legs could rack
+        // up hours of real wall-clock commitment while still comfortably
+        // under budget (the reported case: a 27-min route chained 6 legs
+        // spanning 5:00-8:40, ~2 real hours). Cap the number of legs
+        // actually pre-chained, independent of the service-minute math,
+        // scaled down for longer trips since each one eats more real time.
+        int legsAdded = 0;
+        int maxLegs = MaxPrechainedLegsFor(tripMinutes);
+
         // Fill up to the service-minute budget (real on-route trip minutes only).
-        while (unlimited || !ServiceBudgetReached(route, accum, tripMinutes))
+        while (legsAdded < maxLegs && (unlimited || !ServiceBudgetReached(route, accum, tripMinutes)))
         {
             bool nextDir = !dir;
             // [FIX Bug 5] Was purely dep + tripMinutes + minLayoverMinutes —
@@ -1921,6 +1932,7 @@ public int CountActiveBusesOnRoute(string routeNumber)
             }
 
             lapCursor++;
+            legsAdded++;
             next.chainLegIndex = lapCursor;
             next.assignedBusID = busID;
             next.state = state;
@@ -1930,6 +1942,17 @@ public int CountActiveBusesOnRoute(string routeNumber)
             accum += tripMinutes;
             next.serviceMinutesAccum = accum;
         }
+    }
+
+    /// <summary>[ADD Bug 4 fix] How many legs TopUpChain will pre-chain onto
+    /// one rotation, independent of the service-minute budget. Tuned so a
+    /// typical ~20-30min one-way route lands in the requested 4-5 range,
+    /// scaling down for longer routes (each leg is a bigger real-time
+    /// commitment) and up for short ones, clamped to [2, 5] either way.</summary>
+    private static int MaxPrechainedLegsFor(float tripMinutes)
+    {
+        if (tripMinutes <= 0f) tripMinutes = DefaultTripMinutes;
+        return Mathf.Clamp(Mathf.RoundToInt(110f / tripMinutes), 2, 5);
     }
     private bool IsTooFarAhead(TimetableSlot s) =>
         s != null && s.scheduledDeparture - SimClock.Instance.AbsoluteGameMinutes > maxTerminalHoldMinutes;
