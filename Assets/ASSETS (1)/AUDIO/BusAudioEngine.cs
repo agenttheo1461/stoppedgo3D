@@ -6137,6 +6137,12 @@ private void DoDeepL9VoiceDSP(ref double voiceSample, float hz, float rn, float 
                 }
             }
 
+            // Aerodynamic wind rush at speed -- universal, engine/tx-agnostic,
+            // present on every bus (electric drivetrains included, unlike the
+            // wheel-bearing whine below which only runs inside
+            // DoCombustionEngine). See BusAudioEngine.WindNoise.cs.
+            double windSample = RenderWindNoise(invSR);
+
             double engineSample = 0.0;
             double txSample     = 0.0;
 
@@ -6347,7 +6353,7 @@ if (oldBusVariant > 0) DoOldBusVariantCharacter(ref variantSample, rn, ld, hz, o
             double coreSample = ((engineSample * cb_invFilterMod) + txSample) * catchWobble;
             double breakdownSample = UpdateBreakdownAudio(invSR, engVolPersonality);
 
-float output = (float)(coreSample + acSample + oldBusSample + coastSample + fuzzSample + creakSample + variantSample + stallHoldSample + breakdownSample + catchSample + alternatorSample + extendedPuffSample) * 0.525f * attenuation;
+float output = (float)(coreSample + acSample + oldBusSample + coastSample + fuzzSample + creakSample + variantSample + stallHoldSample + breakdownSample + catchSample + alternatorSample + extendedPuffSample + windSample) * 0.525f * attenuation;
             for (int c = 0; c < channels; c++) data[i + c] = output;
         }
     }
