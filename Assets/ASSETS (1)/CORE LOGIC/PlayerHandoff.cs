@@ -3505,11 +3505,14 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         switch (_rampState)
         {
             case RampState.Stowed:
-                if (!AdaEventPending)
-                {
-                    PrintTagged("No wheelchair passenger needs the lift right now.", "warn");
-                    return;
-                }
+                // [FIX per request] Freely deployable any time, same as
+                // kneel -- no longer gated on an actual wheelchair pax
+                // being present. The physical prerequisites below still
+                // apply (those are about the lift mechanism itself, not
+                // about who's using it). ProcessStopDoorOpen only holds
+                // regular boarding back when AdaEventPending is genuinely
+                // true, so a manual/test deploy with nobody waiting doesn't
+                // affect anyone else's boarding.
                 if (!playerBus.doorsOpen)
                 {
                     PrintTagged("Ramp needs the front door open first.", "warn");

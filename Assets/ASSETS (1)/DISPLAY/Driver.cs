@@ -158,7 +158,7 @@ public class DriverConsole : MonoBehaviour
         new CmdDoc { names = "ignition",   args = "",                  desc = "Toggle the engine ignition on/off." },
         new CmdDoc { names = "quickstart / qs", args = "",             desc = "Battery on, close any open doors (front + rear), then crank and start the engine automatically -- same as pressing ignition twice, just timed for you. Doors are never reopened; do that yourself once you're ready." },
         new CmdDoc { names = "wedge",      args = "",                  desc = "Force the front door to a halfway 'wedged' position -- a manual fallback for a door stuck open, usable only with the battery off (use ignition/quickstart normally otherwise). Type it again to release. The DOORS button/command falls back to the same thing automatically when there's no power." },
-        new CmdDoc { names = "ramp",       args = "",                  desc = "Deploy/retract the wheelchair lift ramp (also the R key). Only usable with a wheelchair passenger actually needing it, front door open, kneeling, in neutral, and parking brake set. Deploy takes ~10s (with a brief hiccup partway through), then loads/unloads the wheelchair pax over ~5s -- type ramp again once it reads 'Deployed' to raise it, which finishes over another ~10s. Regular boarding through the front door waits until the ramp is fully stowed again." },
+        new CmdDoc { names = "ramp",       args = "",                  desc = "Deploy/retract the wheelchair lift ramp (also the R key) -- usable any time, same as kneel, whether or not a wheelchair passenger is actually waiting. Needs front door open, kneeling, in neutral, and parking brake set. Deploy takes ~10s (with a brief hiccup partway through), then loads/unloads any wheelchair pax over ~5s -- type ramp again once it reads 'Deployed' to raise it, which finishes over another ~10s. Regular boarding through the front door waits until the ramp is fully stowed again ONLY if a wheelchair pax was actually involved this cycle." },
         new CmdDoc { names = "eco",        args = "",                  desc = "Toggle Eco mode (or use the ECO button). On mild-hybrid transmissions (e.g. Voith DIWA 867.8 NXT), this is also the 48V hybrid system's on/off switch — stop-start, coast, boost, and brake regen only run with Eco on." },
         new CmdDoc { names = "gauges",     args = "",                  desc = "Toggle the fuel/maintenance gauges popup." },
         new CmdDoc { names = "time",       args = "",                  desc = "Print current game time and GTST day number." },
@@ -339,8 +339,10 @@ public class DriverConsole : MonoBehaviour
             (label:"Q.START", cmd:"quickstart", enabled:onDuty && engineState != BusAudioEngine.EngineRunState.Running
                                                                     && engineState != BusAudioEngine.EngineRunState.Cranking, primary:false),
             (label:"WEDGE",   cmd:"wedge",    enabled:onDuty && ph?.playerBus?.audioEngine != null && !batteryOn, primary:false),
-            (label:"RAMP",    cmd:"ramp",     enabled:onDuty && ph != null && (ph.AdaEventPending || ph.CurrentRampState != PlayerHandoff.RampState.Stowed),
-                                              primary:ph != null && ph.CurrentRampState != PlayerHandoff.RampState.Stowed),
+            // [FIX per request] Freely usable any time on duty, same as
+            // KNEEL above -- no longer needs an actual wheelchair pax
+            // waiting to light up.
+            (label:"RAMP",    cmd:"ramp",     enabled:onDuty, primary:ph != null && ph.CurrentRampState != PlayerHandoff.RampState.Stowed),
             (label:"ECO",     cmd:"eco",      enabled:onDuty,           primary:ecoOn),
             (label:"RELIEF",  cmd:"relief",   enabled:CanRelief(ph),    primary:false),
             (label:"PAX",     cmd:"pax",      enabled:onDuty,           primary:false),
