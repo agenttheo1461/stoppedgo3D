@@ -3606,23 +3606,40 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
                 _rampTimer += Time.deltaTime;
                 if (_rampTimer >= RAMP_LOAD_SECONDS)
                 {
+                    // [FIX] Message used to unconditionally claim a
+                    // wheelchair pax boarded/got off, even on a manual/test
+                    // deploy (ramp is now freely usable, see HandleRampToggle)
+                    // where neither flag was ever set. Snapshot which actually
+                    // happened BEFORE clearing them so the message matches
+                    // reality instead of assuming both every time.
+                    bool didAlight  = _adaAlightRequested;
+                    bool didBoard   = _adaBoardingWaiting;
+
                     // Alighting first (make room), then boarding -- matches
                     // "wheelchair pax always boards first" relative to
                     // regular pax without needing to touch this order for
                     // the rare stop where both an alight and a board are
                     // pending in the same ramp cycle.
-                    if (_adaAlightRequested)
+                    if (didAlight)
                     {
                         _onboardAdaPax = Mathf.Max(0, _onboardAdaPax - 1);
                         _adaAlightRequested = false;
                     }
-                    if (_adaBoardingWaiting)
+                    if (didBoard)
                     {
                         _onboardAdaPax = Mathf.Min(ADA_CAPACITY, _onboardAdaPax + 1);
                         _adaBoardingWaiting = false;
                     }
                     _rampState = RampState.Deployed;
-                    PrintTagged("♿ Wheelchair aboard/off — press R to raise the ramp when ready.", "system");
+
+                    string loadMsg = (didAlight, didBoard) switch
+                    {
+                        (true, true)   => "♿ Wheelchair off, another aboard",
+                        (true, false)  => "♿ Wheelchair off",
+                        (false, true)  => "♿ Wheelchair aboard",
+                        (false, false) => "Lift cycle complete — no wheelchair passenger this time",
+                    };
+                    PrintTagged($"{loadMsg} — press R to raise the ramp when ready.", "system");
                 }
                 break;
             }
