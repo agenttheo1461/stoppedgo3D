@@ -101,7 +101,7 @@ public class ShiftBoardMenu : MonoBehaviour
     private int _lastRefreshMinute = -1;
     private void Update()
     {
-        if (Input.GetKeyDown(toggleKey))
+        if (!MainMenu.BlocksInput && Input.GetKeyDown(toggleKey)) // [FIX Bug 43]
             HandleTogglePressed();
 
         // Departures roll off / come into range as the sim clock moves.

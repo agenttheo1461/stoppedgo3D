@@ -458,7 +458,7 @@ private void Update()
     _lastMousePos = Input.mousePosition;
     if (_mode3D) Tick3DInput();
 
-    if (Input.GetKeyDown(toggleKey))
+    if (!MainMenu.BlocksInput && Input.GetKeyDown(toggleKey)) // [FIX Bug 43]
         HandleTogglePressed();
 
     if (_visible && Input.GetKeyDown(KeyCode.Escape))

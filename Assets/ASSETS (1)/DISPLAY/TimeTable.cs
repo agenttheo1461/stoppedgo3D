@@ -103,7 +103,7 @@ private bool   _compactCached = false;
 
 private void Update()
 {
-    if (Input.GetKeyDown(toggleKey))
+    if (!MainMenu.BlocksInput && Input.GetKeyDown(toggleKey)) // [FIX Bug 43]
         HandleTogglePressed();
 
     if (!_visible) return;

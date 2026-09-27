@@ -136,7 +136,7 @@ public class MDT_UI_Controller : MonoBehaviour
     {
         if (dockedMode) return;
 
-        if (Input.GetKeyDown(toggleKey)) _open = !_open;
+        if (!MainMenu.BlocksInput && Input.GetKeyDown(toggleKey)) _open = !_open; // [FIX Bug 43]
 
         if (!_open) return;
 

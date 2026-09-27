@@ -136,7 +136,7 @@ public class RouteSnapshotViewerUI : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(toggleKey)) _visible = !_visible;
+        if (!MainMenu.BlocksInput && Input.GetKeyDown(toggleKey)) _visible = !_visible; // [FIX Bug 43]
         if (!_visible) return;
 
         if (Input.GetKeyDown(KeyBindings.Current.snapshotPrevRoute))  StepRoute(-1);

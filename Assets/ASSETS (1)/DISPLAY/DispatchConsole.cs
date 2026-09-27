@@ -60,7 +60,7 @@ public class DispatchConsole : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(toggleKey))
+        if (!MainMenu.BlocksInput && Input.GetKeyDown(toggleKey)) // [FIX Bug 43]
         {
             _open = !_open;
             if (_open)

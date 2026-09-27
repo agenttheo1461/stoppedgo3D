@@ -436,7 +436,8 @@ public class BusSelectMenu : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyBindings.Current.busSelectMenu))
+        // [FIX Bug 43] don't allow opening this behind the main menu
+        if (!MainMenu.BlocksInput && Input.GetKeyDown(KeyBindings.Current.busSelectMenu))
         {
             if (_menuOpen) CloseMenu();
             else           OpenMenu();
