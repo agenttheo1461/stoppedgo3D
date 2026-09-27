@@ -1,0 +1,7891 @@
+{
+  "label": "Snapshot_20260723_151446",
+  "capturedAtUtc": "2026-07-23T15:15:14.6486560Z",
+  "routes": [
+    {
+      "routeId": "1",
+      "routeNumber": "1",
+      "routeName": "1",
+      "terminalACode": "s0034",
+      "terminalZCode": "s0131",
+      "destinationNameOutbound": "Meridian Square",
+      "destinationNameInbound": "Parkview Terminal",
+      "routeQualifierOutbound": "via 0th Ave",
+      "routeQualifierInbound": "via 0th Ave",
+      "headwayFromAMinutes": 15.0,
+      "headwayFromZMinutes": 15.0,
+      "oneWayTripMinutes": 43.0,
+      "operatingStartMinutes": 0.0,
+      "operatingEndMinutes": 1440.0,
+      "scheduleWindows": [
+        {
+          "label": "Overnight",
+          "windowStartMinutes": 0.0,
+          "windowEndMinutes": 240.0,
+          "headwayFromAMinutes": 60.0,
+          "headwayFromZMinutes": 60.0
+        },
+        {
+          "label": "Morning",
+          "windowStartMinutes": 240.0,
+          "windowEndMinutes": 360.0,
+          "headwayFromAMinutes": 30.0,
+          "headwayFromZMinutes": 30.0
+        },
+        {
+          "label": "Increased",
+          "windowStartMinutes": 360.0,
+          "windowEndMinutes": 1320.0,
+          "headwayFromAMinutes": 15.0,
+          "headwayFromZMinutes": 15.0
+        },
+        {
+          "label": "Evening",
+          "windowStartMinutes": 1320.0,
+          "windowEndMinutes": 1439.0,
+          "headwayFromAMinutes": 30.0,
+          "headwayFromZMinutes": 30.0
+        }
+      ],
+      "variants": [],
+      "shortTurns": [],
+      "outboundStops": [
+        {
+          "stopCode": "s0034",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0035",
+          "minutesFromStart": 5.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0036",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0037",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0009",
+          "minutesFromStart": 15.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0010",
+          "minutesFromStart": 17.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0011",
+          "minutesFromStart": 19.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0012",
+          "minutesFromStart": 21.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0013",
+          "minutesFromStart": 23.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0014",
+          "minutesFromStart": 25.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0015",
+          "minutesFromStart": 27.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0016",
+          "minutesFromStart": 29.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0017",
+          "minutesFromStart": 31.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0018",
+          "minutesFromStart": 33.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0019",
+          "minutesFromStart": 35.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0132",
+          "minutesFromStart": 37.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0133",
+          "minutesFromStart": 39.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0134",
+          "minutesFromStart": 41.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0131",
+          "minutesFromStart": 43.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "inboundStops": [
+        {
+          "stopCode": "s0135",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0134",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0133",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s00132",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0019",
+          "minutesFromStart": 8.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0018",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0017",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0016",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0015",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0014",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0013",
+          "minutesFromStart": 20.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0012",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0011",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0010",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0009",
+          "minutesFromStart": 28.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0037",
+          "minutesFromStart": 33.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0036",
+          "minutesFromStart": 35.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0038",
+          "minutesFromStart": 39.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0090",
+          "minutesFromStart": 41.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "outboundNodes": [
+        {
+          "x": -378.5,
+          "y": 4.0,
+          "z": -1020.0,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 4.0,
+          "z": -972.3214111328125,
+          "isCurve": false
+        },
+        {
+          "x": 2.5,
+          "y": 4.0,
+          "z": -837.75,
+          "isCurve": false
+        },
+        {
+          "x": 2.5,
+          "y": 4.0,
+          "z": -190.0,
+          "isCurve": false
+        },
+        {
+          "x": 2.5,
+          "y": 4.0,
+          "z": 0.0,
+          "isCurve": false
+        },
+        {
+          "x": 2.5,
+          "y": 4.0,
+          "z": 3031.5,
+          "isCurve": false
+        },
+        {
+          "x": -20.0,
+          "y": 4.0,
+          "z": 3031.5,
+          "isCurve": false
+        }
+      ],
+      "inboundNodes": [
+        {
+          "x": -120.0,
+          "y": 4.0,
+          "z": 3031.5,
+          "isCurve": false
+        },
+        {
+          "x": -147.0,
+          "y": 4.0,
+          "z": 3031.5,
+          "isCurve": false
+        },
+        {
+          "x": -151.5,
+          "y": 4.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": -2.5,
+          "y": 4.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": -2.5,
+          "y": 4.0,
+          "z": -250.0,
+          "isCurve": false
+        },
+        {
+          "x": -2.5,
+          "y": 4.0,
+          "z": -1048.5,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 4.0,
+          "z": -1048.5,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 4.0,
+          "z": -1040.0,
+          "isCurve": false
+        }
+      ]
+    },
+    {
+      "routeId": "19",
+      "routeNumber": "19",
+      "routeName": "19",
+      "terminalACode": "s0092",
+      "terminalZCode": "s0034",
+      "destinationNameOutbound": "Parkview Terminal",
+      "destinationNameInbound": "Crestbury",
+      "routeQualifierOutbound": "",
+      "routeQualifierInbound": "",
+      "headwayFromAMinutes": 20.0,
+      "headwayFromZMinutes": 20.0,
+      "oneWayTripMinutes": 25.0,
+      "operatingStartMinutes": 300.0,
+      "operatingEndMinutes": 1380.0,
+      "scheduleWindows": [
+        {
+          "label": "morning",
+          "windowStartMinutes": 300.0,
+          "windowEndMinutes": 480.0,
+          "headwayFromAMinutes": 30.0,
+          "headwayFromZMinutes": 30.0
+        },
+        {
+          "label": "increased",
+          "windowStartMinutes": 480.0,
+          "windowEndMinutes": 1200.0,
+          "headwayFromAMinutes": 20.0,
+          "headwayFromZMinutes": 20.0
+        },
+        {
+          "label": "evening",
+          "windowStartMinutes": 1200.0,
+          "windowEndMinutes": 1380.0,
+          "headwayFromAMinutes": 30.0,
+          "headwayFromZMinutes": 30.0
+        }
+      ],
+      "variants": [],
+      "shortTurns": [],
+      "outboundStops": [
+        {
+          "stopCode": "s0092",
+          "minutesFromStart": 0.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0099",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0098",
+          "minutesFromStart": 5.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0097",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0096",
+          "minutesFromStart": 11.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0095",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0094",
+          "minutesFromStart": 17.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0093",
+          "minutesFromStart": 20.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0069",
+          "minutesFromStart": 23.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0091",
+          "minutesFromStart": 25.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "inboundStops": [
+        {
+          "stopCode": "s0034",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0050",
+          "minutesFromStart": 5.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0093",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0094",
+          "minutesFromStart": 11.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0095",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0096",
+          "minutesFromStart": 17.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0097",
+          "minutesFromStart": 20.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0098",
+          "minutesFromStart": 23.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0099",
+          "minutesFromStart": 25.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "outboundNodes": [
+        {
+          "x": -3726.5,
+          "y": 0.0,
+          "z": -670.0,
+          "isCurve": false
+        },
+        {
+          "x": -3726.5,
+          "y": 0.0,
+          "z": -701.5,
+          "isCurve": false
+        },
+        {
+          "x": -911.5,
+          "y": 0.0,
+          "z": -701.5,
+          "isCurve": false
+        },
+        {
+          "x": -911.5,
+          "y": 0.0,
+          "z": -1051.5,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 0.0,
+          "z": -1051.5,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 0.0,
+          "z": -1040.0,
+          "isCurve": false
+        }
+      ],
+      "inboundNodes": [
+        {
+          "x": -378.5,
+          "y": 0.0,
+          "z": -1000.0,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 0.0,
+          "z": -698.5,
+          "isCurve": false
+        },
+        {
+          "x": -3698.5,
+          "y": 0.0,
+          "z": -698.5,
+          "isCurve": false
+        },
+        {
+          "x": -3698.5,
+          "y": 0.0,
+          "z": -608.5,
+          "isCurve": false
+        },
+        {
+          "x": -3726.5,
+          "y": 0.0,
+          "z": -608.5,
+          "isCurve": false
+        },
+        {
+          "x": -3726.5,
+          "y": 0.0,
+          "z": -630.0,
+          "isCurve": false
+        }
+      ]
+    },
+    {
+      "routeId": "11",
+      "routeNumber": "21",
+      "routeName": "21",
+      "terminalACode": "s0247",
+      "terminalZCode": "s0092",
+      "destinationNameOutbound": "Crestbury",
+      "destinationNameInbound": "South Pier",
+      "routeQualifierOutbound": "via R.C. Causeway",
+      "routeQualifierInbound": "via R.C. Causeway",
+      "headwayFromAMinutes": 30.0,
+      "headwayFromZMinutes": 30.0,
+      "oneWayTripMinutes": 58.0,
+      "operatingStartMinutes": 0.0,
+      "operatingEndMinutes": 1440.0,
+      "scheduleWindows": [
+        {
+          "label": "Owl",
+          "windowStartMinutes": 0.0,
+          "windowEndMinutes": 240.0,
+          "headwayFromAMinutes": 60.0,
+          "headwayFromZMinutes": 60.0
+        },
+        {
+          "label": "Early AM",
+          "windowStartMinutes": 240.0,
+          "windowEndMinutes": 360.0,
+          "headwayFromAMinutes": 10.0,
+          "headwayFromZMinutes": 10.0
+        },
+        {
+          "label": "Daytime",
+          "windowStartMinutes": 360.0,
+          "windowEndMinutes": 1320.0,
+          "headwayFromAMinutes": 10.0,
+          "headwayFromZMinutes": 10.0
+        },
+        {
+          "label": "Late Night",
+          "windowStartMinutes": 1320.0,
+          "windowEndMinutes": 1439.0,
+          "headwayFromAMinutes": 10.0,
+          "headwayFromZMinutes": 10.0
+        }
+      ],
+      "variants": [],
+      "shortTurns": [],
+      "outboundStops": [
+        {
+          "stopCode": "s0247",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0240",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0239",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0339",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0338",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0337",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0336",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0335",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0334",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0333",
+          "minutesFromStart": 19.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0001",
+          "minutesFromStart": 20.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0078",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0077",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0076",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0075",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0107",
+          "minutesFromStart": 30.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0106",
+          "minutesFromStart": 32.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0105",
+          "minutesFromStart": 34.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0104",
+          "minutesFromStart": 36.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0103",
+          "minutesFromStart": 38.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0102",
+          "minutesFromStart": 40.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0101",
+          "minutesFromStart": 42.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0100",
+          "minutesFromStart": 44.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "inboundStops": [
+        {
+          "stopCode": "s0092",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0100",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0101",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0102",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0103",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0104",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0105",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0106",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0107",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0079",
+          "minutesFromStart": 20.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0080",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0081",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0082",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0002",
+          "minutesFromStart": 28.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0333",
+          "minutesFromStart": 30.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0334",
+          "minutesFromStart": 32.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0335",
+          "minutesFromStart": 34.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0336",
+          "minutesFromStart": 36.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0337",
+          "minutesFromStart": 38.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0338",
+          "minutesFromStart": 40.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0339",
+          "minutesFromStart": 42.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0239",
+          "minutesFromStart": 44.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0246",
+          "minutesFromStart": 48.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "outboundNodes": [
+        {
+          "x": 1698.5,
+          "y": 0.0,
+          "z": -1960.0,
+          "isCurve": false
+        },
+        {
+          "x": 1698.5,
+          "y": 0.0,
+          "z": -2000.0,
+          "isCurve": false
+        },
+        {
+          "x": 1991.5,
+          "y": 0.0,
+          "z": -2000.0,
+          "isCurve": false
+        },
+        {
+          "x": 1991.5,
+          "y": 0.0,
+          "z": -1698.5,
+          "isCurve": false
+        },
+        {
+          "x": 1991.5,
+          "y": 0.0,
+          "z": -1698.5,
+          "isCurve": true
+        },
+        {
+          "x": 1801.5,
+          "y": 18.0,
+          "z": -1548.5,
+          "isCurve": true
+        },
+        {
+          "x": 1751.5,
+          "y": 25.0,
+          "z": -1248.5,
+          "isCurve": true
+        },
+        {
+          "x": 1581.5,
+          "y": 300.0,
+          "z": -998.5,
+          "isCurve": true
+        },
+        {
+          "x": 1501.5,
+          "y": 400.0,
+          "z": -798.5,
+          "isCurve": true
+        },
+        {
+          "x": 1301.5,
+          "y": 125.0,
+          "z": -358.5,
+          "isCurve": true
+        },
+        {
+          "x": 1101.5,
+          "y": 18.0,
+          "z": -238.5,
+          "isCurve": true
+        },
+        {
+          "x": 1001.5,
+          "y": 0.0,
+          "z": -238.5,
+          "isCurve": true
+        },
+        {
+          "x": 1007.0,
+          "y": 0.0,
+          "z": -238.5,
+          "isCurve": false
+        },
+        {
+          "x": 997.0,
+          "y": 0.0,
+          "z": -238.5,
+          "isCurve": false
+        },
+        {
+          "x": 271.5,
+          "y": 0.0,
+          "z": -238.5,
+          "isCurve": false
+        },
+        {
+          "x": 271.5,
+          "y": 0.0,
+          "z": -220.0,
+          "isCurve": false
+        },
+        {
+          "x": -908.5,
+          "y": 0.0,
+          "z": -220.0,
+          "isCurve": false
+        },
+        {
+          "x": -908.5,
+          "y": 0.0,
+          "z": -109.5,
+          "isCurve": false
+        },
+        {
+          "x": -3701.5,
+          "y": 0.0,
+          "z": -109.5,
+          "isCurve": false
+        },
+        {
+          "x": -3701.5,
+          "y": 0.0,
+          "z": -608.5,
+          "isCurve": false
+        },
+        {
+          "x": -3726.5,
+          "y": 0.0,
+          "z": -608.5,
+          "isCurve": false
+        },
+        {
+          "x": -3726.5,
+          "y": 0.0,
+          "z": -630.0,
+          "isCurve": false
+        }
+      ],
+      "inboundNodes": [
+        {
+          "x": -3729.5,
+          "y": 0.0,
+          "z": -600.0,
+          "isCurve": false
+        },
+        {
+          "x": -3726.5,
+          "y": 0.0,
+          "z": -701.5,
+          "isCurve": false
+        },
+        {
+          "x": -3698.5,
+          "y": 0.0,
+          "z": -701.5,
+          "isCurve": false
+        },
+        {
+          "x": -3698.5,
+          "y": 0.0,
+          "z": -111.5,
+          "isCurve": false
+        },
+        {
+          "x": -911.0999755859375,
+          "y": 0.0,
+          "z": -111.5,
+          "isCurve": false
+        },
+        {
+          "x": -911.5,
+          "y": 0.0,
+          "z": -190.0,
+          "isCurve": false
+        },
+        {
+          "x": 268.5,
+          "y": 0.0,
+          "z": -190.0,
+          "isCurve": false
+        },
+        {
+          "x": 268.5,
+          "y": 0.0,
+          "z": -241.5,
+          "isCurve": false
+        },
+        {
+          "x": 997.0,
+          "y": 0.0,
+          "z": -241.5,
+          "isCurve": false
+        },
+        {
+          "x": 1000.0,
+          "y": 0.0,
+          "z": -241.5,
+          "isCurve": false
+        },
+        {
+          "x": 998.5,
+          "y": 1.0,
+          "z": -241.5,
+          "isCurve": true
+        },
+        {
+          "x": 1098.5,
+          "y": 19.0,
+          "z": -241.5,
+          "isCurve": true
+        },
+        {
+          "x": 1298.5,
+          "y": 126.0,
+          "z": -361.5,
+          "isCurve": true
+        },
+        {
+          "x": 1498.5,
+          "y": 401.0,
+          "z": -801.5,
+          "isCurve": true
+        },
+        {
+          "x": 1578.5,
+          "y": 301.0,
+          "z": -1001.5,
+          "isCurve": true
+        },
+        {
+          "x": 1748.5,
+          "y": 26.0,
+          "z": -1251.5,
+          "isCurve": true
+        },
+        {
+          "x": 1798.5,
+          "y": 19.0,
+          "z": -1551.5,
+          "isCurve": true
+        },
+        {
+          "x": 1988.5,
+          "y": 0.0,
+          "z": -1701.5,
+          "isCurve": true
+        },
+        {
+          "x": 1988.5,
+          "y": 0.0,
+          "z": -1701.5,
+          "isCurve": false
+        },
+        {
+          "x": 1988.5,
+          "y": 0.0,
+          "z": -1900.0,
+          "isCurve": false
+        },
+        {
+          "x": 1700.0,
+          "y": 0.0,
+          "z": -1900.0,
+          "isCurve": false
+        },
+        {
+          "x": 1795.0,
+          "y": 0.0,
+          "z": -1905.0,
+          "isCurve": false
+        }
+      ]
+    },
+    {
+      "routeId": "25",
+      "routeNumber": "25",
+      "routeName": "25",
+      "terminalACode": "s0184",
+      "terminalZCode": "s0203",
+      "destinationNameOutbound": "Edgewood/199 Av",
+      "destinationNameInbound": "NW Point",
+      "routeQualifierOutbound": "via 125th St",
+      "routeQualifierInbound": "via 125th St",
+      "headwayFromAMinutes": 30.0,
+      "headwayFromZMinutes": 30.0,
+      "oneWayTripMinutes": 33.0,
+      "operatingStartMinutes": 300.0,
+      "operatingEndMinutes": 1200.0,
+      "scheduleWindows": [
+        {
+          "label": "AM Peak",
+          "windowStartMinutes": 360.0,
+          "windowEndMinutes": 540.0,
+          "headwayFromAMinutes": 30.0,
+          "headwayFromZMinutes": 30.0
+        },
+        {
+          "label": "Midday Base",
+          "windowStartMinutes": 540.0,
+          "windowEndMinutes": 960.0,
+          "headwayFromAMinutes": 30.0,
+          "headwayFromZMinutes": 30.0
+        },
+        {
+          "label": "PM Peak",
+          "windowStartMinutes": 960.0,
+          "windowEndMinutes": 1140.0,
+          "headwayFromAMinutes": 30.0,
+          "headwayFromZMinutes": 30.0
+        },
+        {
+          "label": "Evening Tail",
+          "windowStartMinutes": 1140.0,
+          "windowEndMinutes": 1200.0,
+          "headwayFromAMinutes": 30.0,
+          "headwayFromZMinutes": 30.0
+        }
+      ],
+      "variants": [
+        {
+          "variantLetter": "N",
+          "destinationNameOutboundOverride": "",
+          "destinationNameInboundOverride": "",
+          "terminalACodeOverride": "s0184",
+          "terminalZCodeOverride": "s0203"
+        }
+      ],
+      "shortTurns": [],
+      "outboundStops": [
+        {
+          "stopCode": "s0184",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0117",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0116",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0185",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0186",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0187",
+          "minutesFromStart": 10.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0188",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0189",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0190",
+          "minutesFromStart": 15.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0191",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0192",
+          "minutesFromStart": 17.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0193",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0194",
+          "minutesFromStart": 19.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0195",
+          "minutesFromStart": 20.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0196",
+          "minutesFromStart": 21.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0197",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0198",
+          "minutesFromStart": 23.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0199",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0200",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0201",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0202",
+          "minutesFromStart": 30.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0203",
+          "minutesFromStart": 33.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "inboundStops": [
+        {
+          "stopCode": "s0203",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0202",
+          "minutesFromStart": 1.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0201",
+          "minutesFromStart": 3.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0200",
+          "minutesFromStart": 5.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0199",
+          "minutesFromStart": 7.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0198",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0197",
+          "minutesFromStart": 9.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0146",
+          "minutesFromStart": 10.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0147",
+          "minutesFromStart": 11.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0087",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0196",
+          "minutesFromStart": 13.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0195",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0194",
+          "minutesFromStart": 15.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0193",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0192",
+          "minutesFromStart": 17.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0191",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0190",
+          "minutesFromStart": 19.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0189",
+          "minutesFromStart": 20.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0188",
+          "minutesFromStart": 21.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0187",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0186",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0185",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0116",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0117",
+          "minutesFromStart": 30.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0118",
+          "minutesFromStart": 32.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0184",
+          "minutesFromStart": 33.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "outboundNodes": [
+        {
+          "x": -2300.0,
+          "y": 0.0,
+          "z": 2200.0,
+          "isCurve": false
+        },
+        {
+          "x": -2300.0,
+          "y": 0.0,
+          "z": 1998.5,
+          "isCurve": false
+        },
+        {
+          "x": -2162.5,
+          "y": 0.0,
+          "z": 1998.5,
+          "isCurve": false
+        },
+        {
+          "x": -2162.5,
+          "y": 0.0,
+          "z": 1247.5,
+          "isCurve": false
+        },
+        {
+          "x": 1990.0,
+          "y": 0.0,
+          "z": 1247.5,
+          "isCurve": false
+        }
+      ],
+      "inboundNodes": [
+        {
+          "x": 1990.0,
+          "y": 0.0,
+          "z": 1252.5,
+          "isCurve": false
+        },
+        {
+          "x": 401.5,
+          "y": 0.0,
+          "z": 1252.5,
+          "isCurve": false
+        },
+        {
+          "x": 401.5,
+          "y": 0.0,
+          "z": 1998.5,
+          "isCurve": false
+        },
+        {
+          "x": 438.5,
+          "y": 0.0,
+          "z": 1998.5,
+          "isCurve": false
+        },
+        {
+          "x": 438.5,
+          "y": 0.0,
+          "z": 1252.5,
+          "isCurve": false
+        },
+        {
+          "x": -2157.5,
+          "y": 0.0,
+          "z": 1252.5,
+          "isCurve": false
+        },
+        {
+          "x": -2157.5,
+          "y": 0.0,
+          "z": 2220.0,
+          "isCurve": false
+        },
+        {
+          "x": -2300.0,
+          "y": 0.0,
+          "z": 2220.0,
+          "isCurve": false
+        },
+        {
+          "x": -2300.0,
+          "y": 0.0,
+          "z": 2010.0,
+          "isCurve": false
+        }
+      ]
+    },
+    {
+      "routeId": "27",
+      "routeNumber": "27",
+      "routeName": "27",
+      "terminalACode": "s0002",
+      "terminalZCode": "s0044",
+      "destinationNameOutbound": "Edgewood Terminal/1000 Exchange",
+      "destinationNameInbound": "Dot Station",
+      "routeQualifierOutbound": "",
+      "routeQualifierInbound": "",
+      "headwayFromAMinutes": 20.0,
+      "headwayFromZMinutes": 20.0,
+      "oneWayTripMinutes": 34.0,
+      "operatingStartMinutes": 300.0,
+      "operatingEndMinutes": 1200.0,
+      "scheduleWindows": [],
+      "variants": [
+        {
+          "variantLetter": "i",
+          "destinationNameOutboundOverride": "",
+          "destinationNameInboundOverride": "",
+          "terminalACodeOverride": "s0002",
+          "terminalZCodeOverride": "s0033"
+        }
+      ],
+      "shortTurns": [],
+      "outboundStops": [
+        {
+          "stopCode": "s0002",
+          "minutesFromStart": 0.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0003",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0004",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0005",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0006",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0007",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0020",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0021",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0022",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0023",
+          "minutesFromStart": 20.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0024",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0039",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0040",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0041",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0042",
+          "minutesFromStart": 30.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0043",
+          "minutesFromStart": 32.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0044",
+          "minutesFromStart": 34.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "inboundStops": [
+        {
+          "stopCode": "s0044",
+          "minutesFromStart": 0.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0049",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0048",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0047",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0046",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0045",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0033",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0024",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0023",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0022",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0021",
+          "minutesFromStart": 20.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0020",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0007",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0006",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0005",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0004",
+          "minutesFromStart": 30.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0003",
+          "minutesFromStart": 32.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0001",
+          "minutesFromStart": 34.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "outboundNodes": [
+        {
+          "x": 80.0,
+          "y": 0.0,
+          "z": -190.0,
+          "isCurve": false
+        },
+        {
+          "x": 271.5,
+          "y": 0.0,
+          "z": -190.0,
+          "isCurve": false
+        },
+        {
+          "x": 271.5,
+          "y": 0.0,
+          "z": 538.5,
+          "isCurve": false
+        },
+        {
+          "x": 998.5,
+          "y": 0.0,
+          "z": 538.5,
+          "isCurve": false
+        },
+        {
+          "x": 998.5,
+          "y": 0.0,
+          "z": 270.0,
+          "isCurve": false
+        },
+        {
+          "x": 1960.0,
+          "y": 0.0,
+          "z": 270.0,
+          "isCurve": false
+        }
+      ],
+      "inboundNodes": [
+        {
+          "x": 1960.0,
+          "y": 0.0,
+          "z": 270.0,
+          "isCurve": false
+        },
+        {
+          "x": 1991.5,
+          "y": 0.0,
+          "z": 270.0,
+          "isCurve": false
+        },
+        {
+          "x": 1991.5,
+          "y": 0.0,
+          "z": 275.0,
+          "isCurve": false
+        },
+        {
+          "x": 1001.5,
+          "y": 0.0,
+          "z": 275.0,
+          "isCurve": false
+        },
+        {
+          "x": 1001.5,
+          "y": 0.0,
+          "z": 361.5,
+          "isCurve": false
+        },
+        {
+          "x": 968.5,
+          "y": 0.0,
+          "z": 361.5,
+          "isCurve": false
+        },
+        {
+          "x": 968.5,
+          "y": 0.0,
+          "z": 541.5,
+          "isCurve": false
+        },
+        {
+          "x": 268.5,
+          "y": 0.0,
+          "z": 541.5,
+          "isCurve": false
+        },
+        {
+          "x": 268.5,
+          "y": 0.0,
+          "z": -220.0,
+          "isCurve": false
+        },
+        {
+          "x": 2.5,
+          "y": 0.0,
+          "z": -220.0,
+          "isCurve": false
+        },
+        {
+          "x": 2.5,
+          "y": 0.0,
+          "z": -190.0,
+          "isCurve": false
+        },
+        {
+          "x": 20.0,
+          "y": 0.0,
+          "z": -190.0,
+          "isCurve": false
+        }
+      ]
+    },
+    {
+      "routeId": "36",
+      "routeNumber": "36",
+      "routeName": "36",
+      "terminalACode": "s0184",
+      "terminalZCode": "s0033",
+      "destinationNameOutbound": "1000 Exchange",
+      "destinationNameInbound": "NW Point",
+      "routeQualifierOutbound": "",
+      "routeQualifierInbound": "",
+      "headwayFromAMinutes": 10.0,
+      "headwayFromZMinutes": 10.0,
+      "oneWayTripMinutes": 49.0,
+      "operatingStartMinutes": 0.0,
+      "operatingEndMinutes": 1440.0,
+      "scheduleWindows": [
+        {
+          "label": "Owl",
+          "windowStartMinutes": 0.0,
+          "windowEndMinutes": 240.0,
+          "headwayFromAMinutes": 60.0,
+          "headwayFromZMinutes": 60.0
+        },
+        {
+          "label": "Early AM",
+          "windowStartMinutes": 240.0,
+          "windowEndMinutes": 360.0,
+          "headwayFromAMinutes": 10.0,
+          "headwayFromZMinutes": 10.0
+        },
+        {
+          "label": "Daytime",
+          "windowStartMinutes": 360.0,
+          "windowEndMinutes": 1320.0,
+          "headwayFromAMinutes": 10.0,
+          "headwayFromZMinutes": 10.0
+        },
+        {
+          "label": "Late Night",
+          "windowStartMinutes": 1320.0,
+          "windowEndMinutes": 1439.0,
+          "headwayFromAMinutes": 10.0,
+          "headwayFromZMinutes": 10.0
+        }
+      ],
+      "variants": [],
+      "shortTurns": [],
+      "outboundStops": [
+        {
+          "stopCode": "s0184",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0181",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0180",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0179",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0178",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0177",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0176",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0175",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0174",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0173",
+          "minutesFromStart": 19.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0172",
+          "minutesFromStart": 20.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0171",
+          "minutesFromStart": 21.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0170",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0169",
+          "minutesFromStart": 23.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0168",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0167",
+          "minutesFromStart": 25.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0166",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0165",
+          "minutesFromStart": 27.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0164",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0163",
+          "minutesFromStart": 29.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0162",
+          "minutesFromStart": 30.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0161",
+          "minutesFromStart": 31.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0160",
+          "minutesFromStart": 32.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0159",
+          "minutesFromStart": 33.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0158",
+          "minutesFromStart": 34.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0157",
+          "minutesFromStart": 35.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0156",
+          "minutesFromStart": 36.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0064",
+          "minutesFromStart": 39.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0065",
+          "minutesFromStart": 40.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0066",
+          "minutesFromStart": 41.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0025",
+          "minutesFromStart": 42.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0026",
+          "minutesFromStart": 43.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0027",
+          "minutesFromStart": 44.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0028",
+          "minutesFromStart": 45.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0029",
+          "minutesFromStart": 46.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0030",
+          "minutesFromStart": 47.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0031",
+          "minutesFromStart": 48.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0033",
+          "minutesFromStart": 49.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "inboundStops": [
+        {
+          "stopCode": "s0033",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0032",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0031",
+          "minutesFromStart": 3.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0030",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0029",
+          "minutesFromStart": 5.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0028",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0027",
+          "minutesFromStart": 7.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0026",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0025",
+          "minutesFromStart": 9.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0066",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0065",
+          "minutesFromStart": 11.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0064",
+          "minutesFromStart": 13.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0156",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0157",
+          "minutesFromStart": 17.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0158",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0159",
+          "minutesFromStart": 19.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0160",
+          "minutesFromStart": 20.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0161",
+          "minutesFromStart": 21.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0162",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0163",
+          "minutesFromStart": 23.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0164",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0165",
+          "minutesFromStart": 25.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0166",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0167",
+          "minutesFromStart": 27.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0168",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0169",
+          "minutesFromStart": 29.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0170",
+          "minutesFromStart": 30.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0171",
+          "minutesFromStart": 31.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0172",
+          "minutesFromStart": 32.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0173",
+          "minutesFromStart": 33.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0174",
+          "minutesFromStart": 34.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0175",
+          "minutesFromStart": 35.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0176",
+          "minutesFromStart": 36.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0177",
+          "minutesFromStart": 38.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0178",
+          "minutesFromStart": 40.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0179",
+          "minutesFromStart": 42.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0180",
+          "minutesFromStart": 44.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0181",
+          "minutesFromStart": 46.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0118",
+          "minutesFromStart": 48.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0184",
+          "minutesFromStart": 49.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "outboundNodes": [
+        {
+          "x": -2300.0,
+          "y": 0.0,
+          "z": 2090.0,
+          "isCurve": false
+        },
+        {
+          "x": -2300.0,
+          "y": 0.0,
+          "z": 2001.5,
+          "isCurve": false
+        },
+        {
+          "x": -3331.5,
+          "y": 0.0,
+          "z": 2001.5,
+          "isCurve": false
+        },
+        {
+          "x": -3331.5,
+          "y": 0.0,
+          "z": 358.5,
+          "isCurve": false
+        },
+        {
+          "x": 968.5,
+          "y": 0.0,
+          "z": 358.5,
+          "isCurve": false
+        },
+        {
+          "x": 968.5,
+          "y": 0.0,
+          "z": 420.0,
+          "isCurve": false
+        }
+      ],
+      "inboundNodes": [
+        {
+          "x": 968.5,
+          "y": 0.0,
+          "z": 430.0,
+          "isCurve": false
+        },
+        {
+          "x": 968.5,
+          "y": 0.0,
+          "z": 538.5,
+          "isCurve": false
+        },
+        {
+          "x": 998.5,
+          "y": 0.0,
+          "z": 538.5,
+          "isCurve": false
+        },
+        {
+          "x": 998.5,
+          "y": 0.0,
+          "z": 361.5,
+          "isCurve": false
+        },
+        {
+          "x": -3328.5,
+          "y": 0.0,
+          "z": 361.5,
+          "isCurve": false
+        },
+        {
+          "x": -3328.5,
+          "y": 0.0,
+          "z": 1998.5,
+          "isCurve": false
+        },
+        {
+          "x": -2157.5,
+          "y": 0.0,
+          "z": 1998.5,
+          "isCurve": false
+        },
+        {
+          "x": -2157.5,
+          "y": 0.0,
+          "z": 2220.0,
+          "isCurve": false
+        },
+        {
+          "x": -2300.0,
+          "y": 0.0,
+          "z": 2220.0,
+          "isCurve": false
+        },
+        {
+          "x": -2305.0,
+          "y": 0.0,
+          "z": 2010.0,
+          "isCurve": false
+        }
+      ]
+    },
+    {
+      "routeId": "87",
+      "routeNumber": "87",
+      "routeName": "87",
+      "terminalACode": "s0034",
+      "terminalZCode": "s0131",
+      "destinationNameOutbound": "Meridian Square",
+      "destinationNameInbound": "Parkview Terminal",
+      "routeQualifierOutbound": "via Evergreen",
+      "routeQualifierInbound": "via Evergreen",
+      "headwayFromAMinutes": 15.0,
+      "headwayFromZMinutes": 15.0,
+      "oneWayTripMinutes": 38.0,
+      "operatingStartMinutes": 240.0,
+      "operatingEndMinutes": 1440.0,
+      "scheduleWindows": [
+        {
+          "label": "Early Bird",
+          "windowStartMinutes": 240.0,
+          "windowEndMinutes": 360.0,
+          "headwayFromAMinutes": 30.0,
+          "headwayFromZMinutes": 30.0
+        },
+        {
+          "label": "Day Base",
+          "windowStartMinutes": 360.0,
+          "windowEndMinutes": 1200.0,
+          "headwayFromAMinutes": 15.0,
+          "headwayFromZMinutes": 15.0
+        },
+        {
+          "label": "Late Night",
+          "windowStartMinutes": 1200.0,
+          "windowEndMinutes": 1440.0,
+          "headwayFromAMinutes": 30.0,
+          "headwayFromZMinutes": 30.0
+        }
+      ],
+      "variants": [],
+      "shortTurns": [],
+      "outboundStops": [
+        {
+          "stopCode": "s0034",
+          "minutesFromStart": 0.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0050",
+          "minutesFromStart": 3.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0052",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0054",
+          "minutesFromStart": 9.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0056",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0057",
+          "minutesFromStart": 13.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0058",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0059",
+          "minutesFromStart": 19.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0060",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0061",
+          "minutesFromStart": 25.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0062",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0063",
+          "minutesFromStart": 31.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0155",
+          "minutesFromStart": 34.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0131",
+          "minutesFromStart": 37.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "inboundStops": [
+        {
+          "stopCode": "s0135",
+          "minutesFromStart": 0.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0129",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0128",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0063",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0062",
+          "minutesFromStart": 9.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0061",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0060",
+          "minutesFromStart": 15.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0059",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0058",
+          "minutesFromStart": 21.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0057",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0056",
+          "minutesFromStart": 25.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0055",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0053",
+          "minutesFromStart": 31.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0051",
+          "minutesFromStart": 34.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0038",
+          "minutesFromStart": 36.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0090",
+          "minutesFromStart": 38.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "outboundNodes": [
+        {
+          "x": -378.5,
+          "y": 4.0,
+          "z": -980.0,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 4.0,
+          "z": 1.5,
+          "isCurve": false
+        },
+        {
+          "x": -698.5,
+          "y": 4.0,
+          "z": 1.5,
+          "isCurve": false
+        },
+        {
+          "x": -698.5,
+          "y": 4.0,
+          "z": 3148.5,
+          "isCurve": false
+        },
+        {
+          "x": -2.5,
+          "y": 4.0,
+          "z": 3148.5,
+          "isCurve": false
+        },
+        {
+          "x": -2.5,
+          "y": 4.0,
+          "z": 3031.5,
+          "isCurve": false
+        },
+        {
+          "x": -20.0,
+          "y": 4.0,
+          "z": 3031.5,
+          "isCurve": false
+        }
+      ],
+      "inboundNodes": [
+        {
+          "x": -140.0,
+          "y": 0.0,
+          "z": 3031.5,
+          "isCurve": false
+        },
+        {
+          "x": -147.0,
+          "y": 4.0,
+          "z": 3031.5,
+          "isCurve": false
+        },
+        {
+          "x": -151.5,
+          "y": 4.0,
+          "z": 3001.5,
+          "isCurve": false
+        },
+        {
+          "x": -701.5,
+          "y": 0.0,
+          "z": 3001.5,
+          "isCurve": false
+        },
+        {
+          "x": -701.5,
+          "y": 0.0,
+          "z": -1.5,
+          "isCurve": false
+        },
+        {
+          "x": -401.5,
+          "y": 0.0,
+          "z": -1.5,
+          "isCurve": false
+        },
+        {
+          "x": -401.5,
+          "y": 0.0,
+          "z": -975.3214111328125,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 0.0,
+          "z": -972.3214111328125,
+          "isCurve": false
+        },
+        {
+          "x": -2.5,
+          "y": 4.0,
+          "z": -838.0,
+          "isCurve": false
+        },
+        {
+          "x": -2.5,
+          "y": 4.0,
+          "z": -1048.5,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 4.0,
+          "z": -1048.5,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 4.0,
+          "z": -1040.0,
+          "isCurve": false
+        }
+      ]
+    },
+    {
+      "routeId": "91",
+      "routeNumber": "91",
+      "routeName": "91",
+      "terminalACode": "s0064",
+      "terminalZCode": "s0067",
+      "destinationNameOutbound": "Bay-Block Station",
+      "destinationNameInbound": "Civic Center Terminal",
+      "routeQualifierOutbound": "-91st Ave Local",
+      "routeQualifierInbound": "-91st Ave Local",
+      "headwayFromAMinutes": 30.0,
+      "headwayFromZMinutes": 30.0,
+      "oneWayTripMinutes": 16.0,
+      "operatingStartMinutes": 360.0,
+      "operatingEndMinutes": 1020.0,
+      "scheduleWindows": [],
+      "variants": [],
+      "shortTurns": [],
+      "outboundStops": [
+        {
+          "stopCode": "s0064",
+          "minutesFromStart": 0.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0074",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0073",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0072",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0071",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0070",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0069",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0068",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0067",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "inboundStops": [
+        {
+          "stopCode": "s0067",
+          "minutesFromStart": 0.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0068",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0069",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0070",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0071",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0072",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0073",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0074",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0064",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "outboundNodes": [
+        {
+          "x": -930.0,
+          "y": 0.0,
+          "z": 358.5,
+          "isCurve": false
+        },
+        {
+          "x": -911.5,
+          "y": 0.0,
+          "z": 358.5,
+          "isCurve": false
+        },
+        {
+          "x": -911.5,
+          "y": 0.0,
+          "z": -1168.5,
+          "isCurve": false
+        },
+        {
+          "x": -401.5,
+          "y": 0.0,
+          "z": -1168.5,
+          "isCurve": false
+        },
+        {
+          "x": -401.5,
+          "y": 0.0,
+          "z": -1210.0,
+          "isCurve": false
+        },
+        {
+          "x": -398.5,
+          "y": 0.0,
+          "z": -1220.0,
+          "isCurve": false
+        }
+      ],
+      "inboundNodes": [
+        {
+          "x": -401.5,
+          "y": 0.0,
+          "z": -1200.0,
+          "isCurve": false
+        },
+        {
+          "x": -401.5,
+          "y": 0.0,
+          "z": -1248.5,
+          "isCurve": false
+        },
+        {
+          "x": -908.5,
+          "y": 0.0,
+          "z": -1248.5,
+          "isCurve": false
+        },
+        {
+          "x": -908.5,
+          "y": 0.0,
+          "z": -1139.5,
+          "isCurve": false
+        },
+        {
+          "x": -908.5,
+          "y": 0.0,
+          "z": -689.0,
+          "isCurve": false
+        },
+        {
+          "x": -908.5,
+          "y": 0.0,
+          "z": -468.0,
+          "isCurve": false
+        },
+        {
+          "x": -908.5,
+          "y": 0.0,
+          "z": -230.00001525878906,
+          "isCurve": false
+        },
+        {
+          "x": -908.5,
+          "y": 0.0,
+          "z": -21.749980926513672,
+          "isCurve": false
+        },
+        {
+          "x": -908.5,
+          "y": 0.0,
+          "z": 186.5,
+          "isCurve": false
+        },
+        {
+          "x": -908.5,
+          "y": 0.0,
+          "z": 361.5,
+          "isCurve": false
+        },
+        {
+          "x": -930.0,
+          "y": 0.0,
+          "z": 361.5,
+          "isCurve": false
+        }
+      ]
+    },
+    {
+      "routeId": "16",
+      "routeNumber": "116",
+      "routeName": "116",
+      "terminalACode": "s0092",
+      "terminalZCode": "s0153",
+      "destinationNameOutbound": "Berrelingway North Station",
+      "destinationNameInbound": "Crestbury",
+      "routeQualifierOutbound": "",
+      "routeQualifierInbound": "",
+      "headwayFromAMinutes": 15.0,
+      "headwayFromZMinutes": 15.0,
+      "oneWayTripMinutes": 56.0,
+      "operatingStartMinutes": 300.0,
+      "operatingEndMinutes": 1200.0,
+      "scheduleWindows": [
+        {
+          "label": "Owl",
+          "windowStartMinutes": 0.0,
+          "windowEndMinutes": 240.0,
+          "headwayFromAMinutes": 60.0,
+          "headwayFromZMinutes": 60.0
+        },
+        {
+          "label": "Early AM",
+          "windowStartMinutes": 240.0,
+          "windowEndMinutes": 360.0,
+          "headwayFromAMinutes": 30.0,
+          "headwayFromZMinutes": 30.0
+        },
+        {
+          "label": "Daytime",
+          "windowStartMinutes": 360.0,
+          "windowEndMinutes": 1320.0,
+          "headwayFromAMinutes": 20.0,
+          "headwayFromZMinutes": 20.0
+        },
+        {
+          "label": "Late Night",
+          "windowStartMinutes": 1320.0,
+          "windowEndMinutes": 1439.0,
+          "headwayFromAMinutes": 30.0,
+          "headwayFromZMinutes": 30.0
+        }
+      ],
+      "variants": [],
+      "shortTurns": [],
+      "outboundStops": [
+        {
+          "stopCode": "s0092",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0099",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0098",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0097",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0096",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0108",
+          "minutesFromStart": 10.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0109",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0110",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0111",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0112",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0113",
+          "minutesFromStart": 20.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0114",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0115",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0116",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0117",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0118",
+          "minutesFromStart": 30.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0119",
+          "minutesFromStart": 32.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0120",
+          "minutesFromStart": 34.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0121",
+          "minutesFromStart": 36.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0122",
+          "minutesFromStart": 38.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0124",
+          "minutesFromStart": 40.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0125",
+          "minutesFromStart": 42.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0126",
+          "minutesFromStart": 44.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0127",
+          "minutesFromStart": 46.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0128",
+          "minutesFromStart": 48.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0129",
+          "minutesFromStart": 50.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0130",
+          "minutesFromStart": 52.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0153",
+          "minutesFromStart": 54.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "inboundStops": [
+        {
+          "stopCode": "s0153",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0151",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0130",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0129",
+          "minutesFromStart": 6.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0128",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0127",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0126",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0125",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0124",
+          "minutesFromStart": 16.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0123",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0121",
+          "minutesFromStart": 20.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0120",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0119",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0118",
+          "minutesFromStart": 26.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0117",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0116",
+          "minutesFromStart": 30.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0115",
+          "minutesFromStart": 32.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0114",
+          "minutesFromStart": 34.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0113",
+          "minutesFromStart": 36.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0112",
+          "minutesFromStart": 38.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0111",
+          "minutesFromStart": 40.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0110",
+          "minutesFromStart": 42.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0109",
+          "minutesFromStart": 44.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0108",
+          "minutesFromStart": 46.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0096",
+          "minutesFromStart": 48.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0097",
+          "minutesFromStart": 50.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0098",
+          "minutesFromStart": 52.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0099",
+          "minutesFromStart": 54.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0092",
+          "minutesFromStart": 56.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "outboundNodes": [
+        {
+          "x": -3725.0,
+          "y": 0.0,
+          "z": -650.0,
+          "isCurve": false
+        },
+        {
+          "x": -3725.0,
+          "y": 0.0,
+          "z": -701.5,
+          "isCurve": false
+        },
+        {
+          "x": -2157.5,
+          "y": 0.0,
+          "z": -701.5,
+          "isCurve": false
+        },
+        {
+          "x": -2157.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 3000.0,
+          "isCurve": false
+        },
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2970.0,
+          "isCurve": false
+        }
+      ],
+      "inboundNodes": [
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2920.0,
+          "isCurve": false
+        },
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2900.0,
+          "isCurve": false
+        },
+        {
+          "x": 401.5,
+          "y": 0.0,
+          "z": 2900.0,
+          "isCurve": false
+        },
+        {
+          "x": 401.5,
+          "y": 0.0,
+          "z": 3001.5,
+          "isCurve": false
+        },
+        {
+          "x": -2162.5,
+          "y": 0.0,
+          "z": 3001.5,
+          "isCurve": false
+        },
+        {
+          "x": -2162.5,
+          "y": 0.0,
+          "z": -698.5,
+          "isCurve": false
+        },
+        {
+          "x": -3698.5,
+          "y": 0.0,
+          "z": -698.5,
+          "isCurve": false
+        },
+        {
+          "x": -3698.5,
+          "y": 0.0,
+          "z": -608.5,
+          "isCurve": false
+        },
+        {
+          "x": -3726.5,
+          "y": 0.0,
+          "z": -608.5,
+          "isCurve": false
+        },
+        {
+          "x": -3726.5,
+          "y": 0.0,
+          "z": -630.0,
+          "isCurve": false
+        }
+      ]
+    },
+    {
+      "routeId": "40",
+      "routeNumber": "140",
+      "routeName": "140",
+      "terminalACode": "s0154",
+      "terminalZCode": "s0153",
+      "destinationNameOutbound": "Berrelingway North Station",
+      "destinationNameInbound": "Parkview Parking Garage",
+      "routeQualifierOutbound": "",
+      "routeQualifierInbound": "",
+      "headwayFromAMinutes": 15.0,
+      "headwayFromZMinutes": 15.0,
+      "oneWayTripMinutes": 36.0,
+      "operatingStartMinutes": 0.0,
+      "operatingEndMinutes": 1440.0,
+      "scheduleWindows": [
+        {
+          "label": "Owl",
+          "windowStartMinutes": 0.0,
+          "windowEndMinutes": 240.0,
+          "headwayFromAMinutes": 60.0,
+          "headwayFromZMinutes": 60.0
+        },
+        {
+          "label": "Early AM",
+          "windowStartMinutes": 240.0,
+          "windowEndMinutes": 360.0,
+          "headwayFromAMinutes": 30.0,
+          "headwayFromZMinutes": 30.0
+        },
+        {
+          "label": "Daytime",
+          "windowStartMinutes": 360.0,
+          "windowEndMinutes": 1320.0,
+          "headwayFromAMinutes": 15.0,
+          "headwayFromZMinutes": 15.0
+        },
+        {
+          "label": "Late Night",
+          "windowStartMinutes": 1320.0,
+          "windowEndMinutes": 1439.0,
+          "headwayFromAMinutes": 30.0,
+          "headwayFromZMinutes": 30.0
+        }
+      ],
+      "variants": [],
+      "shortTurns": [],
+      "outboundStops": [
+        {
+          "stopCode": "s0154",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0152",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0136",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0137",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0138",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0139",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0140",
+          "minutesFromStart": 12.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0141",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0142",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0143",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0144",
+          "minutesFromStart": 20.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0145",
+          "minutesFromStart": 22.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0146",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0147",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0148",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0149",
+          "minutesFromStart": 30.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0150",
+          "minutesFromStart": 32.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0151",
+          "minutesFromStart": 34.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0153",
+          "minutesFromStart": 36.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "inboundStops": [
+        {
+          "stopCode": "s0153",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0150",
+          "minutesFromStart": 3.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0149",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0148",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0147",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0146",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0145",
+          "minutesFromStart": 14.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0144",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0143",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0142",
+          "minutesFromStart": 20.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0141",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0140",
+          "minutesFromStart": 24.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0139",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0138",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0137",
+          "minutesFromStart": 30.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0136",
+          "minutesFromStart": 32.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0152",
+          "minutesFromStart": 34.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0154",
+          "minutesFromStart": 36.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "outboundNodes": [
+        {
+          "x": -380.0,
+          "y": 0.0,
+          "z": -1230.0,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 0.0,
+          "z": -1171.5,
+          "isCurve": false
+        },
+        {
+          "x": 401.5,
+          "y": 0.0,
+          "z": -1171.5,
+          "isCurve": false
+        },
+        {
+          "x": 401.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2970.0,
+          "isCurve": false
+        }
+      ],
+      "inboundNodes": [
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2901.0,
+          "isCurve": false
+        },
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2900.0,
+          "isCurve": false
+        },
+        {
+          "x": 401.5,
+          "y": 0.0,
+          "z": 2900.0,
+          "isCurve": false
+        },
+        {
+          "x": 401.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2900.0,
+          "isCurve": false
+        },
+        {
+          "x": 398.5,
+          "y": 0.0,
+          "z": 2900.0,
+          "isCurve": false
+        },
+        {
+          "x": 398.5,
+          "y": 0.0,
+          "z": -1168.5,
+          "isCurve": false
+        },
+        {
+          "x": -201.5,
+          "y": 0.0,
+          "z": -1168.5,
+          "isCurve": false
+        },
+        {
+          "x": -201.5,
+          "y": 0.0,
+          "z": -1248.5,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 0.0,
+          "z": -1248.5,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 0.0,
+          "z": -1200.0,
+          "isCurve": false
+        }
+      ]
+    },
+    {
+      "routeId": "73",
+      "routeNumber": "199",
+      "routeName": "199",
+      "terminalACode": "s0247",
+      "terminalZCode": "s0244",
+      "destinationNameOutbound": "Meridian Square",
+      "destinationNameInbound": "South Pier",
+      "routeQualifierOutbound": "",
+      "routeQualifierInbound": "",
+      "headwayFromAMinutes": 15.0,
+      "headwayFromZMinutes": 15.0,
+      "oneWayTripMinutes": 52.0,
+      "operatingStartMinutes": 255.0,
+      "operatingEndMinutes": 1215.0,
+      "scheduleWindows": [
+        {
+          "label": "Owl",
+          "windowStartMinutes": 0.0,
+          "windowEndMinutes": 240.0,
+          "headwayFromAMinutes": 60.0,
+          "headwayFromZMinutes": 60.0
+        },
+        {
+          "label": "Early AM",
+          "windowStartMinutes": 240.0,
+          "windowEndMinutes": 360.0,
+          "headwayFromAMinutes": 20.0,
+          "headwayFromZMinutes": 20.0
+        },
+        {
+          "label": "Daytime",
+          "windowStartMinutes": 360.0,
+          "windowEndMinutes": 1320.0,
+          "headwayFromAMinutes": 10.0,
+          "headwayFromZMinutes": 10.0
+        },
+        {
+          "label": "Late Night",
+          "windowStartMinutes": 1320.0,
+          "windowEndMinutes": 1439.0,
+          "headwayFromAMinutes": 20.0,
+          "headwayFromZMinutes": 20.0
+        }
+      ],
+      "variants": [],
+      "shortTurns": [],
+      "outboundStops": [
+        {
+          "stopCode": "s0247",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0240",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0239",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0238",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0237",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0236",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0235",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0234",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0233",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0232",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0231",
+          "minutesFromStart": 20.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0230",
+          "minutesFromStart": 21.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0229",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0228",
+          "minutesFromStart": 23.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0227",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0226",
+          "minutesFromStart": 25.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0225",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0224",
+          "minutesFromStart": 27.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0223",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0222",
+          "minutesFromStart": 29.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0221",
+          "minutesFromStart": 30.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0220",
+          "minutesFromStart": 31.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0219",
+          "minutesFromStart": 32.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0218",
+          "minutesFromStart": 33.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0217",
+          "minutesFromStart": 34.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0216",
+          "minutesFromStart": 35.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0215",
+          "minutesFromStart": 36.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0214",
+          "minutesFromStart": 37.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0213",
+          "minutesFromStart": 38.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0212",
+          "minutesFromStart": 39.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0211",
+          "minutesFromStart": 40.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0207",
+          "minutesFromStart": 41.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0206",
+          "minutesFromStart": 42.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0205",
+          "minutesFromStart": 44.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0204",
+          "minutesFromStart": 46.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0130",
+          "minutesFromStart": 48.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0244",
+          "minutesFromStart": 51.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "inboundStops": [
+        {
+          "stopCode": "s0245",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0129",
+          "minutesFromStart": 1.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0128",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0155",
+          "minutesFromStart": 3.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0248",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0249",
+          "minutesFromStart": 5.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0130",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0204",
+          "minutesFromStart": 7.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0205",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0206",
+          "minutesFromStart": 9.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0207",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0211",
+          "minutesFromStart": 11.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0212",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0213",
+          "minutesFromStart": 13.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0214",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0215",
+          "minutesFromStart": 15.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0216",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0217",
+          "minutesFromStart": 17.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0218",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0219",
+          "minutesFromStart": 19.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0220",
+          "minutesFromStart": 20.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0221",
+          "minutesFromStart": 21.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0222",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0223",
+          "minutesFromStart": 23.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0224",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0225",
+          "minutesFromStart": 25.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0226",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0227",
+          "minutesFromStart": 27.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0228",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0229",
+          "minutesFromStart": 29.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0230",
+          "minutesFromStart": 30.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0231",
+          "minutesFromStart": 32.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0232",
+          "minutesFromStart": 34.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0233",
+          "minutesFromStart": 36.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0234",
+          "minutesFromStart": 38.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0235",
+          "minutesFromStart": 40.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0236",
+          "minutesFromStart": 42.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0237",
+          "minutesFromStart": 44.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0238",
+          "minutesFromStart": 46.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0239",
+          "minutesFromStart": 48.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0246",
+          "minutesFromStart": 52.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "outboundNodes": [
+        {
+          "x": 1698.5,
+          "y": 0.0,
+          "z": -1940.0,
+          "isCurve": false
+        },
+        {
+          "x": 1698.5,
+          "y": 0.0,
+          "z": -2000.0,
+          "isCurve": false
+        },
+        {
+          "x": 1991.5,
+          "y": 0.0,
+          "z": -2000.0,
+          "isCurve": false
+        },
+        {
+          "x": 1991.5,
+          "y": 0.0,
+          "z": 3001.5,
+          "isCurve": false
+        },
+        {
+          "x": 2.5,
+          "y": 0.0,
+          "z": 3001.5,
+          "isCurve": false
+        },
+        {
+          "x": 2.5,
+          "y": 0.0,
+          "z": 3061.5,
+          "isCurve": false
+        },
+        {
+          "x": -20.0,
+          "y": 0.0,
+          "z": 3061.5,
+          "isCurve": false
+        }
+      ],
+      "inboundNodes": [
+        {
+          "x": -100.0,
+          "y": 0.0,
+          "z": 3061.5,
+          "isCurve": false
+        },
+        {
+          "x": -139.0,
+          "y": 0.0,
+          "z": 3061.5,
+          "isCurve": false
+        },
+        {
+          "x": -147.0,
+          "y": 0.0,
+          "z": 3031.5,
+          "isCurve": false
+        },
+        {
+          "x": -151.0,
+          "y": 0.0,
+          "z": 3001.5,
+          "isCurve": false
+        },
+        {
+          "x": -698.5,
+          "y": 0.0,
+          "z": 3001.5,
+          "isCurve": false
+        },
+        {
+          "x": -698.5,
+          "y": 0.0,
+          "z": 3148.5,
+          "isCurve": false
+        },
+        {
+          "x": -698.5,
+          "y": 0.0,
+          "z": 3148.5,
+          "isCurve": false
+        },
+        {
+          "x": 58.5,
+          "y": 0.0,
+          "z": 3148.5,
+          "isCurve": false
+        },
+        {
+          "x": 58.5,
+          "y": 0.0,
+          "z": 3148.5,
+          "isCurve": true
+        },
+        {
+          "x": 218.5,
+          "y": 0.0,
+          "z": 3148.5,
+          "isCurve": true
+        },
+        {
+          "x": 58.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": true
+        },
+        {
+          "x": 318.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": true
+        },
+        {
+          "x": 318.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": 1988.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": 1988.5,
+          "y": 0.0,
+          "z": -1900.0,
+          "isCurve": false
+        },
+        {
+          "x": 1700.0,
+          "y": 0.0,
+          "z": -1900.0,
+          "isCurve": false
+        }
+      ]
+    },
+    {
+      "routeId": "201",
+      "routeNumber": "201",
+      "routeName": "201",
+      "terminalACode": "s0034",
+      "terminalZCode": "s0019",
+      "destinationNameOutbound": "49th Block - Extended",
+      "destinationNameInbound": "Parkview Terminal",
+      "routeQualifierOutbound": "MAX",
+      "routeQualifierInbound": "MAX",
+      "headwayFromAMinutes": 30.0,
+      "headwayFromZMinutes": 30.0,
+      "oneWayTripMinutes": 32.0,
+      "operatingStartMinutes": 300.0,
+      "operatingEndMinutes": 1200.0,
+      "scheduleWindows": [],
+      "variants": [],
+      "shortTurns": [],
+      "outboundStops": [
+        {
+          "stopCode": "s0034",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0036",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0009",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0011",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0013",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0016",
+          "minutesFromStart": 23.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0019",
+          "minutesFromStart": 28.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "inboundStops": [
+        {
+          "stopCode": "s0019",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0016",
+          "minutesFromStart": 5.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0013",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0011",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0009",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0036",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0038",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0090",
+          "minutesFromStart": 28.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "outboundNodes": [
+        {
+          "x": -378.5,
+          "y": 4.0,
+          "z": -1000.0,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 4.0,
+          "z": -972.3214111328125,
+          "isCurve": false
+        },
+        {
+          "x": 2.5,
+          "y": 4.0,
+          "z": -837.75,
+          "isCurve": false
+        },
+        {
+          "x": 2.5,
+          "y": 4.0,
+          "z": -190.0,
+          "isCurve": false
+        },
+        {
+          "x": 2.5,
+          "y": 4.0,
+          "z": 0.0,
+          "isCurve": false
+        },
+        {
+          "x": 2.5,
+          "y": 4.0,
+          "z": 2000.0,
+          "isCurve": false
+        }
+      ],
+      "inboundNodes": [
+        {
+          "x": 2.5,
+          "y": 4.0,
+          "z": 2040.0,
+          "isCurve": false
+        },
+        {
+          "x": -2.5,
+          "y": 4.0,
+          "z": 2070.0,
+          "isCurve": false
+        },
+        {
+          "x": 2.5,
+          "y": 4.0,
+          "z": 2070.0,
+          "isCurve": false
+        },
+        {
+          "x": -2.5,
+          "y": 4.0,
+          "z": -250.0,
+          "isCurve": false
+        },
+        {
+          "x": -2.5,
+          "y": 4.0,
+          "z": -1048.5,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 4.0,
+          "z": -1048.5,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 4.0,
+          "z": -1000.0,
+          "isCurve": false
+        }
+      ]
+    },
+    {
+      "routeId": "225",
+      "routeNumber": "",
+      "routeName": "",
+      "terminalACode": "",
+      "terminalZCode": "",
+      "destinationNameOutbound": "",
+      "destinationNameInbound": "",
+      "routeQualifierOutbound": "",
+      "routeQualifierInbound": "",
+      "headwayFromAMinutes": 15.0,
+      "headwayFromZMinutes": 15.0,
+      "oneWayTripMinutes": 30.0,
+      "operatingStartMinutes": 255.0,
+      "operatingEndMinutes": 1215.0,
+      "scheduleWindows": [],
+      "variants": [],
+      "shortTurns": [],
+      "outboundStops": [],
+      "inboundStops": [],
+      "outboundNodes": [],
+      "inboundNodes": []
+    },
+    {
+      "routeId": "240",
+      "routeNumber": "240",
+      "routeName": "240",
+      "terminalACode": "s0154",
+      "terminalZCode": "s0153",
+      "destinationNameOutbound": "Berrelingway North Station",
+      "destinationNameInbound": "Parkview Parking Garage",
+      "routeQualifierOutbound": "BRT MAX Berrelingway",
+      "routeQualifierInbound": "BRT MAX Berrelingway",
+      "headwayFromAMinutes": 15.0,
+      "headwayFromZMinutes": 15.0,
+      "oneWayTripMinutes": 18.0,
+      "operatingStartMinutes": 0.0,
+      "operatingEndMinutes": 1440.0,
+      "scheduleWindows": [
+        {
+          "label": "Early Bird",
+          "windowStartMinutes": 240.0,
+          "windowEndMinutes": 360.0,
+          "headwayFromAMinutes": 15.0,
+          "headwayFromZMinutes": 15.0
+        },
+        {
+          "label": "Day Base",
+          "windowStartMinutes": 360.0,
+          "windowEndMinutes": 1200.0,
+          "headwayFromAMinutes": 7.5,
+          "headwayFromZMinutes": 7.5
+        },
+        {
+          "label": "Late Night",
+          "windowStartMinutes": 1200.0,
+          "windowEndMinutes": 1440.0,
+          "headwayFromAMinutes": 15.0,
+          "headwayFromZMinutes": 15.0
+        }
+      ],
+      "variants": [],
+      "shortTurns": [],
+      "outboundStops": [
+        {
+          "stopCode": "s0154",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0152",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0083",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0084",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0085",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0086",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0087",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0088",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0089",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0153",
+          "minutesFromStart": 18.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "inboundStops": [
+        {
+          "stopCode": "s0153",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0088",
+          "minutesFromStart": 3.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0087",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0086",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0085",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0084",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0083",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0152",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0154",
+          "minutesFromStart": 18.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "outboundNodes": [
+        {
+          "x": -380.0,
+          "y": 0.0,
+          "z": -1240.0,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 0.0,
+          "z": -1171.5,
+          "isCurve": false
+        },
+        {
+          "x": 442.5,
+          "y": 0.0,
+          "z": -1171.5,
+          "isCurve": false
+        },
+        {
+          "x": 442.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2970.0,
+          "isCurve": false
+        }
+      ],
+      "inboundNodes": [
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2910.0,
+          "isCurve": false
+        },
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2900.0,
+          "isCurve": false
+        },
+        {
+          "x": 442.5,
+          "y": 0.0,
+          "z": 2900.0,
+          "isCurve": false
+        },
+        {
+          "x": 442.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": 488.5,
+          "y": 0.0,
+          "z": 2900.0,
+          "isCurve": false
+        },
+        {
+          "x": 437.5,
+          "y": 0.0,
+          "z": 2900.0,
+          "isCurve": false
+        },
+        {
+          "x": 437.5,
+          "y": 0.0,
+          "z": -1168.5,
+          "isCurve": false
+        },
+        {
+          "x": -201.5,
+          "y": 0.0,
+          "z": -1168.5,
+          "isCurve": false
+        },
+        {
+          "x": -201.5,
+          "y": 0.0,
+          "z": -1248.5,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 0.0,
+          "z": -1248.5,
+          "isCurve": false
+        },
+        {
+          "x": -378.5,
+          "y": 0.0,
+          "z": -1200.0,
+          "isCurve": false
+        }
+      ]
+    },
+    {
+      "routeId": "299",
+      "routeNumber": "299",
+      "routeName": "299",
+      "terminalACode": "s0247",
+      "terminalZCode": "s0244",
+      "destinationNameOutbound": "Meridian Square",
+      "destinationNameInbound": "South Pier",
+      "routeQualifierOutbound": "BEACH MAX",
+      "routeQualifierInbound": "BEACH MAX",
+      "headwayFromAMinutes": 30.0,
+      "headwayFromZMinutes": 30.0,
+      "oneWayTripMinutes": 25.0,
+      "operatingStartMinutes": 300.0,
+      "operatingEndMinutes": 1200.0,
+      "scheduleWindows": [
+        {
+          "label": "rush",
+          "windowStartMinutes": 300.0,
+          "windowEndMinutes": 1200.0,
+          "headwayFromAMinutes": 30.0,
+          "headwayFromZMinutes": 30.0
+        }
+      ],
+      "variants": [],
+      "shortTurns": [],
+      "outboundStops": [
+        {
+          "stopCode": "s0247",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0237",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0232",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0226",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0221",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0214",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0207",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0205",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0130",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0244",
+          "minutesFromStart": 22.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "inboundStops": [
+        {
+          "stopCode": "s0245",
+          "minutesFromStart": 0.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0248",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0130",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0205",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0207",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0214",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0221",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0222",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0226",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0232",
+          "minutesFromStart": 20.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0237",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0246",
+          "minutesFromStart": 24.0,
+          "isTimepoint": true,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "outboundNodes": [
+        {
+          "x": 1698.5,
+          "y": 0.0,
+          "z": -1950.0,
+          "isCurve": false
+        },
+        {
+          "x": 1698.5,
+          "y": 0.0,
+          "z": -2000.0,
+          "isCurve": false
+        },
+        {
+          "x": 1991.5,
+          "y": 0.0,
+          "z": -2000.0,
+          "isCurve": false
+        },
+        {
+          "x": 1991.5,
+          "y": 0.0,
+          "z": 3001.5,
+          "isCurve": false
+        },
+        {
+          "x": 2.5,
+          "y": 0.0,
+          "z": 3001.5,
+          "isCurve": false
+        },
+        {
+          "x": 2.5,
+          "y": 0.0,
+          "z": 3061.5,
+          "isCurve": false
+        },
+        {
+          "x": -20.0,
+          "y": 0.0,
+          "z": 3061.5,
+          "isCurve": false
+        }
+      ],
+      "inboundNodes": [
+        {
+          "x": -90.0,
+          "y": 0.0,
+          "z": 3061.5,
+          "isCurve": false
+        },
+        {
+          "x": -139.0,
+          "y": 0.0,
+          "z": 3061.5,
+          "isCurve": false
+        },
+        {
+          "x": -147.0,
+          "y": 0.0,
+          "z": 3031.5,
+          "isCurve": false
+        },
+        {
+          "x": -151.0,
+          "y": 0.0,
+          "z": 3001.5,
+          "isCurve": false
+        },
+        {
+          "x": -698.5,
+          "y": 0.0,
+          "z": 3001.5,
+          "isCurve": false
+        },
+        {
+          "x": -698.5,
+          "y": 0.0,
+          "z": 3148.5,
+          "isCurve": false
+        },
+        {
+          "x": -698.5,
+          "y": 0.0,
+          "z": 3148.5,
+          "isCurve": false
+        },
+        {
+          "x": 58.5,
+          "y": 0.0,
+          "z": 3148.5,
+          "isCurve": false
+        },
+        {
+          "x": 58.5,
+          "y": 0.0,
+          "z": 3148.5,
+          "isCurve": true
+        },
+        {
+          "x": 218.5,
+          "y": 0.0,
+          "z": 3148.5,
+          "isCurve": true
+        },
+        {
+          "x": 58.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": true
+        },
+        {
+          "x": 318.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": true
+        },
+        {
+          "x": 318.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": 1988.5,
+          "y": 0.0,
+          "z": 2998.5,
+          "isCurve": false
+        },
+        {
+          "x": 1988.5,
+          "y": 0.0,
+          "z": -1900.0,
+          "isCurve": false
+        },
+        {
+          "x": 1700.0,
+          "y": 0.0,
+          "z": -1900.0,
+          "isCurve": false
+        }
+      ]
+    },
+    {
+      "routeId": "7",
+      "routeNumber": "7",
+      "routeName": "7",
+      "terminalACode": "s0292",
+      "terminalZCode": "s0332",
+      "destinationNameOutbound": "University Park",
+      "destinationNameInbound": "Art District",
+      "routeQualifierOutbound": "",
+      "routeQualifierInbound": "",
+      "headwayFromAMinutes": 10.0,
+      "headwayFromZMinutes": 10.0,
+      "oneWayTripMinutes": 39.0,
+      "operatingStartMinutes": 255.0,
+      "operatingEndMinutes": 1215.0,
+      "scheduleWindows": [],
+      "variants": [],
+      "shortTurns": [],
+      "outboundStops": [
+        {
+          "stopCode": "s0292",
+          "minutesFromStart": 0.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0313",
+          "minutesFromStart": 2.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0314",
+          "minutesFromStart": 4.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0315",
+          "minutesFromStart": 6.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0316",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0317",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0318",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0319",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0320",
+          "minutesFromStart": 15.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0321",
+          "minutesFromStart": 17.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0322",
+          "minutesFromStart": 19.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0323",
+          "minutesFromStart": 21.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0324",
+          "minutesFromStart": 23.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0325",
+          "minutesFromStart": 25.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0326",
+          "minutesFromStart": 27.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0327",
+          "minutesFromStart": 29.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0328",
+          "minutesFromStart": 30.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0329",
+          "minutesFromStart": 32.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0330",
+          "minutesFromStart": 34.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0331",
+          "minutesFromStart": 36.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0332",
+          "minutesFromStart": 39.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "inboundStops": [
+        {
+          "stopCode": "s0332",
+          "minutesFromStart": 0.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0312",
+          "minutesFromStart": 5.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0311",
+          "minutesFromStart": 7.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0310",
+          "minutesFromStart": 8.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0309",
+          "minutesFromStart": 10.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0308",
+          "minutesFromStart": 12.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0307",
+          "minutesFromStart": 14.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0306",
+          "minutesFromStart": 16.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0305",
+          "minutesFromStart": 18.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0304",
+          "minutesFromStart": 20.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0303",
+          "minutesFromStart": 22.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0302",
+          "minutesFromStart": 24.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0301",
+          "minutesFromStart": 26.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0300",
+          "minutesFromStart": 28.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0299",
+          "minutesFromStart": 30.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0298",
+          "minutesFromStart": 32.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0297",
+          "minutesFromStart": 34.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0296",
+          "minutesFromStart": 36.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0295",
+          "minutesFromStart": 38.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0294",
+          "minutesFromStart": 40.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0293",
+          "minutesFromStart": 42.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0291",
+          "minutesFromStart": 45.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        },
+        {
+          "stopCode": "s0292",
+          "minutesFromStart": 47.0,
+          "isTimepoint": false,
+          "stopName": "",
+          "worldX": 0.0,
+          "worldY": 0.0,
+          "worldZ": 0.0
+        }
+      ],
+      "outboundNodes": [
+        {
+          "x": 929.99853515625,
+          "y": 0.0,
+          "z": -2694.684326171875,
+          "isCurve": false
+        },
+        {
+          "x": -2985.201416015625,
+          "y": 0.0,
+          "z": -2698.5,
+          "isCurve": false
+        }
+      ],
+      "inboundNodes": [
+        {
+          "x": -2985.262451171875,
+          "y": 0.0,
+          "z": -2698.501220703125,
+          "isCurve": false
+        },
+        {
+          "x": -3105.25,
+          "y": 0.0,
+          "z": -2705.0,
+          "isCurve": false
+        },
+        {
+          "x": -3105.25,
+          "y": 0.0,
+          "z": -2710.0,
+          "isCurve": false
+        },
+        {
+          "x": -3098.99365234375,
+          "y": 0.0,
+          "z": -2707.695556640625,
+          "isCurve": false
+        },
+        {
+          "x": -3098.25,
+          "y": 0.0,
+          "z": -2705.0,
+          "isCurve": false
+        },
+        {
+          "x": -3098.25,
+          "y": 0.0,
+          "z": -2505.0,
+          "isCurve": false
+        },
+        {
+          "x": -3092.35302734375,
+          "y": 0.0,
+          "z": -2506.75,
+          "isCurve": false
+        },
+        {
+          "x": -2970.0,
+          "y": 0.0,
+          "z": -2506.75,
+          "isCurve": false
+        },
+        {
+          "x": -2965.188232421875,
+          "y": 0.0,
+          "z": -2521.968505859375,
+          "isCurve": false
+        },
+        {
+          "x": -2975.12548828125,
+          "y": 0.0,
+          "z": -2514.917724609375,
+          "isCurve": false
+        },
+        {
+          "x": -2973.255615234375,
+          "y": 0.0,
+          "z": -2543.239501953125,
+          "isCurve": false
+        },
+        {
+          "x": -2970.75537109375,
+          "y": 0.0,
+          "z": -2560.9287109375,
+          "isCurve": false
+        },
+        {
+          "x": -2967.24462890625,
+          "y": 0.0,
+          "z": -2577.664306640625,
+          "isCurve": false
+        },
+        {
+          "x": -2962.718017578125,
+          "y": 0.0,
+          "z": -2593.44384765625,
+          "isCurve": false
+        },
+        {
+          "x": -2957.16845703125,
+          "y": 0.0,
+          "z": -2608.26318359375,
+          "isCurve": false
+        },
+        {
+          "x": -2954.008056640625,
+          "y": 0.0,
+          "z": -2615.310302734375,
+          "isCurve": false
+        },
+        {
+          "x": -2950.59033203125,
+          "y": 0.0,
+          "z": -2622.11376953125,
+          "isCurve": false
+        },
+        {
+          "x": -2946.91455078125,
+          "y": 0.0,
+          "z": -2628.67333984375,
+          "isCurve": false
+        },
+        {
+          "x": -2942.980712890625,
+          "y": 0.0,
+          "z": -2634.986328125,
+          "isCurve": false
+        },
+        {
+          "x": -2938.7890625,
+          "y": 0.0,
+          "z": -2641.0517578125,
+          "isCurve": false
+        },
+        {
+          "x": -2934.339599609375,
+          "y": 0.0,
+          "z": -2646.867431640625,
+          "isCurve": false
+        },
+        {
+          "x": -2929.633544921875,
+          "y": 0.0,
+          "z": -2652.432373046875,
+          "isCurve": false
+        },
+        {
+          "x": -2924.67138671875,
+          "y": 0.0,
+          "z": -2657.744384765625,
+          "isCurve": false
+        },
+        {
+          "x": -2919.454345703125,
+          "y": 0.0,
+          "z": -2662.80224609375,
+          "isCurve": false
+        },
+        {
+          "x": -2913.984375,
+          "y": 0.0,
+          "z": -2667.6044921875,
+          "isCurve": false
+        },
+        {
+          "x": -2908.26220703125,
+          "y": 0.0,
+          "z": -2672.150146484375,
+          "isCurve": false
+        },
+        {
+          "x": -2902.29052734375,
+          "y": 0.0,
+          "z": -2676.438720703125,
+          "isCurve": false
+        },
+        {
+          "x": -2896.070068359375,
+          "y": 0.0,
+          "z": -2680.46923828125,
+          "isCurve": false
+        },
+        {
+          "x": -2889.60302734375,
+          "y": 0.0,
+          "z": -2684.2421875,
+          "isCurve": false
+        },
+        {
+          "x": -2882.890625,
+          "y": 0.0,
+          "z": -2687.75634765625,
+          "isCurve": false
+        },
+        {
+          "x": -2868.736083984375,
+          "y": 0.0,
+          "z": -2694.0126953125,
+          "isCurve": false
+        },
+        {
+          "x": -2853.6162109375,
+          "y": 0.0,
+          "z": -2699.241943359375,
+          "isCurve": false
+        },
+        {
+          "x": -2837.537353515625,
+          "y": 0.0,
+          "z": -2703.450439453125,
+          "isCurve": false
+        },
+        {
+          "x": -2815.262939453125,
+          "y": 0.0,
+          "z": -2707.398681640625,
+          "isCurve": false
+        },
+        {
+          "x": -2793.312744140625,
+          "y": 0.0,
+          "z": -2709.538818359375,
+          "isCurve": false
+        },
+        {
+          "x": -2740.48876953125,
+          "y": 0.0,
+          "z": -2708.52490234375,
+          "isCurve": false
+        },
+        {
+          "x": -2777.78173828125,
+          "y": 0.0,
+          "z": -2703.17236328125,
+          "isCurve": false
+        },
+        {
+          "x": -2800.183349609375,
+          "y": 0.0,
+          "z": -2702.009765625,
+          "isCurve": false
+        },
+        {
+          "x": -2821.1689453125,
+          "y": 0.0,
+          "z": -2699.454345703125,
+          "isCurve": false
+        },
+        {
+          "x": -2827.849365234375,
+          "y": 0.0,
+          "z": -2698.293701171875,
+          "isCurve": false
+        },
+        {
+          "x": -2820.206787109375,
+          "y": 0.0,
+          "z": -2705.25,
+          "isCurve": false
+        },
+        {
+          "x": 1000.0,
+          "y": 0.0,
+          "z": -2705.25,
+          "isCurve": false
+        },
+        {
+          "x": 1001.46533203125,
+          "y": 0.0,
+          "z": -2700.320556640625,
+          "isCurve": false
+        },
+        {
+          "x": 1001.75,
+          "y": 0.0,
+          "z": -2692.0,
+          "isCurve": false
+        },
+        {
+          "x": 1001.75,
+          "y": 0.0,
+          "z": -2500.0,
+          "isCurve": false
+        },
+        {
+          "x": 1001.156494140625,
+          "y": 0.0,
+          "z": -2503.21142578125,
+          "isCurve": false
+        },
+        {
+          "x": 992.2222290039062,
+          "y": 0.0,
+          "z": -2494.75,
+          "isCurve": false
+        },
+        {
+          "x": 930.0,
+          "y": 0.0,
+          "z": -2494.75,
+          "isCurve": false
+        },
+        {
+          "x": 928.5,
+          "y": 0.0,
+          "z": -2696.184326171875,
+          "isCurve": false
+        }
+      ]
+    }
+  ]
+}

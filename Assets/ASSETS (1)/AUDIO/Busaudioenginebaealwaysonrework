@@ -1,0 +1,115 @@
+using System;
+using UnityEngine;
+
+// ════════════════════════════════════════════════════════════════════════
+//  BusAudioEngine.BaeAlwaysOn — REBUILD of BAE HybriDrive genset start/stop
+//  + rev character, per Ted's real-world reference (video pending detailed
+//  review — this is a first pass off the text description).
+//
+//  TWO CORRECTIONS FROM THE OLD MODEL:
+//   1. The genset does NOT idle-stop after a dwell period, and doesn't wait
+//      4s to restart. It runs the ENTIRE time the bus is moving, at any
+//      speed above 0 (including artics), and only shuts down at an exact
+//      stop (spd == 0). Pure function of speed, no dwell timer, no jitter.
+//   2. Character: winds up like an L9 with a DIWA-style choppy, motorcycle-
+//      like revving burstiness — NOT converter whine (BAE has no torque
+//      converter). Climbs, holds a plateau RPM (existing tier/thermostat
+//      logic already does this correctly), keeps chopping at idle, and the
+//      chop rate/depth rises as more power is demanded. Startup is a rising
+//      high-pitched spool ("air" sound, small-turbine-ish) rather than a
+//      low diesel crank churn.
+//
+//  APPLY:
+//   - New fields below are additive (paste anywhere in the partial class).
+//   - PASTE the two replacement blocks below OVER the corresponding blocks
+//     inside DoBAEEngineDSP in BusAudioEngine.cs:
+//       (a) the "Auto idle-stop / restart genset state machine" block
+//           (currently ~lines 8032-8094)
+//       (b) the "Startup crank churn + rev-flare" block
+//           (currently ~lines 8167-8192)
+//   - Add the chop call (bottom of this file) right after the existing
+//     `engineSample += gp.isGas ? DoGasCore(...) : DoDieselCore(...)` line,
+//     inside the `if (bae_engineRunning && bae_rpm > 5f)` block.
+// ════════════════════════════════════════════════════════════════════════
+public partial class BusAudioEngine
+{
+
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   (a) REPLACES the idle-stop dwell / 4s-restart-delay block:
+   ───────────────────────────────────────────────────────────────────────── */
+/*
+    bool isStopped = spd < 0.4f;
+    bool nearStop  = spd < 6f && spd > 0.4f && bkPd > 0.02f;
+
+    bool outerRunning = engineState == EngineRunState.Running;
+    if (outerRunning && !bae_wasOuterRunning)
+    {
+        bae_engineRunning   = true;
+        bae_engineOff       = false;
+        bae_engineStarting  = true;
+        bae_startDelayTimer = 0f;
+        bae_rpm             = 0f;
+        bae_spoolActive     = true;
+        bae_spoolTimer      = 0f;
+    }
+    bae_wasOuterRunning = outerRunning;
+
+    // Genset runs exactly whenever the bus isn't at a dead stop. No dwell
+    // timer, no restart delay -- shuts down the instant spd hits 0, comes
+    // back the instant it leaves 0. The 0.4 km/h deadband on isStopped
+    // (same one used everywhere else in this file) already prevents
+    // chatter from creep/inching.
+    if (isStopped && bae_engineRunning)
+    {
+        bae_engineRunning   = false;
+        bae_engineOff       = true;
+        bae_engineStarting  = false;
+        bae_startDelayTimer = 0f;
+    }
+    else if (!isStopped && !bae_engineRunning)
+    {
+        bae_engineRunning   = true;
+        bae_engineOff       = false;
+        bae_engineStarting  = true;
+        bae_startDelayTimer = 0f;
+        bae_spoolActive     = true;
+        bae_spoolTimer      = 0f;
+        bae_rpm             = 0f;
+    }
+    bae_wasStopped = isStopped;
+    bae_wasMoving  = !isStopped;
+*/
+
+
+/* ─────────────────────────────────────────────────────────────────────────
+   (c) ADD right after the existing genset core call, still inside
+       `if (bae_engineRunning && bae_rpm > 5f) { ... }`, right after:
+           engineSample += gp.isGas ? DoGasCore(...) : DoDieselCore(...);
+
+       NOTE: this chops ONLY the genset core's own contribution, so pull it
+       into a local var first rather than multiplying the shared
+       `engineSample` accumulator (which may already hold other layers by
+       this point in the real method) — swap in whichever your actual
+       accumulator ordering needs:
+   ───────────────────────────────────────────────────────────────────────── */
+/*
+        float gensetCore = gp.isGas
+            ? DoGasCore(gp, gHz, gRn, bae_gensetLd, engMul, noiseClt, noiseInd, invSR)
+            : DoDieselCore(gp, gHz, gRn, bae_gensetLd, engMul, noiseClt, noiseInd, invSR);
+
+        // ── Choppy, motorcycle-like rev burstiness — DIWA-style chop without
+        //    the converter whine (BAE has no torque converter). Rate/depth
+        //    rise with genset load, so it revs in audible bursts as power is
+        //    demanded and settles into a steady idle chop at the plateau.
+        float  chopRateTarget  = Mathf.Lerp(BAE_CHOP_RATE_BASE, BAE_CHOP_RATE_MAX, bae_gensetLd);
+        float  chopDepthTarget = BAE_CHOP_DEPTH * (0.5f + 0.5f * gRn);
+        bae_chopDepthSmooth += (chopDepthTarget - bae_chopDepthSmooth) * 0.01f;
+        float chop = 1f - bae_chopDepthSmooth + bae_chopDepthSmooth *
+                     (0.5f + 0.5f * (float)Math.Sin(2.0 * Math.PI * ph_bae_chop));
+        gensetCore *= chop;
+        ph_bae_chop = (ph_bae_chop + chopRateTarget * invSR) % 1.0;
+
+        engineSample += gensetCore;
+*/

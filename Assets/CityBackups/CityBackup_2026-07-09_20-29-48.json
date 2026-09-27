@@ -1,0 +1,3717 @@
+{
+    "exportedAt": "2026-07-09 20:29:48",
+    "sceneName": "0 (21)",
+    "spawnIntersections": false,
+    "includeTrafficLights": true,
+    "leftHandTraffic": false,
+    "intersectionCheckResolution": 50,
+    "junctionPavementSize": 12.0,
+    "stopDetectRadius": 80.0,
+    "roads": [
+        {
+            "roadName": "Central Road",
+            "roadCode": "CTRD",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": true,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -1500.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                {
+                    "x": 1000.0,
+                    "y": 0.0,
+                    "z": 0.0
+                }
+            ],
+            "mathStart": {
+                "x": -500.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 500.0,
+                "y": 0.0,
+                "z": 500.0
+            },
+            "waveform": "Arc",
+            "amplitude": 2.0,
+            "frequency": 5.0,
+            "phase": 3.0,
+            "sampleCount": 128
+        },
+        {
+            "roadName": "Midway Blvd",
+            "roadCode": "MDWY1",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": true,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 540.0
+                },
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 2000.0
+                }
+            ],
+            "mathStart": {
+                "x": -500.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 500.0,
+                "y": 0.0,
+                "z": 500.0
+            },
+            "waveform": "Arc",
+            "amplitude": 2.0,
+            "frequency": 5.0,
+            "phase": 3.0,
+            "sampleCount": 128
+        },
+        {
+            "roadName": "27th Ave",
+            "roadCode": "E27AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": true,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 270.0,
+                    "y": 0.0,
+                    "z": -243.5
+                },
+                {
+                    "x": 270.0,
+                    "y": 0.0,
+                    "z": 540.0
+                }
+            ],
+            "mathStart": {
+                "x": -500.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 500.0,
+                "y": 0.0,
+                "z": 500.0
+            },
+            "waveform": "Arc",
+            "amplitude": 2.0,
+            "frequency": 5.0,
+            "phase": 3.0,
+            "sampleCount": 128
+        },
+        {
+            "roadName": "-22nd St",
+            "roadCode": "S22ST",
+            "roadWidth": 3.5,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": true,
+            "reverseFlow": true,
+            "hasSidewalks": true,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -220.0
+                },
+                {
+                    "x": 270.0,
+                    "y": 0.0,
+                    "z": -220.0
+                }
+            ],
+            "mathStart": {
+                "x": -500.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 500.0,
+                "y": 0.0,
+                "z": 500.0
+            },
+            "waveform": "Arc",
+            "amplitude": 2.0,
+            "frequency": 5.0,
+            "phase": 3.0,
+            "sampleCount": 128
+        },
+        {
+            "roadName": "Midway Blvd",
+            "roadCode": "MDWY",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": true,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -500.0
+                },
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 540.0
+                }
+            ],
+            "mathStart": {
+                "x": -500.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 500.0,
+                "y": 0.0,
+                "z": 500.0
+            },
+            "waveform": "Arc",
+            "amplitude": 2.0,
+            "frequency": 5.0,
+            "phase": 3.0,
+            "sampleCount": 128
+        },
+        {
+            "roadName": "-19th St",
+            "roadCode": "S19ST",
+            "roadWidth": 3.5,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": true,
+            "reverseFlow": false,
+            "hasSidewalks": true,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -190.0
+                },
+                {
+                    "x": 270.0,
+                    "y": 0.0,
+                    "z": -190.0
+                }
+            ],
+            "mathStart": {
+                "x": -500.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 500.0,
+                "y": 0.0,
+                "z": 500.0
+            },
+            "waveform": "Arc",
+            "amplitude": 2.0,
+            "frequency": 5.0,
+            "phase": 3.0,
+            "sampleCount": 128
+        },
+        {
+            "roadName": "54th St",
+            "roadCode": "N54ST",
+            "roadWidth": 9.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": true,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 540.0
+                },
+                {
+                    "x": 1000.0,
+                    "y": 0.0,
+                    "z": 540.0
+                }
+            ],
+            "mathStart": {
+                "x": -500.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 500.0,
+                "y": 0.0,
+                "z": 500.0
+            },
+            "waveform": "Arc",
+            "amplitude": 2.0,
+            "frequency": 5.0,
+            "phase": 3.0,
+            "sampleCount": 128
+        },
+        {
+            "roadName": "36th St",
+            "roadCode": "N36ST",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -585.0,
+                    "y": 0.0,
+                    "z": 360.0
+                },
+                {
+                    "x": 1000.0,
+                    "y": 0.0,
+                    "z": 360.0
+                }
+            ],
+            "mathStart": {
+                "x": -500.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 500.0,
+                "y": 0.0,
+                "z": 500.0
+            },
+            "waveform": "Arc",
+            "amplitude": 2.0,
+            "frequency": 5.0,
+            "phase": 3.0,
+            "sampleCount": 128
+        },
+        {
+            "roadName": "-22nd St",
+            "roadCode": "S22ST1",
+            "roadWidth": 3.5,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": true,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -910.0,
+                    "y": 0.0,
+                    "z": -220.0
+                },
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -220.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-19th St",
+            "roadCode": "S19ST1",
+            "roadWidth": 3.5,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": true,
+            "reverseFlow": true,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -910.0,
+                    "y": 0.0,
+                    "z": -190.0
+                },
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -190.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "Joint Road",
+            "roadCode": "JTRD",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 440.0,
+                    "y": 0.0,
+                    "z": 540.0
+                },
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 600.0
+                },
+                {
+                    "x": -500.0,
+                    "y": 0.0,
+                    "z": 600.0
+                },
+                {
+                    "x": -540.0,
+                    "y": 0.0,
+                    "z": 540.0
+                },
+                {
+                    "x": -600.0,
+                    "y": 0.0,
+                    "z": 500.0
+                },
+                {
+                    "x": -600.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                {
+                    "x": -600.0,
+                    "y": 0.0,
+                    "z": -250.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-20th Ave",
+            "roadCode": "W22AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -220.0,
+                    "y": 0.0,
+                    "z": 360.0
+                },
+                {
+                    "x": -220.0,
+                    "y": 0.0,
+                    "z": -310.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "Interstate 47",
+            "roadCode": "H47",
+            "roadWidth": 28.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 470.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                {
+                    "x": 470.0,
+                    "y": 0.0,
+                    "z": -1170.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "61st Ave",
+            "roadCode": "E61AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 610.0,
+                    "y": 0.0,
+                    "z": 540.0
+                },
+                {
+                    "x": 610.0,
+                    "y": 0.0,
+                    "z": -240.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "97th St",
+            "roadCode": "E97AVE",
+            "roadWidth": 5.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 3",
+            "controlPoints": [
+                {
+                    "x": 970.0,
+                    "y": 0.0,
+                    "z": 363.5
+                },
+                {
+                    "x": 970.0,
+                    "y": 0.0,
+                    "z": 535.5
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "1000 Block",
+            "roadCode": "E100AVE",
+            "roadWidth": 14.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 1000.0,
+                    "y": 0.0,
+                    "z": 570.0
+                },
+                {
+                    "x": 1000.0,
+                    "y": 0.0,
+                    "z": -240.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-24th St",
+            "roadCode": "S24ST",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 270.0,
+                    "y": 0.0,
+                    "z": -240.0
+                },
+                {
+                    "x": 1000.0,
+                    "y": 0.0,
+                    "z": -240.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "Midway",
+            "roadCode": "MDWY2",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -500.0
+                },
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -1170.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "Sterling Way",
+            "roadCode": "STWY",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 160.0,
+                    "y": 0.0,
+                    "z": -780.0
+                },
+                {
+                    "x": -400.0,
+                    "y": 0.0,
+                    "z": -980.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-105th St",
+            "roadCode": "S105ST",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -910.0,
+                    "y": 0.0,
+                    "z": -1050.0
+                },
+                {
+                    "x": 200.0,
+                    "y": 0.0,
+                    "z": -1050.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-38th Ave",
+            "roadCode": "W38AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -380.0,
+                    "y": 0.0,
+                    "z": -780.0
+                },
+                {
+                    "x": -380.0,
+                    "y": 0.0,
+                    "z": -1170.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-40th Ave",
+            "roadCode": "W40AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -400.0,
+                    "y": 0.0,
+                    "z": -780.0
+                },
+                {
+                    "x": -400.0,
+                    "y": 0.0,
+                    "z": -1170.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-38th Ave",
+            "roadCode": "W38AVE1",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -380.0,
+                    "y": 0.0,
+                    "z": -780.0
+                },
+                {
+                    "x": -380.0,
+                    "y": 0.0,
+                    "z": 0.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-40th Ave",
+            "roadCode": "W40AVE1",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -400.0,
+                    "y": 0.0,
+                    "z": -780.0
+                },
+                {
+                    "x": -400.0,
+                    "y": 0.0,
+                    "z": 0.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "27th St",
+            "roadCode": "N27ST",
+            "roadWidth": 3.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 1000.0,
+                    "y": 0.0,
+                    "z": 270.0
+                },
+                {
+                    "x": 1990.0,
+                    "y": 0.0,
+                    "z": 270.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "N 2750 Block",
+            "roadCode": "N2750B",
+            "roadWidth": 3.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 1000.0,
+                    "y": 0.0,
+                    "z": 275.0
+                },
+                {
+                    "x": 1990.0,
+                    "y": 0.0,
+                    "z": 275.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-70th Ave",
+            "roadCode": "W70AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -700.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                {
+                    "x": -700.0,
+                    "y": 0.0,
+                    "z": 3000.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "36th St",
+            "roadCode": "N36ST1",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -930.0,
+                    "y": 0.0,
+                    "z": 360.0
+                },
+                {
+                    "x": -585.0,
+                    "y": 0.0,
+                    "z": 360.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-91st Ave",
+            "roadCode": "W91AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -910.0,
+                    "y": 0.0,
+                    "z": -1250.0
+                },
+                {
+                    "x": -910.0,
+                    "y": 0.0,
+                    "z": 3000.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-125th St",
+            "roadCode": "S125ST",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -910.0,
+                    "y": 0.0,
+                    "z": -1250.0
+                },
+                {
+                    "x": -200.0,
+                    "y": 0.0,
+                    "z": -1250.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-117th ST",
+            "roadCode": "S117ST",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -910.0,
+                    "y": 0.0,
+                    "z": -1170.0
+                },
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -1170.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-20th Ave",
+            "roadCode": "W20AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -200.0,
+                    "y": 0.0,
+                    "z": -1250.0
+                },
+                {
+                    "x": -200.0,
+                    "y": 0.0,
+                    "z": -1170.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-38th Ave",
+            "roadCode": "B38AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -380.0,
+                    "y": 0.0,
+                    "z": -1250.0
+                },
+                {
+                    "x": -380.0,
+                    "y": 0.0,
+                    "z": -1170.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-40th Ave",
+            "roadCode": "B40AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -400.0,
+                    "y": 0.0,
+                    "z": -1250.0
+                },
+                {
+                    "x": -400.0,
+                    "y": 0.0,
+                    "z": -1170.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-70th St",
+            "roadCode": "S70ST",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -380.0,
+                    "y": 0.0,
+                    "z": -700.0
+                },
+                {
+                    "x": -3330.0,
+                    "y": 0.0,
+                    "z": -700.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "Berrelingway",
+            "roadCode": "BRWY",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 3",
+            "controlPoints": [
+                {
+                    "x": 440.0,
+                    "y": 0.0,
+                    "z": -1170.0
+                },
+                {
+                    "x": 440.0,
+                    "y": 0.0,
+                    "z": 3000.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "40th Ave",
+            "roadCode": "E40AVE",
+            "roadWidth": 9.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 400.0,
+                    "y": 0.0,
+                    "z": -1170.0
+                },
+                {
+                    "x": 400.0,
+                    "y": 0.0,
+                    "z": 3000.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "Leaf Blvd",
+            "roadCode": "LFBD",
+            "roadWidth": 9.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -2160.0,
+                    "y": 0.0,
+                    "z": 3000.0
+                },
+                {
+                    "x": 2990.0,
+                    "y": 0.0,
+                    "z": 3000.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "Edgewood Road",
+            "roadCode": "EDRD",
+            "roadWidth": 9.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 1990.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                {
+                    "x": 1990.0,
+                    "y": 0.0,
+                    "z": 3000.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-333rd Ave",
+            "roadCode": "W333AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -3330.0,
+                    "y": 0.0,
+                    "z": -1050.0
+                },
+                {
+                    "x": -3330.0,
+                    "y": 0.0,
+                    "z": 2000.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-11th St",
+            "roadCode": "S11ST",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -4000.0,
+                    "y": 0.0,
+                    "z": -110.0
+                },
+                {
+                    "x": -910.0,
+                    "y": 0.0,
+                    "z": -110.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-303rd Ave",
+            "roadCode": "W303AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -3030.0,
+                    "y": 0.0,
+                    "z": -700.0
+                },
+                {
+                    "x": -3030.0,
+                    "y": 0.0,
+                    "z": -110.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-70th St",
+            "roadCode": "S70ST1",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -3850.0,
+                    "y": 0.0,
+                    "z": -700.0
+                },
+                {
+                    "x": -3330.0,
+                    "y": 0.0,
+                    "z": -700.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-370th Ave",
+            "roadCode": "W370AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -3700.0,
+                    "y": 0.0,
+                    "z": -700.0
+                },
+                {
+                    "x": -3700.0,
+                    "y": 0.0,
+                    "z": -110.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "Crestbury Road",
+            "roadCode": "CRBY",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -3700.0,
+                    "y": 0.0,
+                    "z": -430.0
+                },
+                {
+                    "x": -3800.0,
+                    "y": 0.0,
+                    "z": -450.0
+                },
+                {
+                    "x": -3900.0,
+                    "y": 0.0,
+                    "z": -565.0
+                },
+                {
+                    "x": -3750.0,
+                    "y": 0.0,
+                    "z": -700.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-61st St",
+            "roadCode": "S61ST",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -3850.0,
+                    "y": 0.0,
+                    "z": -610.0
+                },
+                {
+                    "x": -3030.0,
+                    "y": 0.0,
+                    "z": -610.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-375th Ave",
+            "roadCode": "W375AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -3725.0,
+                    "y": 0.0,
+                    "z": -610.0
+                },
+                {
+                    "x": -3725.0,
+                    "y": 0.0,
+                    "z": -700.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "0th Ave",
+            "roadCode": "N0AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 2000.0
+                },
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 3150.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "New Road",
+            "roadCode": "N200ST",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -3330.0,
+                    "y": 0.0,
+                    "z": 2000.0
+                },
+                {
+                    "x": 1000.0,
+                    "y": 0.0,
+                    "z": 2000.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-70th Ave",
+            "roadCode": "W70AVE1",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -700.0,
+                    "y": 0.0,
+                    "z": 3000.0
+                },
+                {
+                    "x": -700.0,
+                    "y": 0.0,
+                    "z": 3150.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "NaN Rd",
+            "roadCode": "NNRD",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -700.0,
+                    "y": 0.0,
+                    "z": 3150.0
+                },
+                {
+                    "x": 1990.0,
+                    "y": 0.0,
+                    "z": 3150.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "mathEnd": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 200.0
+            },
+            "waveform": "Sine",
+            "amplitude": 30.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "Meridian Blvd",
+            "roadCode": "MRBD",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "MathEquation",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 100.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 3150.0
+            },
+            "mathEnd": {
+                "x": -150.0,
+                "y": 0.0,
+                "z": 3000.0
+            },
+            "waveform": "Arc",
+            "amplitude": -45.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "303rd St",
+            "roadCode": "N303ST",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 3030.0
+                },
+                {
+                    "x": -146.0,
+                    "y": 0.0,
+                    "z": 3030.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 3150.0
+            },
+            "mathEnd": {
+                "x": -150.0,
+                "y": 0.0,
+                "z": 3000.0
+            },
+            "waveform": "Arc",
+            "amplitude": -45.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "306th ST",
+            "roadCode": "N306ST",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 3060.0
+                },
+                {
+                    "x": -137.0,
+                    "y": 0.0,
+                    "z": 3060.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 3150.0
+            },
+            "mathEnd": {
+                "x": -150.0,
+                "y": 0.0,
+                "z": 3000.0
+            },
+            "waveform": "Arc",
+            "amplitude": -45.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "49th Ave",
+            "roadCode": "E49AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 490.0,
+                    "y": 0.0,
+                    "z": 3000.0
+                },
+                {
+                    "x": 490.0,
+                    "y": 0.0,
+                    "z": 2900.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 3150.0
+            },
+            "mathEnd": {
+                "x": -150.0,
+                "y": 0.0,
+                "z": 3000.0
+            },
+            "waveform": "Arc",
+            "amplitude": -45.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "BRWYextra",
+            "roadCode": "BRWYX",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": 493.5,
+                    "y": 0.0,
+                    "z": 2900.0
+                },
+                {
+                    "x": 400.0,
+                    "y": 0.0,
+                    "z": 2900.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 3150.0
+            },
+            "mathEnd": {
+                "x": -150.0,
+                "y": 0.0,
+                "z": 3000.0
+            },
+            "waveform": "Arc",
+            "amplitude": -45.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "W216AVE",
+            "roadCode": "R057",
+            "roadWidth": 9.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -2160.0,
+                    "y": 0.0,
+                    "z": -700.0
+                },
+                {
+                    "x": -2160.0,
+                    "y": 0.0,
+                    "z": 3150.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 3150.0
+            },
+            "mathEnd": {
+                "x": -150.0,
+                "y": 0.0,
+                "z": 3000.0
+            },
+            "waveform": "Arc",
+            "amplitude": -45.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "125th St",
+            "roadCode": "N125ST",
+            "roadWidth": 9.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -2160.0,
+                    "y": 0.0,
+                    "z": 1250.0
+                },
+                {
+                    "x": 1990.0,
+                    "y": 0.0,
+                    "z": 1250.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 3150.0
+            },
+            "mathEnd": {
+                "x": -150.0,
+                "y": 0.0,
+                "z": 3000.0
+            },
+            "waveform": "Arc",
+            "amplitude": -45.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "222nd St",
+            "roadCode": "N222ST",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -3330.0,
+                    "y": 0.0,
+                    "z": 2220.0
+                },
+                {
+                    "x": -910.0,
+                    "y": 0.0,
+                    "z": 2220.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 3150.0
+            },
+            "mathEnd": {
+                "x": -150.0,
+                "y": 0.0,
+                "z": 3000.0
+            },
+            "waveform": "Arc",
+            "amplitude": -45.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        },
+        {
+            "roadName": "-230th Ave",
+            "roadCode": "W230AVE",
+            "roadWidth": 7.0,
+            "meshResolution": 0.5,
+            "canHaveIntersection": true,
+            "isOneWay": false,
+            "reverseFlow": false,
+            "hasSidewalks": false,
+            "curveMode": "ControlPoints",
+            "greenTime": 10.0,
+            "roadMaterialName": "Custom_ToonRampLit 1",
+            "controlPoints": [
+                {
+                    "x": -2300.0,
+                    "y": 0.0,
+                    "z": 2000.0
+                },
+                {
+                    "x": -2300.0,
+                    "y": 0.0,
+                    "z": 2220.0
+                }
+            ],
+            "mathStart": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 3150.0
+            },
+            "mathEnd": {
+                "x": -150.0,
+                "y": 0.0,
+                "z": 3000.0
+            },
+            "waveform": "Arc",
+            "amplitude": -45.0,
+            "frequency": 1.0,
+            "phase": 0.0,
+            "sampleCount": 24
+        }
+    ],
+    "stops": [
+        {
+            "stopCode": "s0001",
+            "stopName": "DOWNTOWN",
+            "parentRoadCode": "S22ST",
+            "tValue": 0.7620000243186951,
+            "hasShelter": false,
+            "isTerminal": true,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0002",
+            "stopName": "S19ST & MIDWAY BLVD",
+            "parentRoadCode": "S19ST",
+            "tValue": 0.2939999997615814,
+            "hasShelter": false,
+            "isTerminal": true,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0003",
+            "stopName": "SE 27 AVE & CENTRAL ROAD",
+            "parentRoadCode": "E27AVE",
+            "tValue": 0.30399999022483828,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0004",
+            "stopName": "SE 27 AVE & 8 ST",
+            "parentRoadCode": "E27AVE",
+            "tValue": 0.4339999854564667,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0005",
+            "stopName": "NE 27 AVE & NE 20 ST",
+            "parentRoadCode": "E27AVE",
+            "tValue": 0.6729999780654907,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0006",
+            "stopName": "NE 27 AVE & NE 37 ST",
+            "parentRoadCode": "E27AVE",
+            "tValue": 0.7940000295639038,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0007",
+            "stopName": "NE 27 AVE & NE 47 ST",
+            "parentRoadCode": "E27AVE",
+            "tValue": 0.8880000114440918,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0008",
+            "stopName": "NE 54 ST & 10 AVE",
+            "parentRoadCode": "N54ST",
+            "tValue": 0.19200000166893006,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0009",
+            "stopName": "MIDWAY BLVD & DOWNTOWN",
+            "parentRoadCode": "MDWY",
+            "tValue": 0.25,
+            "hasShelter": false,
+            "isTerminal": true,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0010",
+            "stopName": "MIDWAY BLVD & S 18 ST",
+            "parentRoadCode": "MDWY",
+            "tValue": 0.38999998569488528,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0011",
+            "stopName": "MIDWAY BLVD & CENTRAL RD",
+            "parentRoadCode": "MDWY",
+            "tValue": 0.6600000262260437,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0012",
+            "stopName": "MIDWAY BLVD 36",
+            "parentRoadCode": "MDWY",
+            "tValue": 0.800000011920929,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0013",
+            "stopName": "MIDWAY BLVD & N 49 ST",
+            "parentRoadCode": "MDWY",
+            "tValue": 0.9100000262260437,
+            "hasShelter": false,
+            "isTerminal": true,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0014",
+            "stopName": "MIDWAY62",
+            "parentRoadCode": "MDWY1",
+            "tValue": 0.0949999988079071,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0015",
+            "stopName": "MIDWAY75",
+            "parentRoadCode": "MDWY1",
+            "tValue": 0.35100001096725466,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0016",
+            "stopName": "MIDWAY100",
+            "parentRoadCode": "MDWY1",
+            "tValue": 0.5130000114440918,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0017",
+            "stopName": "MIDWAY123",
+            "parentRoadCode": "MDWY1",
+            "tValue": 0.6349999904632568,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0018",
+            "stopName": "MIDWAY167",
+            "parentRoadCode": "MDWY1",
+            "tValue": 0.7860000133514404,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0019",
+            "stopName": "MIDWAY200",
+            "parentRoadCode": "MDWY1",
+            "tValue": 0.9750000238418579,
+            "hasShelter": false,
+            "isTerminal": true,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0020",
+            "stopName": "NE 54 ST & 27 AVE",
+            "parentRoadCode": "N54ST",
+            "tValue": 0.3720000088214874,
+            "hasShelter": true,
+            "isTerminal": false,
+            "isLayover": true,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0021",
+            "stopName": "NE 54 ST & 41 AVE",
+            "parentRoadCode": "N54ST",
+            "tValue": 0.5199999809265137,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0022",
+            "stopName": "NE 54 ST & 63 AVE",
+            "parentRoadCode": "N54ST",
+            "tValue": 0.6690000295639038,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0023",
+            "stopName": "NE 54 ST & 87 AVE",
+            "parentRoadCode": "N54ST",
+            "tValue": 0.8539999723434448,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0024",
+            "stopName": "NE 54 ST & 100 AVE",
+            "parentRoadCode": "N54ST",
+            "tValue": 0.9319999814033508,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0025",
+            "stopName": "36ST -195 AVE",
+            "parentRoadCode": "N36ST",
+            "tValue": 0.012500000186264515,
+            "hasShelter": true,
+            "isTerminal": true,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0026",
+            "stopName": "36ST -145 AVE",
+            "parentRoadCode": "N36ST",
+            "tValue": 0.17299999296665193,
+            "hasShelter": true,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0027",
+            "stopName": "36ST -120 AVE",
+            "parentRoadCode": "N36ST",
+            "tValue": 0.3100000023841858,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0028",
+            "stopName": "36ST MIDWAY",
+            "parentRoadCode": "N36ST",
+            "tValue": 0.4830000102519989,
+            "hasShelter": true,
+            "isTerminal": false,
+            "isLayover": true,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0029",
+            "stopName": "36ST 45 AVE",
+            "parentRoadCode": "N36ST",
+            "tValue": 0.612500011920929,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0030",
+            "stopName": "36ST 62 AVE",
+            "parentRoadCode": "N36ST",
+            "tValue": 0.6549999713897705,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0031",
+            "stopName": "36ST AIRPORT LANE",
+            "parentRoadCode": "N36ST",
+            "tValue": 0.7990000247955322,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0032",
+            "stopName": "AIRPORT STATION",
+            "parentRoadCode": "N36ST",
+            "tValue": 0.9800000190734863,
+            "hasShelter": true,
+            "isTerminal": true,
+            "isLayover": true,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0033",
+            "stopName": "1000 Exchange",
+            "parentRoadCode": "E97AVE",
+            "tValue": 0.6359999775886536,
+            "hasShelter": true,
+            "isTerminal": true,
+            "isLayover": true,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0034",
+            "stopName": "Parkview Terminal",
+            "parentRoadCode": "W38AVE",
+            "tValue": 0.5139999985694885,
+            "hasShelter": true,
+            "isTerminal": true,
+            "isLayover": true,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0035",
+            "stopName": "Sterlingway & -91 AVE",
+            "parentRoadCode": "STWY",
+            "tValue": 0.38100001215934756,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0036",
+            "stopName": "S Midway & -78 ST",
+            "parentRoadCode": "MDWY2",
+            "tValue": 0.39552199840545657,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0037",
+            "stopName": "S Midway & -68 ST",
+            "parentRoadCode": "MDWY2",
+            "tValue": 0.26119399070739748,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0038",
+            "stopName": "S Midway & -96 ST",
+            "parentRoadCode": "MDWY2",
+            "tValue": 0.6865670084953308,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0039",
+            "stopName": "N 27 ST & 108 AVE",
+            "parentRoadCode": "N27ST",
+            "tValue": 0.07999999821186066,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0040",
+            "stopName": "N 27 ST & 124 AVE",
+            "parentRoadCode": "N27ST",
+            "tValue": 0.23999999463558198,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0041",
+            "stopName": "N 27 ST & 141 AVE",
+            "parentRoadCode": "N27ST",
+            "tValue": 0.4099999964237213,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0042",
+            "stopName": "N 27 ST & 162 AVE",
+            "parentRoadCode": "N27ST",
+            "tValue": 0.6299999952316284,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0043",
+            "stopName": "N 27 ST & 178 AVE",
+            "parentRoadCode": "N27ST",
+            "tValue": 0.7900000214576721,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0044",
+            "stopName": "Edgewood Terminal",
+            "parentRoadCode": "N27ST",
+            "tValue": 0.9700000286102295,
+            "hasShelter": false,
+            "isTerminal": true,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0045",
+            "stopName": "N 27 ST & 108 AVE",
+            "parentRoadCode": "N2750B",
+            "tValue": 0.07000000029802323,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0046",
+            "stopName": "N 27 ST & 124 AVE",
+            "parentRoadCode": "N2750B",
+            "tValue": 0.23000000417232514,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0047",
+            "stopName": "N 27 ST & 141 AVE",
+            "parentRoadCode": "N2750B",
+            "tValue": 0.4000000059604645,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0048",
+            "stopName": "N 27 ST & 162 AVE",
+            "parentRoadCode": "N2750B",
+            "tValue": 0.6200000047683716,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0049",
+            "stopName": "N 27 ST & 178 AVE",
+            "parentRoadCode": "N2750B",
+            "tValue": 0.75,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0050",
+            "stopName": "W 38 AVE & -74 ST",
+            "parentRoadCode": "W38AVE1",
+            "tValue": 0.005100000184029341,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0051",
+            "stopName": "W 40 AVE & -75 ST",
+            "parentRoadCode": "W40AVE1",
+            "tValue": 0.003599999938160181,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0052",
+            "stopName": "W 38 AVE & -49 ST",
+            "parentRoadCode": "W38AVE1",
+            "tValue": 0.36500000953674319,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0053",
+            "stopName": "W 40 AVE & -51 ST",
+            "parentRoadCode": "W40AVE1",
+            "tValue": 0.34599998593330386,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0054",
+            "stopName": "W 38 AVE & -11 ST",
+            "parentRoadCode": "W38AVE1",
+            "tValue": 0.859000027179718,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0055",
+            "stopName": "W 40 AVE & -9 ST",
+            "parentRoadCode": "W40AVE1",
+            "tValue": 0.878000020980835,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0056",
+            "stopName": "W 70 AVE & 18 ST",
+            "parentRoadCode": "W70AVE",
+            "tValue": 0.006000000052154064,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0057",
+            "stopName": "W 70 AVE & 45 ST",
+            "parentRoadCode": "W70AVE",
+            "tValue": 0.15000000596046449,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0058",
+            "stopName": "W 70 AVE & 76 ST",
+            "parentRoadCode": "W70AVE",
+            "tValue": 0.2529999911785126,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0059",
+            "stopName": "W 70 AVE & 104 ST",
+            "parentRoadCode": "W70AVE",
+            "tValue": 0.34700000286102297,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0060",
+            "stopName": "W 70 AVE & 165 ST",
+            "parentRoadCode": "W70AVE",
+            "tValue": 0.550000011920929,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0061",
+            "stopName": "W 70 AVE & 232 ST",
+            "parentRoadCode": "W70AVE",
+            "tValue": 0.7730000019073486,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0062",
+            "stopName": "W 70 AVE & 267 ST",
+            "parentRoadCode": "W70AVE",
+            "tValue": 0.8899999856948853,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0063",
+            "stopName": "W 70 AVE & 294 ST",
+            "parentRoadCode": "W70AVE",
+            "tValue": 0.9800000190734863,
+            "hasShelter": false,
+            "isTerminal": true,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0064",
+            "stopName": "Civic Center Terminal",
+            "parentRoadCode": "N36ST1",
+            "tValue": 0.0430000014603138,
+            "hasShelter": true,
+            "isTerminal": true,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0065",
+            "stopName": "N 36 ST & -76 AVE",
+            "parentRoadCode": "N36ST1",
+            "tValue": 0.49300000071525576,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0066",
+            "stopName": "N 36 ST & -65 AVE",
+            "parentRoadCode": "N36ST1",
+            "tValue": 0.8119999766349793,
+            "hasShelter": true,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0067",
+            "stopName": "Bay Block Terminal",
+            "parentRoadCode": "B40AVE",
+            "tValue": 0.5,
+            "hasShelter": false,
+            "isTerminal": true,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0068",
+            "stopName": "W 91 AVE & -114  ST",
+            "parentRoadCode": "W91AVE",
+            "tValue": 0.026000000536441804,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0069",
+            "stopName": "W 91 AVE & -92 ST",
+            "parentRoadCode": "W91AVE",
+            "tValue": 0.07800000160932541,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0070",
+            "stopName": "W 91 AVE & -69 ST",
+            "parentRoadCode": "W91AVE",
+            "tValue": 0.13199999928474427,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0071",
+            "stopName": "W 91 AVE & -47 ST",
+            "parentRoadCode": "W91AVE",
+            "tValue": 0.18400000035762788,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0072",
+            "stopName": "W 91 AVE & -23 ST",
+            "parentRoadCode": "W91AVE",
+            "tValue": 0.23999999463558198,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0073",
+            "stopName": "W 91 AVE & -2 ST",
+            "parentRoadCode": "W91AVE",
+            "tValue": 0.289000004529953,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0074",
+            "stopName": "W 91 AVE & 19 ST",
+            "parentRoadCode": "W91AVE",
+            "tValue": 0.33799999952316286,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0075",
+            "stopName": "S 22 ST & -82 AVE",
+            "parentRoadCode": "S22ST1",
+            "tValue": 0.0989999994635582,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0076",
+            "stopName": "S 22 ST & -58 AVE",
+            "parentRoadCode": "S22ST1",
+            "tValue": 0.3630000054836273,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0077",
+            "stopName": "S 22 ST & -31 AVE",
+            "parentRoadCode": "S22ST1",
+            "tValue": 0.6589999794960022,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0078",
+            "stopName": "S 22 ST & -6 AVE",
+            "parentRoadCode": "S22ST1",
+            "tValue": 0.9340000152587891,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0079",
+            "stopName": "S 19 ST & -84 AVE",
+            "parentRoadCode": "S19ST1",
+            "tValue": 0.07699999958276749,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0080",
+            "stopName": "S 19 ST & -55 AVE",
+            "parentRoadCode": "S19ST1",
+            "tValue": 0.3959999978542328,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0081",
+            "stopName": "S 19 ST & -28 AVE",
+            "parentRoadCode": "S19ST1",
+            "tValue": 0.6919999718666077,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0082",
+            "stopName": "S 19 ST & -4 AVE",
+            "parentRoadCode": "S19ST1",
+            "tValue": 0.9559999704360962,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0083",
+            "stopName": "Berrelingway South Station",
+            "parentRoadCode": "BRWY",
+            "tValue": 0.02199999988079071,
+            "hasShelter": false,
+            "isTerminal": true,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0084",
+            "stopName": "Berrelingway Dot Station",
+            "parentRoadCode": "BRWY",
+            "tValue": 0.125,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0085",
+            "stopName": "Berrelingway Central Station",
+            "parentRoadCode": "BRWY",
+            "tValue": 0.25200000405311587,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0086",
+            "stopName": "Berrelingway & 54 St",
+            "parentRoadCode": "BRWY",
+            "tValue": 0.4050000011920929,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0087",
+            "stopName": "Berrelingway & 176 St",
+            "parentRoadCode": "BRWY",
+            "tValue": 0.703000009059906,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0088",
+            "stopName": "Berrelingway & 242 St",
+            "parentRoadCode": "BRWY",
+            "tValue": 0.8610000014305115,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0089",
+            "stopName": "Berrelingway North Station",
+            "parentRoadCode": "BRWY",
+            "tValue": 0.9810000061988831,
+            "hasShelter": false,
+            "isTerminal": true,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0090",
+            "stopName": "Parkview Terminal [DROPOFF] A",
+            "parentRoadCode": "S105ST",
+            "tValue": 0.593999981880188,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0091",
+            "stopName": "Parkview Terminal [DROPOFF] B",
+            "parentRoadCode": "S105ST",
+            "tValue": 0.36899998784065249,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0092",
+            "stopName": "Crestbury Terminal",
+            "parentRoadCode": "W375AVE",
+            "tValue": 0.800000011920929,
+            "hasShelter": false,
+            "isTerminal": true,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0093",
+            "stopName": "S 70 ST & -103 AVE",
+            "parentRoadCode": "S70ST",
+            "tValue": 0.22300000488758088,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0094",
+            "stopName": "S 70 ST & -132 AVE",
+            "parentRoadCode": "S70ST",
+            "tValue": 0.32199999690055849,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0095",
+            "stopName": "S 70 ST & -191 AVE",
+            "parentRoadCode": "S70ST",
+            "tValue": 0.5239999890327454,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0096",
+            "stopName": "S 70 ST & -223 AVE ",
+            "parentRoadCode": "S70ST",
+            "tValue": 0.6340000033378601,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0097",
+            "stopName": "S 70 ST & -288 AVE",
+            "parentRoadCode": "S70ST",
+            "tValue": 0.8560000061988831,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0098",
+            "stopName": "S 70 ST & -323 AVE",
+            "parentRoadCode": "S70ST",
+            "tValue": 0.9760000109672546,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0099",
+            "stopName": "Crestbury Terminal [DROPOFF]",
+            "parentRoadCode": "S70ST1",
+            "tValue": 0.4000000059604645,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0100",
+            "stopName": "S 11 ST & -338 AVE",
+            "parentRoadCode": "S11ST",
+            "tValue": 0.20000000298023225,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0101",
+            "stopName": "S 11 ST & -307 AVE",
+            "parentRoadCode": "S11ST",
+            "tValue": 0.30000001192092898,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0102",
+            "stopName": "S 11 ST & -276 AVE",
+            "parentRoadCode": "S11ST",
+            "tValue": 0.4000000059604645,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0103",
+            "stopName": "S 11 ST & -246 AVE",
+            "parentRoadCode": "S11ST",
+            "tValue": 0.5,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0104",
+            "stopName": "S 11 ST & -215 AVE",
+            "parentRoadCode": "S11ST",
+            "tValue": 0.6000000238418579,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0105",
+            "stopName": "S 11 ST & -184 AVE",
+            "parentRoadCode": "S11ST",
+            "tValue": 0.699999988079071,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0106",
+            "stopName": "S 11 ST & -153 AVE",
+            "parentRoadCode": "S11ST",
+            "tValue": 0.800000011920929,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0107",
+            "stopName": "S 11 ST & -122 AVE",
+            "parentRoadCode": "S11ST",
+            "tValue": 0.8999999761581421,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0108",
+            "stopName": "New Stop",
+            "parentRoadCode": "",
+            "tValue": 0.5,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        },
+        {
+            "stopCode": "s0109",
+            "stopName": "New Stop",
+            "parentRoadCode": "",
+            "tValue": 0.5,
+            "hasShelter": false,
+            "isTerminal": false,
+            "isLayover": false,
+            "isAccessible": true
+        }
+    ],
+    "intersections": [
+        {
+            "roadACode": "MDWY",
+            "roadBCode": "S22ST",
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -220.0
+            },
+            "lightNorth": true,
+            "lightSouth": true,
+            "lightEast": false,
+            "lightWest": false,
+            "roadAGreenTime": 10.0,
+            "roadBGreenTime": 15.0,
+            "yellowTime": 5.0
+        },
+        {
+            "roadACode": "E27AVE",
+            "roadBCode": "S19ST",
+            "position": {
+                "x": 270.0,
+                "y": 0.0,
+                "z": -190.0
+            },
+            "lightNorth": true,
+            "lightSouth": true,
+            "lightEast": false,
+            "lightWest": false,
+            "roadAGreenTime": 25.0,
+            "roadBGreenTime": 10.0,
+            "yellowTime": 5.0
+        },
+        {
+            "roadACode": "MDWY",
+            "roadBCode": "CTRD",
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "lightNorth": true,
+            "lightSouth": true,
+            "lightEast": true,
+            "lightWest": true,
+            "roadAGreenTime": 45.0,
+            "roadBGreenTime": 45.0,
+            "yellowTime": 5.0
+        },
+        {
+            "roadACode": "W70AVE",
+            "roadBCode": "CTRD",
+            "position": {
+                "x": -700.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "lightNorth": true,
+            "lightSouth": true,
+            "lightEast": true,
+            "lightWest": true,
+            "roadAGreenTime": 20.0,
+            "roadBGreenTime": 45.0,
+            "yellowTime": 5.0
+        },
+        {
+            "roadACode": "STWY",
+            "roadBCode": "MDWY2",
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -838.75
+            },
+            "lightNorth": true,
+            "lightSouth": true,
+            "lightEast": true,
+            "lightWest": true,
+            "roadAGreenTime": 30.0,
+            "roadBGreenTime": 30.0,
+            "yellowTime": 5.0
+        },
+        {
+            "roadACode": "W91AVE",
+            "roadBCode": "S70ST",
+            "position": {
+                "x": -910.0,
+                "y": 0.0,
+                "z": -700.0
+            },
+            "lightNorth": true,
+            "lightSouth": true,
+            "lightEast": true,
+            "lightWest": true,
+            "roadAGreenTime": 15.0,
+            "roadBGreenTime": 45.0,
+            "yellowTime": 5.0
+        },
+        {
+            "roadACode": "W91AVE",
+            "roadBCode": "CTRD",
+            "position": {
+                "x": -910.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "lightNorth": true,
+            "lightSouth": true,
+            "lightEast": true,
+            "lightWest": true,
+            "roadAGreenTime": 20.0,
+            "roadBGreenTime": 60.0,
+            "yellowTime": 5.0
+        },
+        {
+            "roadACode": "BRWY",
+            "roadBCode": "S24ST",
+            "position": {
+                "x": 440.0,
+                "y": 0.0,
+                "z": -240.0
+            },
+            "lightNorth": true,
+            "lightSouth": true,
+            "lightEast": true,
+            "lightWest": true,
+            "roadAGreenTime": 60.0,
+            "roadBGreenTime": 15.0,
+            "yellowTime": 5.0
+        },
+        {
+            "roadACode": "BRWY",
+            "roadBCode": "CTRD",
+            "position": {
+                "x": 440.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "lightNorth": true,
+            "lightSouth": true,
+            "lightEast": true,
+            "lightWest": true,
+            "roadAGreenTime": 30.0,
+            "roadBGreenTime": 30.0,
+            "yellowTime": 5.0
+        },
+        {
+            "roadACode": "BRWY",
+            "roadBCode": "N36ST",
+            "position": {
+                "x": 440.0,
+                "y": 0.0,
+                "z": 360.0
+            },
+            "lightNorth": true,
+            "lightSouth": true,
+            "lightEast": true,
+            "lightWest": true,
+            "roadAGreenTime": 60.0,
+            "roadBGreenTime": 30.0,
+            "yellowTime": 5.0
+        },
+        {
+            "roadACode": "BRWY",
+            "roadBCode": "N54ST",
+            "position": {
+                "x": 440.0,
+                "y": 0.0,
+                "z": 540.0
+            },
+            "lightNorth": true,
+            "lightSouth": true,
+            "lightEast": true,
+            "lightWest": true,
+            "roadAGreenTime": 60.0,
+            "roadBGreenTime": 60.0,
+            "yellowTime": 5.0
+        }
+    ]
+}

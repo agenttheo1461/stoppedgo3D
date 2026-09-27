@@ -1,0 +1,103 @@
+if (deepWhineVol > 0.2f)
+{
+    float shiftProgress = 0f;
+
+    if (gear == 1)
+        shiftProgress = Mathf.InverseLerp(14f, 18f, spd);
+    else if (gear == 2)
+        shiftProgress = Mathf.InverseLerp(18f, 30f, spd);
+    else if (gear == 3)
+        shiftProgress = Mathf.InverseLerp(30f, 45f, spd);
+
+    shiftProgress = Mathf.Clamp01(shiftProgress);
+
+    // =========================
+    // AUDIO TIME STEP
+    // =========================
+    float dt = (float)invSR;
+
+    // =========================
+    // TIRED ENGINE CORE SHAPE
+    // (always produces usable energy)
+    // =========================
+    float baseCurve =
+        Mathf.Lerp(0.35f, 1.0f, shiftProgress);
+
+    // “heavy bus load” sag
+    float loadSag =
+        1f - (shiftProgress * 0.25f);
+
+    float targetEnergy =
+        baseCurve * loadSag;
+
+    // =========================
+    // POST-SHIFT SUSTAIN BOOST
+    // keeps sound alive AFTER shift peak
+    // =========================
+    float postShiftHold =
+        1f + (1f - shiftProgress) * 0.6f;
+
+    targetEnergy *= postShiftHold;
+
+    // =========================
+    // SMOOTH ENVELOPE (IMPORTANT FIX)
+    // =========================
+    float attack = 12.0f;
+    float release = 1.2f;
+
+    float rate =
+        targetEnergy > howlEnergy ? attack : release;
+
+    howlEnergy =
+        Mathf.Lerp(howlEnergy, targetEnergy, dt * rate);
+
+    // =========================
+    // HARD MINIMUM AUDIBILITY (CRITICAL)
+    // prevents “silence bug”
+    // =========================
+    howlEnergy = Mathf.Max(howlEnergy, 0.25f);
+
+    howlEnergy = Mathf.Clamp01(howlEnergy);
+
+    // =========================
+    // TIRED FREQUENCY RANGE
+    // =========================
+    float whHz =
+        Mathf.Lerp(55f, 220f, howlEnergy);
+
+    // =========================
+    // OSCILLATORS
+    // =========================
+    double d1 = Math.Sin(2.0 * Math.PI * ph_deepWhine);
+    double d2 = Math.Sin(2.0 * Math.PI * ph_deepWhine2);
+    double d3 = Math.Sin(2.0 * Math.PI * ph_deepWhine3);
+
+    double growl = Math.Tanh(d1 * 4.5);
+
+    // =========================
+    // VOLUME (STRONGER, AUDIBLE)
+    // =========================
+    float vol =
+        deepWhineVol *
+        0.35f *
+        (0.15f + howlEnergy * 4.2f);
+
+    float sample =
+        (float)(
+            d1 * vol * 0.55f * engMul +
+            d2 * vol * 0.35f * engMul +
+            d3 * vol * 0.25f * engMul +
+            growl * vol * 0.35f * engMul
+        );
+
+    txSample += sample;
+
+    // =========================
+    // PHASE ADVANCE
+    // =========================
+    float phaseStep = whHz * dt;
+
+    ph_deepWhine = (ph_deepWhine + phaseStep) % 1.0;
+    ph_deepWhine2 = (ph_deepWhine2 + phaseStep * 0.50f) % 1.0;
+    ph_deepWhine3 = (ph_deepWhine3 + phaseStep * 1.40f) % 1.0;
+}

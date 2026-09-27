@@ -1,0 +1,7 @@
+[2026-06-20 22:59:43] Scene: 0 (6)
+Issue(s): 1. articulated buses run red lights due to not being able to notice them quick enough, they slow but do not stop
+2. all buses overshoot stops by a bit because they are going extremely fast and do not recognize them, they DO stop eventually
+3. buses going into idle zones at terminals go in backwards
+4. engineHUD doesnt actually update engine or battery if toggled, there is also no A/C slider
+5. If economy mode button for engine HUD is toggled it doesnt show up nor work.
+------------------------

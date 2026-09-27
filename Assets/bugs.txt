@@ -1,0 +1,5 @@
+[2026-06-21 08:08:06] Scene: 0 (6)
+Issue(s): 1. economy mode just seems off, its ratios are not right
+2. allison downshifting isnt right
+3. articulated buses stop completely at green lights but only move when it turns yellow fix that
+------------------------

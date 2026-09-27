@@ -1,0 +1,226 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7940766485544659444
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9088652287354637233}
+  - component: {fileID: 8556713935373546007}
+  - component: {fileID: 6327468342223579813}
+  - component: {fileID: 6601860364053645291}
+  - component: {fileID: 5383065852332865326}
+  - component: {fileID: 1570889701328797649}
+  - component: {fileID: 3185848323421472260}
+  - component: {fileID: 5453587475475516793}
+  - component: {fileID: -7253564940618412464}
+  - component: {fileID: -5625555850183572098}
+  m_Layer: 0
+  m_Name: Buses
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9088652287354637233
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7940766485544659444}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -327.4018, y: 0.69876, z: -386.1789}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8556713935373546007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7940766485544659444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 677744cf1a36544799c8810e96713e16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DepotManager
+  depots:
+  - {fileID: 11400000, guid: 271ea29678dce43088305bce99cb3e41, type: 2}
+  - {fileID: 11400000, guid: a184e7b4ea13f44e2b2a31c4fe3d06aa, type: 2}
+  fleetRoster: {fileID: 11400000, guid: 5ed8475fbe85f4f64a9df473c4ff3f10, type: 2}
+  busSpawner: {fileID: 0}
+  logAssignments: 1
+--- !u!114 &6327468342223579813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7940766485544659444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5192d3328e4244e1bc109e30933f3e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BusScheduler
+  startTimeMinutes: 299
+  secondsPerGameMinute: 30
+  managedRoutes:
+  - {fileID: 11400000, guid: 7230c72314b8f4b92aaaaca1da19564e, type: 2}
+  - {fileID: 11400000, guid: b58f2581005c247ddaa81db340290ac5, type: 2}
+  - {fileID: 11400000, guid: 11722706b32f94a7894d7f83c5a63a51, type: 2}
+  scheduleDaysAhead: 3
+  scheduleRefillThresholdMinutes: 120
+  logDispatches: 1
+  logLateness: 1
+  scheduleReportInterval: 15
+  latenessThreshold: 0.5
+  latenessDwellCutoffMinutes: 3
+  expressDeadRunThresholdMinutes: 480
+  minLateDwellMultiplier: 0.3
+  lapHandoffMin: 5
+  lapHandoffMax: 6
+  handoffOppositeDirection: 1
+  randomizeInitialDirection: 1
+  oneToOneHeadwayMinutes: 5
+--- !u!114 &6601860364053645291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7940766485544659444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c84dff07388048d7838a409ac46a072, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHandoff
+  playerBus: {fileID: 0}
+  playerBusID: -99
+  terminalArrivalRadius: 40
+  stopDetectRadius: 50
+  stopZoneHalfExtents: {x: 10, y: 10, z: 10}
+  enableHotkeys: 1
+  reliefKey: 56
+  statusKey: 57
+--- !u!114 &5383065852332865326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7940766485544659444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d725bfd0016104a0092a0f39d38f2248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TimetableOverlay
+  toggleKey: 116
+  stopColWidth: 200
+  depColWidth: 88
+  rowHeight: 28
+  headerHeight: 52
+  marginTop: 16
+  marginSide: 16
+  fontSizeClock: 13
+  fontSizeTitle: 11
+  fontSizeColDep: 12
+  fontSizeColID: 9
+  fontSizeCell: 11
+  fontSizeStop: 10
+--- !u!114 &1570889701328797649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7940766485544659444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1487e5098702741f8b6c3d469c7ead6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MDT_UI_Controller
+  toggleKey: 117
+  panelX: 40
+  panelY: 40
+  panelWidth: 320
+  panelHeight: 560
+  refreshInterval: 1
+--- !u!114 &3185848323421472260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7940766485544659444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77fde935151154a0e95364e639156d9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadEventRegistry
+--- !u!114 &5453587475475516793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7940766485544659444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2a59b826cc154564b7d4fdd46ddda90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoadEventSpawner
+  spawnPoints:
+  - roadEvent: {fileID: 0}
+    overrideSeverity: 1
+    forcedSeverity: 1
+    allowedTypes: 00000000
+    cooldownSeconds: 0
+  checkIntervalSeconds: 45
+  spawnChance: 0.35
+  maxConcurrentEvents: 2
+  minorWeight: 0.5
+  moderateWeight: 0.35
+  majorWeight: 0.15
+  minorDurationRange: {x: 8, y: 20}
+  moderateDurationRange: {x: 15, y: 40}
+  majorDurationRange: {x: 25, y: 60}
+  logSpawns: 1
+--- !u!114 &-7253564940618412464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7940766485544659444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5888ade88ea394f19ab79b68708357a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameTimeScale
+  oneToOneMode: 0
+  customTimeScale: 2
+--- !u!114 &-5625555850183572098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7940766485544659444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c436d9900dca44de693b41013592d3b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BusManager
+  busPrefabPool: []
+  idleZones: []
+  lapThresholdMin: 4
+  lapThresholdMax: 6
+  logAssignments: 1

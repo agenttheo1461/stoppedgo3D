@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"bae_wasStopped = isStopped;\\\\s*$\" \"/Users/tedtimes/raceSIM/Assets/ASSETS \\(1\\)/AUDIO/BusAudioEngine.cs\")",
+      "Bash(awk '/private void DoCombustionEngine/,/^    }$/' \"/Users/tedtimes/raceSIM/Assets/ASSETS \\(1\\)/AUDIO/BusAudioEngine.AudioLayers.cs\")"
+    ]
+  }
+}

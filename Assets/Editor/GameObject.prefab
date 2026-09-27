@@ -1,0 +1,384 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4064467043205682658
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1658804459891918765}
+  - component: {fileID: 1173311316985300483}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1658804459891918765
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4064467043205682658}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1, y: 0.7, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1173311316985300483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4064467043205682658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 976d66b75b24a45e9bc3b6190de05b40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralEnvironment
+  manualIntersections:
+  - roadACode: MDWY
+    roadBCode: S22ST
+    position: {x: 0, y: 0, z: -220}
+    lightNorth: 1
+    lightSouth: 1
+    lightEast: 0
+    lightWest: 0
+    roadAGreenTime: 3
+    roadBGreenTime: 30
+    yellowTime: 1
+  - roadACode: E27AVE
+    roadBCode: S19ST
+    position: {x: 270, y: 0, z: -190}
+    lightNorth: 1
+    lightSouth: 1
+    lightEast: 0
+    lightWest: 0
+    roadAGreenTime: 30
+    roadBGreenTime: 10
+    yellowTime: 3
+  - roadACode: MDWY
+    roadBCode: CTRD
+    position: {x: 0, y: 0, z: 0}
+    lightNorth: 1
+    lightSouth: 1
+    lightEast: 1
+    lightWest: 1
+    roadAGreenTime: 10
+    roadBGreenTime: 45
+    yellowTime: 5
+  busTransform: {fileID: 0}
+  busController: {fileID: 0}
+  stopPrefab: {fileID: 5734442825634479557, guid: 452075f2dac934cf08b7bdfd36b56c83, type: 3}
+  routes:
+  - {fileID: 11400000, guid: b58f2581005c247ddaa81db340290ac5, type: 2}
+  - {fileID: 11400000, guid: 7230c72314b8f4b92aaaaca1da19564e, type: 2}
+  - {fileID: 11400000, guid: ad6b7ce230c7848e6a3f3d17c93f3f9a, type: 2}
+  stopDetectRadius: 80
+  spawnIntersections: 1
+  includeTrafficLights: 1
+  leftHandTraffic: 0
+  intersectionCheckResolution: 50
+  junctionPavementSize: 12
+  lightMatRed: {fileID: 2100000, guid: 67bf1dc4c2ec94c85bcfe2da97842e54, type: 2}
+  lightMatYellow: {fileID: 2100000, guid: 3de63ff97e53947eb9d3d5a336f1aded, type: 2}
+  lightMatGreen: {fileID: 2100000, guid: 776426d200643467f8b5f40007a68d17, type: 2}
+  lightMatPavement: {fileID: 2100000, guid: a1d8491f756c74ae9a671895f11d1e11, type: 2}
+  lightMatPole: {fileID: 2100000, guid: b4c254d738e6f4d3b8a6c7e20d78c246, type: 2}
+  regularStopMaterial: {fileID: 2100000, guid: b4c254d738e6f4d3b8a6c7e20d78c246, type: 2}
+  terminalStopMaterial: {fileID: 2100000, guid: 3de63ff97e53947eb9d3d5a336f1aded, type: 2}
+  roadDefinitions:
+  - roadName: Central Road
+    roadCode: CTRD
+    roadWidth: 7
+    meshResolution: 0.5
+    canHaveIntersection: 1
+    isOneWay: 0
+    reverseFlow: 0
+    curveMode: 0
+    greenTime: 10
+    controlPoints:
+    - {x: -500, y: 0, z: 0}
+    - {x: 500, y: 0, z: 0}
+    mathStart: {x: -500, y: 0, z: 0}
+    mathEnd: {x: 500, y: 0, z: 500}
+    waveform: 2
+    amplitude: 2
+    frequency: 5
+    phase: 3
+    sampleCount: 128
+  - roadName: Midway Blvd
+    roadCode: MDWY1
+    roadWidth: 7
+    meshResolution: 0.5
+    canHaveIntersection: 1
+    isOneWay: 0
+    reverseFlow: 0
+    curveMode: 0
+    greenTime: 10
+    controlPoints:
+    - {x: 0, y: 0, z: 540}
+    - {x: 0, y: 0, z: 2000}
+    mathStart: {x: -500, y: 0, z: 0}
+    mathEnd: {x: 500, y: 0, z: 500}
+    waveform: 2
+    amplitude: 2
+    frequency: 5
+    phase: 3
+    sampleCount: 128
+  - roadName: 27th Ave
+    roadCode: E27AVE
+    roadWidth: 7
+    meshResolution: 0.5
+    canHaveIntersection: 1
+    isOneWay: 0
+    reverseFlow: 0
+    curveMode: 0
+    greenTime: 10
+    controlPoints:
+    - {x: 270, y: 0, z: -220}
+    - {x: 270, y: 0, z: 540}
+    mathStart: {x: -500, y: 0, z: 0}
+    mathEnd: {x: 500, y: 0, z: 500}
+    waveform: 2
+    amplitude: 2
+    frequency: 5
+    phase: 3
+    sampleCount: 128
+  - roadName: -22nd St
+    roadCode: S22ST
+    roadWidth: 3.5
+    meshResolution: 0.5
+    canHaveIntersection: 1
+    isOneWay: 1
+    reverseFlow: 1
+    curveMode: 0
+    greenTime: 10
+    controlPoints:
+    - {x: 0, y: 0, z: -220}
+    - {x: 270, y: 0, z: -220}
+    mathStart: {x: -500, y: 0, z: 0}
+    mathEnd: {x: 500, y: 0, z: 500}
+    waveform: 2
+    amplitude: 2
+    frequency: 5
+    phase: 3
+    sampleCount: 128
+  - roadName: Midway Blvd
+    roadCode: MDWY
+    roadWidth: 7
+    meshResolution: 0.5
+    canHaveIntersection: 1
+    isOneWay: 0
+    reverseFlow: 0
+    curveMode: 0
+    greenTime: 10
+    controlPoints:
+    - {x: 0, y: 0, z: -500}
+    - {x: 0, y: 0, z: 540}
+    mathStart: {x: -500, y: 0, z: 0}
+    mathEnd: {x: 500, y: 0, z: 500}
+    waveform: 2
+    amplitude: 2
+    frequency: 5
+    phase: 3
+    sampleCount: 128
+  - roadName: -19th St
+    roadCode: S19ST
+    roadWidth: 3.5
+    meshResolution: 0.5
+    canHaveIntersection: 1
+    isOneWay: 1
+    reverseFlow: 0
+    curveMode: 0
+    greenTime: 10
+    controlPoints:
+    - {x: 0, y: 0, z: -190}
+    - {x: 270, y: 0, z: -190}
+    mathStart: {x: -500, y: 0, z: 0}
+    mathEnd: {x: 500, y: 0, z: 500}
+    waveform: 2
+    amplitude: 2
+    frequency: 5
+    phase: 3
+    sampleCount: 128
+  - roadName: 54th St
+    roadCode: N54ST
+    roadWidth: 9
+    meshResolution: 0.5
+    canHaveIntersection: 1
+    isOneWay: 0
+    reverseFlow: 0
+    curveMode: 0
+    greenTime: 10
+    controlPoints:
+    - {x: 0, y: 0, z: 540}
+    - {x: 300, y: 0, z: 540}
+    mathStart: {x: -500, y: 0, z: 0}
+    mathEnd: {x: 500, y: 0, z: 500}
+    waveform: 2
+    amplitude: 2
+    frequency: 5
+    phase: 3
+    sampleCount: 128
+  stopDefinitions:
+  - stopCode: s0001
+    stopName: DOWNTOWN
+    parentRoadCode: S22ST
+    tValue: 0.762
+    hasShelter: 0
+    isTerminal: 1
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0002
+    stopName: S19ST & MIDWAY BLVD
+    parentRoadCode: S19ST
+    tValue: 0.294
+    hasShelter: 0
+    isTerminal: 1
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0003
+    stopName: SE 27 AVE & SE 8 ST
+    parentRoadCode: E27AVE
+    tValue: 0.304
+    hasShelter: 0
+    isTerminal: 0
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0004
+    stopName: SE 27 AVE & E CENTRAL ROAD
+    parentRoadCode: E27AVE
+    tValue: 0.434
+    hasShelter: 0
+    isTerminal: 0
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0005
+    stopName: NE 27 AVE & NE 16 ST
+    parentRoadCode: E27AVE
+    tValue: 0.673
+    hasShelter: 0
+    isTerminal: 0
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0006
+    stopName: NE 27 AVE & NE 33 ST
+    parentRoadCode: E27AVE
+    tValue: 0.794
+    hasShelter: 0
+    isTerminal: 0
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0007
+    stopName: NE 27 AVE & NE 47 ST
+    parentRoadCode: E27AVE
+    tValue: 0.888
+    hasShelter: 0
+    isTerminal: 0
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0008
+    stopName: NE 54 ST & 29 AVE
+    parentRoadCode: N54ST
+    tValue: 1
+    hasShelter: 0
+    isTerminal: 1
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0009
+    stopName: MIDWAY BLVD & DOWNTOWN
+    parentRoadCode: MDWY
+    tValue: 0.25
+    hasShelter: 0
+    isTerminal: 1
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0010
+    stopName: MIDWAY BLVD & S 18 ST
+    parentRoadCode: MDWY
+    tValue: 0.39
+    hasShelter: 0
+    isTerminal: 0
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0011
+    stopName: MIDWAY BLVD & CENTRAL RD
+    parentRoadCode: MDWY
+    tValue: 0.66
+    hasShelter: 0
+    isTerminal: 0
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0012
+    stopName: MIDWAY BLVD 36
+    parentRoadCode: MDWY
+    tValue: 0.8
+    hasShelter: 0
+    isTerminal: 0
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0013
+    stopName: MIDWAY BLVD & N 49 ST
+    parentRoadCode: MDWY
+    tValue: 0.91
+    hasShelter: 0
+    isTerminal: 1
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0014
+    stopName: MIDWAY62
+    parentRoadCode: MDWY1
+    tValue: 0.095
+    hasShelter: 0
+    isTerminal: 0
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0015
+    stopName: MIDWAY75
+    parentRoadCode: MDWY1
+    tValue: 0.351
+    hasShelter: 0
+    isTerminal: 0
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0016
+    stopName: MIDWAY100
+    parentRoadCode: MDWY1
+    tValue: 0.513
+    hasShelter: 0
+    isTerminal: 0
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0017
+    stopName: MIDWAY123
+    parentRoadCode: MDWY1
+    tValue: 0.635
+    hasShelter: 0
+    isTerminal: 0
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0018
+    stopName: MIDWAY167
+    parentRoadCode: MDWY1
+    tValue: 0.786
+    hasShelter: 0
+    isTerminal: 0
+    isLayover: 0
+    isAccessible: 1
+  - stopCode: s0019
+    stopName: MIDWAY200
+    parentRoadCode: MDWY1
+    tValue: 0.975
+    hasShelter: 0
+    isTerminal: 1
+    isLayover: 0
+    isAccessible: 1
