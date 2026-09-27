@@ -3833,6 +3833,21 @@ private IEnumerator StopDwell()
             ResetArticulationState();
         }
         spd = 0f; accel = 0f; bkPd = 1f;
+        // [FIX Bug 2] BusUpdateManager never ticks an Idle bus, and this is
+        // the only place a bus transitions into being parked/idle at a
+        // depot -- so whatever light state existed at the exact moment it
+        // pulled in (a turn signal, hazards, headlights) was never touched
+        // again until the bus was redispatched. Reset explicitly here.
+        for (int i = 0; i < (_extLightsAll?.Length ?? 0); i++)
+        {
+            var lc = _extLightsAll[i]; if (lc == null) continue;
+            lc.SetHeadlights(false);
+            lc.SetLeftSignal(false);
+            lc.SetRightSignal(false);
+            lc.SetHazards(false);
+        }
+        for (int i = 0; i < (_intLightsAll?.Length ?? 0); i++)
+            _intLightsAll[i]?.SetMode(BusInteriorLightController.InteriorLightMode.Off);
 
         if (_ingressIsForWait && _depotWaitSlot != null)
         {

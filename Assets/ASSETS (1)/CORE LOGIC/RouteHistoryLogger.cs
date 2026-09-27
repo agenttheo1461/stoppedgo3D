@@ -24,7 +24,16 @@ public class RouteHistoryLogger : MonoBehaviour
 
     [Header("Storage")]
     public string fileName = "route_history.json";
-    public int    maxStoredTrips = 1 << 24;   // 16,777,216
+    // [FIX] Was 1 << 24 (16.7M) -- high enough that RemoveRange below never
+    // actually fired in a real session. Every completed trip (player AND
+    // every NPC bus) got appended and kept forever, so the list grew
+    // unbounded for as long as the session ran; Save() JSON-serializes and
+    // synchronously writes the WHOLE list every saveIntervalSeconds, so that
+    // write got slower and slower the longer play continued -- the "lag
+    // after extended periods" symptom. 2000 trips is far more than enough
+    // for the per-route totals (which are separately accumulated and never
+    // trimmed) to stay meaningful, while keeping Save()'s payload bounded.
+    public int    maxStoredTrips = 2000;
     public float  saveIntervalSeconds = 20f;
 
     [Serializable] public class RouteTotals

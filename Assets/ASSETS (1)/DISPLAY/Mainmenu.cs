@@ -33,6 +33,13 @@ public class MainMenu : MonoBehaviour
     private bool _open;
     public bool IsOpen => _open;
 
+    // [ADD Bug 43 fix] Nothing else in the project checked this before
+    // acting -- debug hotkeys (Ctrl+F7 reset, Ctrl+F4 schedule dump,
+    // Ctrl+Shift+F12 NPC toggle) all fired even while this menu was open,
+    // letting a player poke at live game state (or just get confused by
+    // console spam) before ever picking a route. Single place to check.
+    public static bool BlocksInput => Instance != null && Instance.IsOpen;
+
     private string _nameInput = "";
     private string _createError = null;
 
