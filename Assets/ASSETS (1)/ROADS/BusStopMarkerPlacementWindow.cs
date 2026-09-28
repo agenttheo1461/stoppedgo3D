@@ -266,6 +266,9 @@ public class BusStopMarkerPlacementWindow : EditorWindow
 
     private void AddSingleMarker(BusStopData stop, Vector3 pos, Quaternion rot)
     {
+        pos.y = 0f; // EvaluateSurfacePosition can return a road's snapped/elevated height -- the
+                    // marker prefab's own child meshes already carry their height offsets from a
+                    // y=0 root, same as the existing 44, so the root itself always sits at 0.
         bool alreadyMarked = _parentContainer != null && HasNearbyMarker(pos);
         _preview.Add((stop, pos, rot, alreadyMarked));
     }
