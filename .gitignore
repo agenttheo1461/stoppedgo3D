@@ -79,3 +79,7 @@ ProfilerCaptures/
 # Never track a renamed-aside nested-repo .git folder again -- see the
 # "Assets/ASSETS (1)/.git.backup-do-not-delete" cleanup commit for why.
 **/.git.backup-do-not-delete/
+
+# Python bytecode cache from running the guide-generation scripts in Tools/
+__pycache__/
+*.pyc
