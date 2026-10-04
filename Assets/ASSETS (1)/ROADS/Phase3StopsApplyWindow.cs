@@ -117,9 +117,11 @@ public class Phase3StopsApplyWindow : EditorWindow
         if (byCode.TryGetValue("s0597", out var leaf1) && byCode.TryGetValue("s0598", out var leaf2)
             && leaf1.parentRoadCode == leaf2.parentRoadCode && Mathf.Approximately(leaf1.tValue, leaf2.tValue))
         {
-            _log.Add("NOTE: s0597 and s0598 share the exact same road+tValue (per the guide's own numbers), " +
-                     "so GetWorldPosition() will place them at the identical spot. That matches the plan doc " +
-                     "as given -- flagging it in case it wasn't intended, since the data has no side/direction field.");
+            _log.Add("NOTE: s0597 and s0598 share the exact same road+tValue, so GetWorldPosition() places " +
+                     "them at the identical spot. Tools/guide_data.py's own stop registry computes s0597 as " +
+                     "the LEFT side of Leaf Blvd and s0598 as the RIGHT side (eastbound vs westbound) -- that " +
+                     "distinction never reaches the printed guide's numbers because BusStopData has no side/" +
+                     "direction field to hold it. Nudge one stop's tValue by a hair if you want them visibly apart.");
         }
 
         // ── 3B: moved stops ──
