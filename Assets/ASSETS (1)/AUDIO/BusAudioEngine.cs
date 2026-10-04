@@ -1684,6 +1684,27 @@ private float h50EngineRevZone = 0f;
     private bool   _wasPoweredForACTail = false;
     private float  _acShutdownTailTimer = 0f;
     private const float AC_SHUTDOWN_TAIL_SEC = 3f; // long enough for the ~2.7s smooth release above to actually finish
+
+    // ── Smooth ENGINE shutdown tail ("QoL: a shutoff sound instead of a harsh
+    //    clip") -- the main engine tone used to just hard-mute (Array.Clear) the
+    //    instant running/batteryOn went false, same discontinuity the AC tail
+    //    above was built to fix, just never extended to the engine itself.
+    //    Deliberately self-contained (own tiny sine + decay envelope) rather
+    //    than reusing the real per-transmission tone generators (NXT/ZF/Voith/
+    //    BAE/etc, a dozen-plus separate code paths) -- those all assume
+    //    `running` is genuinely still true and touching them to keep running
+    //    a little past shutdown risks real instability in a DSP system this
+    //    size that can't be verified by ear from here. This buys a smooth
+    //    amplitude decay + gentle downward pitch glide -- reads as winding
+    //    down rather than clipping off -- without touching the existing
+    //    per-engine synthesis at all. A truly distinct, authored shutdown
+    //    sound per engine PERSONALITY (a real decompression/spin-down
+    //    recording or bespoke synthesis per transmission type) is a bigger,
+    //    separate audio-design task -- flagged, not attempted here.
+    private float _engineShutdownTailTimer = 0f;
+    private float _engineShutdownStartHz   = 0f;
+    private float _engineShutdownPhase     = 0f;
+    private const float ENGINE_SHUTDOWN_TAIL_SEC = 0.45f;
     private float  ac_startupTimer   = 0f;
     private float  ac_startupPulse   = 0f;
     private float  ac_spinUpT        = 0f;
@@ -2276,7 +2297,14 @@ else if (!isNeutral || spd >= 0.0000001f || accel >= 0.03f || isH4xEVT || tx == 
                 else if (tx == "hds300") rpmTgt = CalcHDS300RPM();
                 else if (tx == "baegen3") rpmTgt = CalcBAEGen3RPM();
                 else if (tx == "h40ep") rpmTgt = CalcH40EPRPM(dt);
-                else if (tx == "h50ep" || tx == "zh50ep" || tx == "h50ep_gen5") rpmTgt = CalcH50EPRPM(dt);
+                else if (tx == "h50ep" || tx == "zh50ep" || tx == "h50ep_gen5")
+                {
+                    // L9/ISL9 launch jump (h50ep / zh50ep only; see BusAudioEngine.L9Character.cs)
+                    l9c_preset = ResolveL9Preset();
+                    float h50Rpm = H50UsesIrlRpm ? CalcH50EPIrlRPM(dt) : CalcH50EPRPM(dt);
+                    rpmTgt = gear == 0 ? h50Rpm : L9LaunchJump(h50Rpm, accel);
+                    if (H50UsesIrlRpm) H50IrlFollowJump(rpmTgt);
+                }
                 else if (tx == "ep40") rpmTgt = CalcEP40RPM(dt);
                 else if (tx == "ep50") rpmTgt = CalcEP50RPM(dt);
                 else if (tx == "d8645") rpmTgt = CalcD8645RPM();
@@ -2339,6 +2367,9 @@ if (gear == 1 && accel > 0.10f && !economyMode)
        smoothing it away. */
     rpmRate = rpmTgt > rpm ? 2600f : 2200f;
 }
+// L9/ISL9 launch jump: Economy's slow 350 rpm/s rise would flatten it, so let
+// the limiter pass the jump's own rise rate while it plays.
+if (L9JumpActive && rpmTgt > rpm) rpmRate = Mathf.Max(rpmRate, l9j_rate);
 // [FIX] The normal downward rate (280f) is genuinely slow -- a typical
 // ~500 RPM post-upshift drop takes ~1.8s to fully settle at that rate.
 // With short shift cooldowns (especially Gen5's), another shift can fire
@@ -3175,6 +3206,7 @@ private float B4xUpshiftSpeed(int fromGear)
 
 private float CalcAllisonRPM()
 {
+    if (allisonCompromiseModel) return AlcCalcRPM();
     B4xUpdateTCC(Time.deltaTime);
     B4xUpdateKickdownCreep(Time.deltaTime);
 
@@ -3247,6 +3279,7 @@ private float CalcAllisonRPM()
 
 private void DoAllisonGear()
 {
+    if (allisonCompromiseModel) { AlcDoGear(); return; }
     if (gear == 0)
     {
         gear = 1; shiftCD = 0.5f; alShiftTransient = 1f; alShiftTransientDur = 0.22f;
@@ -3562,19 +3595,19 @@ private void DoB400RGen5DSP(ref double txSample, float rn, float ld,
     // brightness response (5 discrete VAC levels) instead of a continuous
     // ramp -- the real, audible "two additional acceleration levels" trait.
     {
-        float awHz = B4R_AW_BASE_HZ + Mathf.Max(0f, rpm - IDLE) * (B4R_AW_RPM_SCALE * 0.5f);
+        float awHz = B4G5_AW_BASE_HZ + Mathf.Max(0f, rpm - IDLE) * (B4G5_AW_RPM_SCALE * 0.5f);
 
         float brightRaw = Mathf.Clamp01((rpm - IDLE) / Mathf.Max(1f, (GOV - IDLE)));
         // [NEW] 5-level VAC stepping.
         float brightTgt = Mathf.Floor(brightRaw * 5f) / 5f;
         float rate = brightTgt > b4g5_awBrightSm
-            ? (float)invSR / Mathf.Max(0.05f, B4R_AW_SWELL_ATTACK * 0.65f)   // faster than Gen 4
-            : (float)invSR / Mathf.Max(0.05f, B4R_AW_SWELL_RELEASE * 0.65f);
+            ? (float)invSR / Mathf.Max(0.05f, B4G5_AW_SWELL_ATTACK * 0.65f)   // faster than Gen 4
+            : (float)invSR / Mathf.Max(0.05f, B4G5_AW_SWELL_RELEASE * 0.65f);
         b4g5_awBrightSm = Mathf.MoveTowards(b4g5_awBrightSm, brightTgt, rate);
 
         // Self-contained air blend, gear-driven only (no external TCC
         // dependency) -- same shape as Gen4's gear-based ramp.
-        float airTgt = Mathf.Clamp01((gear - B4R_AW_AIR_GEAR_START) / Mathf.Max(0.01f, B4R_AW_AIR_GEAR_FULL - B4R_AW_AIR_GEAR_START));
+        float airTgt = Mathf.Clamp01((gear - B4G5_AW_AIR_GEAR_START) / Mathf.Max(0.01f, B4G5_AW_AIR_GEAR_FULL - B4G5_AW_AIR_GEAR_START));
         b4g5_awAirBlend += (airTgt - b4g5_awAirBlend) * 0.014f; // faster than Gen4's 0.01f
 
         float swellDepth = 1f - b4g5_awAirBlend * 0.75f;
@@ -3589,7 +3622,7 @@ private void DoB400RGen5DSP(ref double txSample, float rn, float ld,
         // instruction). Still smooth -- the extra partial is a pure sine,
         // no added grit/noise, and the vowelRatio/swell shaping above is
         // untouched, so it stays clean, just fuller and more present.
-        float awVol = B4R_AW_VOL * 1.15f * Mathf.Clamp01(0.25f + ld * 0.9f);
+        float awVol = B4G5_AW_VOL * 1.15f * Mathf.Clamp01(0.25f + ld * 0.9f);
 
         double t1 = Math.Sin(2.0 * Math.PI * ph_b4g5_aw1);
         double t2 = Math.Sin(2.0 * Math.PI * ph_b4g5_aw2);
@@ -3597,8 +3630,8 @@ private void DoB400RGen5DSP(ref double txSample, float rn, float ld,
         double tone = t1 * 1.0 + t2 * (0.28 + 0.40 * b4g5_awBrightSm * swellDepth) + t3 * 0.38;
 
         double airNoise = noise_hi * 0.6 + noise_lp * 0.4;
-        double airMix = tone * (1.0 - b4g5_awAirBlend * B4R_AW_AIR_NOISE_MIX)
-                       + airNoise * (b4g5_awAirBlend * B4R_AW_AIR_NOISE_MIX);
+        double airMix = tone * (1.0 - b4g5_awAirBlend * B4G5_AW_AIR_NOISE_MIX)
+                       + airNoise * (b4g5_awAirBlend * B4G5_AW_AIR_NOISE_MIX);
 
         txSample += airMix * awVol * engMul;
 
@@ -3674,7 +3707,7 @@ private void DoB400RGen5DSP(ref double txSample, float rn, float ld,
     // No legacy tap-thud on Gen 5 -- that's specifically a Gen4-era
     // artifact the real 5th Gen controls refresh moved past.
 
-    DoAllisonRetarderSpit(ref txSample, ref b4g5_retardZoneActive,
+    G5_RetarderSpit(ref txSample, ref b4g5_retardZoneActive,
                           ref b4g5_tickVol, ref b4g5_spitVol,
                           ref ph_b4g5_spitTick, ref ph_b4g5_spitHiss, engMul, invSR);
 }
@@ -3735,6 +3768,7 @@ private bool  l9_launchHuntActive = false;
     // ═════════════════════════════════════════════════════════════════════════
     private float CalcB500RRPM()
     {
+        if (allisonCompromiseModel) return AlcCalcRPM();
         if (gear == 0) return IDLE;
         // [GENERALIZED per instruction] Same as B400R Gen4: ISL9 keeps its
         // permanent hard-rev character, every other engine now gets the
@@ -3804,6 +3838,7 @@ private bool  l9_launchHuntActive = false;
     private const float VOITH_DEEP_HZ_BASE = 78f; // lowered per the "1 sec in" pitch you found
     private void DoB500RGear()
     {
+        if (allisonCompromiseModel) { AlcDoGear(); return; }
         // [FIX per instruction] kdExt (the old gear-1 kickdown speed
         // shrink) removed entirely -- kickdown no longer touches the gear
         // ladder anywhere in this function; it only boosts RPM gain via
@@ -3910,7 +3945,7 @@ private bool  l9_launchHuntActive = false;
         // real B500R math (CalcB500RRPM) plus the same smoothing "mask" on
         // top, so it reads smoother/quieter without any separate revving
         // logic underneath.
-        float raw = CalcB500RRPM();
+        float raw = G5B5_CalcRPM();
         float maskTau = 0.10f;
         b5g5_maskRPM = Mathf.Lerp(b5g5_maskRPM, raw, 1f - Mathf.Exp(-Time.deltaTime / Mathf.Max(0.001f, maskTau)));
         return b5g5_maskRPM;
@@ -3924,13 +3959,13 @@ private bool  l9_launchHuntActive = false;
         // on any gear change so DoB500RGen5DSP's b5g5_shiftThud/
         // b5g5_lockupThud layers keep working.
         int gearBefore = gear;
-        bool wasLockedBefore = gearBefore >= 1 && AL_LOCK_B500[Mathf.Min(gearBefore, AL_LOCK_B500.Length - 1)];
-        DoB500RGear();
+        bool wasLockedBefore = gearBefore >= 1 && AL_LOCK_B5G5[Mathf.Min(gearBefore, AL_LOCK_B5G5.Length - 1)];
+        G5B5_DoGear();
         if (gear != gearBefore)
         {
             b5g5_shiftThud = gear > gearBefore ? 1.0f : 0.70f;
             ph_b5g5_thud1 = 0.0; ph_b5g5_thud2 = 0.0; // [FIX -- click bug] zero the thud's own phase on every envelope-open
-            bool nowLocked = AL_LOCK_B500[Mathf.Min(gear, AL_LOCK_B500.Length - 1)];
+            bool nowLocked = AL_LOCK_B5G5[Mathf.Min(gear, AL_LOCK_B5G5.Length - 1)];
             b5g5_lockupThud = (gear >= 3 && nowLocked && !wasLockedBefore) ? 1.0f : 0f;
             if (b5g5_lockupThud > 0f) ph_b5g5_wh2 = 0.0; // [FIX -- click bug] ph_b5g5_wh2 is only ever read by the lockup thud, safe to reset
             b5g5_prevGearForThud = gear;
@@ -3955,7 +3990,7 @@ private bool  l9_launchHuntActive = false;
         // extra smoothing "mask" applied on top so the newer electronic
         // controls read as smoother/quieter acoustically -- the underlying
         // revving behavior is now IDENTICAL to Gen 4.
-        float raw = CalcAllisonRPM();
+        float raw = G5B4_CalcRPM();
         float maskTau = 0.10f;
         b4g5_maskRPM = Mathf.Lerp(b4g5_maskRPM, raw, 1f - Mathf.Exp(-Time.deltaTime / Mathf.Max(0.001f, maskTau)));
         return b4g5_maskRPM;
@@ -3969,7 +4004,7 @@ private bool  l9_launchHuntActive = false;
         // still fired on any gear change so DoB400RGen5DSP's b4g5_shiftThud
         // layer keeps working.
         int gearBefore = gear;
-        DoAllisonGear();
+        G5B4_DoGear();
         if (gear != gearBefore)
         {
             b4g5_shiftThud = gear > gearBefore ? 0.55f : 0.40f;
@@ -5647,7 +5682,7 @@ private void DoB500RGen5DSP(ref double txSample, float rn, float ld, float hz,
 
     // ── TC slip whoosh — tighter lockup than Gen 4 (newer torsional
     // damper), so less time spent slipping overall, quieter when it does.
-    bool  b5g5Slipping = gear > 0 && !AL_LOCK_B500[Mathf.Min(gear, AL_LOCK_B500.Length - 1)];
+    bool  b5g5Slipping = gear > 0 && !AL_LOCK_B5G5[Mathf.Min(gear, AL_LOCK_B5G5.Length - 1)];
     float b5g5SlipLoad = b5g5Slipping ? (gear == 1 ? ld * 0.85f : ld * 0.35f) : 0f;
     b5g5_tcNoiseSmooth += (b5g5SlipLoad - b5g5_tcNoiseSmooth) * 0.007f; // faster than Gen4's 0.005
     if (b5g5_tcNoiseSmooth > 0.003f && spd > 0.5f)
@@ -5714,7 +5749,7 @@ private void DoB500RGen5DSP(ref double txSample, float rn, float ld, float hz,
 
     // ── Retarder spit/tick — shared real mechanism (both generations
     // physically retard the same way), state kept fully separate though.
-    DoAllisonRetarderSpit(ref txSample, ref b5g5_retardZoneActive,
+    G5_RetarderSpit(ref txSample, ref b5g5_retardZoneActive,
                           ref b5g5_tickVol, ref b5g5_spitVol,
                           ref ph_b5g5_spitTick, ref ph_b5g5_spitHiss, engMul, invSR);
 }
@@ -5871,7 +5906,16 @@ private void DoDeepL9VoiceDSP(ref double voiceSample, float hz, float rn, float 
         bool poweredNow = batteryOn && running;
         if (!poweredNow)
         {
-            if (_wasPoweredForACTail) _acShutdownTailTimer = AC_SHUTDOWN_TAIL_SEC;
+            if (_wasPoweredForACTail)
+            {
+                _acShutdownTailTimer = AC_SHUTDOWN_TAIL_SEC;
+                // [ADD] QoL: engine shutoff fade instead of a harsh clip -- see
+                // ENGINE_SHUTDOWN_TAIL_SEC's own comment. Captured once, right on the transition
+                // frame, while `rpm` still holds its last real value (Tick() stopped updating it
+                // the instant `running` went false, but hasn't been reset to 0 by anything).
+                _engineShutdownTailTimer = ENGINE_SHUTDOWN_TAIL_SEC;
+                _engineShutdownStartHz   = FHz(rpm);
+            }
             _wasPoweredForACTail = false;
             // Same reset as the isEngineRunning==false branch further down --
             // covers the case where power cuts (battery off / breakdown)
@@ -5883,17 +5927,37 @@ private void DoDeepL9VoiceDSP(ref double voiceSample, float hz, float rn, float 
             _alternatorTimer    = -1f;
             _extendedPuffTimer  = -1f;
 
-            if (_acShutdownTailTimer > 0f)
+            if (_acShutdownTailTimer > 0f || _engineShutdownTailTimer > 0f)
             {
                 double invSRTail = 1.0 / SR;
-                _acShutdownTailTimer -= (float)(data.Length / (double)channels / SR);
+                float bufDurSec = (float)(data.Length / (double)channels / SR);
+                _acShutdownTailTimer -= bufDurSec;
                 float acVolPersonalityTail = acHighEngLow ? 1.45f : 1.0f;
+                bool engineTailActive = _engineShutdownTailTimer > 0f;
                 for (int i = 0; i < data.Length; i += channels)
                 {
-                    double acSampleTail = DoUniversalACDSP(NextNoiseSample(), false, 0f, acVolPersonalityTail, invSRTail, false);
-                    float sTail = (float)(acSampleTail * npcVolumeScale);
+                    double acSampleTail = _acShutdownTailTimer > 0f
+                        ? DoUniversalACDSP(NextNoiseSample(), false, 0f, acVolPersonalityTail, invSRTail, false)
+                        : 0.0;
+
+                    double engineTail = 0.0;
+                    if (engineTailActive)
+                    {
+                        float tailFrac = Mathf.Clamp01(_engineShutdownTailTimer / ENGINE_SHUTDOWN_TAIL_SEC);
+                        // Amplitude decays faster than linear (a real spin-down loses energy
+                        // quickly at first, then trails off) and pitch glides gently downward --
+                        // reads as winding down rather than an abrupt mute.
+                        float decayEnv = tailFrac * tailFrac;
+                        float hzNow = _engineShutdownStartHz * (0.4f + 0.6f * tailFrac);
+                        _engineShutdownPhase += hzNow * (float)invSRTail;
+                        if (_engineShutdownPhase > 1f) _engineShutdownPhase -= 1f;
+                        engineTail = Math.Sin(_engineShutdownPhase * 2.0 * Math.PI) * decayEnv * 0.12;
+                    }
+
+                    float sTail = (float)((acSampleTail + engineTail) * npcVolumeScale);
                     for (int c = 0; c < channels; c++) data[i + c] = sTail;
                 }
+                if (engineTailActive) _engineShutdownTailTimer -= bufDurSec;
                 return;
             }
 
@@ -6018,7 +6082,13 @@ private void DoDeepL9VoiceDSP(ref double voiceSample, float hz, float rn, float 
         bool  retAct = retStage > 0;
         float outRPM = gear > 0 ? (spd / 3.6f) / TCIRC * 60f : 0f;
 
-        bool  acEffectiveOn     = batteryOn && acComfortOn;
+        // [FIX] Was `batteryOn && acComfortOn` -- AC (compressor, belt/engine-driven) needs the
+        // ENGINE running, not just battery power. Battery alone keeps lights/accessories alive
+        // with the engine off (a real, normal state); AC shouldn't stay "on" through that. Matches
+        // `poweredNow` a few lines up (already `batteryOn && running`), which drives the shutdown-
+        // tail fade -- this just aligns AC's actual steady-state target with the same condition
+        // instead of a looser one, so the two don't disagree about when AC should really be off.
+        bool  acEffectiveOn     = batteryOn && running && acComfortOn;
 
         // [NEW] AC cycling mode -- 30s-on/30s-off duty cycle when enabled,
         // overriding acEffectiveOn during the off phase. Timer advanced
@@ -6238,8 +6308,9 @@ if (engineType == EngineType.L9N || engineType == EngineType.ISLG
             // ══════════════════════════════════════════════════════════════
             else if (engineType == EngineType.XE60)
             {
+                // Centre-axle builds = modified ZF AVE 130 (hub motor as the centre axle).
                 if (tx == "elfa3_centeraxle" || tx == "accelera_centeraxle")
-                    DoElfa3CenterAxleDSP(ref engineSample, ref txSample, ld, engVolPersonality, noiseHp, invSR);
+                    DoZFAVE130DSP(ref engineSample, ref txSample, ld, engVolPersonality, noiseHp, invSR, false, true);
                 else
                     DoZFAVE130DSP(ref engineSample, ref txSample, ld, engVolPersonality, noiseHp, invSR);
             }
@@ -12544,7 +12615,7 @@ private void DoEP4xDSP(ref double txSample, ref double engineSample,
 
     private void DoZFAVE130DSP(ref double engineSample, ref double txSample,
                                 float ld, float engVolPersonality, double noiseHp, double invSR,
-                                bool isELFA2 = false)
+                                bool isELFA2 = false, bool hubCentre = false)
     {
         // [FIX — abrupt harmonics on acceleration] `ld` (accelerator/load)
         // arrives unsmoothed and used to feed straight into motVol/invVol/
@@ -12555,6 +12626,7 @@ private void DoEP4xDSP(ref double txSample, ref double engineSample,
         // everywhere `ld` previously was for these parts of the chain.
         zfa_ldSmooth += (ld - zfa_ldSmooth) * (ld > zfa_ldSmooth ? 0.004f : 0.003f);
         float ldS = zfa_ldSmooth;
+        XeIrlBegin(invSR);
 
         // [REAL SPEC — Miami-Dade XE60 manual] "When the brake pedal is
         // depressed, the regenerative braking is blended with the vehicle
@@ -12608,28 +12680,33 @@ private void DoEP4xDSP(ref double txSample, ref double engineSample,
         // continuously-tracked target, never stepped. [FIX — takeoff
         // blending] attack slowed slightly (0.012→0.009), same reasoning as
         // XE40's.
-        float motTarget = (spd / MAX_SPD) * 610f;
+        float motTop = 610f * xe_ps;
+        float motTarget = Mathf.Max((spd / MAX_SPD) * motTop, XeLaunchFloorHz(ldS, 1f));
         zfa_motorHzSmooth += (motTarget - zfa_motorHzSmooth) * (motTarget > zfa_motorHzSmooth ? 0.009f : 0.006f);
         if (zfa_motorHzSmooth < 0.3f) zfa_motorHzSmooth = 0f;
-        float motSpdFrac = Mathf.Clamp01(zfa_motorHzSmooth / 610f);
+        float motSpdFrac = Mathf.Clamp01(zfa_motorHzSmooth / motTop);
         float motVol = motSpdFrac > 0.001f
-            ? (0.045f + motSpdFrac * motSpdFrac * 0.10f + ldS * 0.03f) * npcVolumeScale * engVolPersonality * (1f + ldS * 0.45f) : 0f;
+            ? (0.045f + motSpdFrac * motSpdFrac * 0.10f + ldS * 0.03f) * npcVolumeScale * engVolPersonality * (1f + ldS * 0.45f) * xe_gain : 0f;
 
         double motSample = 0;
         if (zfa_motorHzSmooth > 0.3f)
         {
             // Left bank — the dominant, clean swell (mirrors XE40's mot1/2/3
             // exactly in structure/weighting, so the core tone reads the same).
-            motSample = Math.Sin(2.0 * Math.PI * ph_zfa_motL1) * motVol
-                      + Math.Sin(2.0 * Math.PI * ph_zfa_motL2) * motVol * 0.42
+            // IRL layers: xe_wF/xe_w2 thin the body at high speed; the right
+            // bank comes up to ~0.5 and drifts off unison for the pound.
+            float rGain = 0.22f + 0.28f * xe_wob;
+            motSample = Math.Sin(2.0 * Math.PI * ph_zfa_motL1) * motVol * xe_wF
+                      + Math.Sin(2.0 * Math.PI * ph_zfa_motL2) * motVol * 0.42 * xe_w2
                       + Math.Sin(2.0 * Math.PI * ph_zfa_motL3) * motVol * 0.18
                       // Right bank — quiet, near-unison "second motor" thickening.
                       // Detune is small enough (~0.02%) that the beat period is
                       // several seconds long: it reads as body/richness, not a wobble.
-                      + Math.Sin(2.0 * Math.PI * ph_zfa_motR1) * motVol * 0.22
-                      + Math.Sin(2.0 * Math.PI * ph_zfa_motR2) * motVol * 0.10
+                      + Math.Sin(2.0 * Math.PI * ph_zfa_motR1) * motVol * rGain * xe_wF
+                      + Math.Sin(2.0 * Math.PI * ph_zfa_motR2) * motVol * 0.10 * xe_w2
                       // Slot-harmonic shimmer — same research basis as XE40.
-                      + Math.Sin(2.0 * Math.PI * ph_zfa_slot) * motVol * 0.05 * motSpdFrac;
+                      + Math.Sin(2.0 * Math.PI * ph_zfa_slot) * motVol * 0.05 * motSpdFrac
+                      + (xe_hs > 0f ? Math.Sin(2.0 * Math.PI * ph_xe_ov) * motVol * 0.02 * xe_hs : 0.0);
             motSample *= cogAM;
 
             // [RESTORED] Motor rasp — same reasoning/values as XE40: XE60's
@@ -12644,6 +12721,7 @@ private void DoEP4xDSP(ref double txSample, ref double engineSample,
             double raspMix   = isELFA2 ? 0.93 : 0.97;
             motSample = Math.Tanh(motSample * raspDrive) * raspMix
                       + Math.Sin(2.0 * Math.PI * ph_zfa_motL3) * motVol * (isELFA2 ? 0.045 : 0.028);
+            motSample *= xe_shAM * (1.0 + 0.15 * xe_wob * xe_pound);
         }
 
         // Planetary reduction mesh whine — real gear teeth, real gear-mesh
@@ -12653,10 +12731,11 @@ private void DoEP4xDSP(ref double txSample, ref double engineSample,
         // unison), so this layer was never the source of the wobble.
         float meshVol = motSpdFrac > 0.001f
             ? (0.020f + motSpdFrac * 0.045f + ldS * 0.02f) * npcVolumeScale * engVolPersonality : 0f;
-        double meshHz = 260.0 + zfa_motorHzSmooth * 2.35;
+        double meshHz = (260.0 + (zfa_motorHzSmooth / xe_ps) * 2.35) * xe_ps;
         double meshSample = meshVol > 0.0005f
             ? Math.Sin(2.0 * Math.PI * ph_zfa_mesh1) * meshVol + Math.Sin(2.0 * Math.PI * ph_zfa_mesh2) * meshVol * 0.5
             : 0.0;
+        meshSample *= xe_shAM;
 
         // ═════════════════════════════════════════════════════════════════
         //  CENTER AXLE DRIVE  —  RESTORED, and this time actually grounded.
@@ -12691,25 +12770,51 @@ private void DoEP4xDSP(ref double txSample, ref double engineSample,
         //  little so the two banks beat gently against each other rather
         //  than sitting in artificial unison.
         // ═════════════════════════════════════════════════════════════════
-        float ctrMotTarget = (spd / MAX_SPD) * 548f; // lower than the rear bank's 610f
-        zfc_motorHzSmooth += (ctrMotTarget - zfc_motorHzSmooth) * (ctrMotTarget > zfc_motorHzSmooth ? 0.009f : 0.006f);
-        if (zfc_motorHzSmooth < 0.3f) zfc_motorHzSmooth = 0f;
-        float ctrSpdFrac = Mathf.Clamp01(zfc_motorHzSmooth / 548f);
-        float ctrMotVol = ctrSpdFrac > 0.001f
-            ? (0.030f + ctrSpdFrac * ctrSpdFrac * 0.062f + ldS * 0.020f) * npcVolumeScale * engVolPersonality * (1f + ldS * 0.35f)
-            : 0f;
+        float ctrSpdFrac;
         double ctrSample = 0.0;
-        if (ctrMotVol > 0.0005f)
+        if (hubCentre)
         {
-            ctrSample = Math.Sin(2.0 * Math.PI * ph_zfc_mot1) * ctrMotVol
-                      + Math.Sin(2.0 * Math.PI * ph_zfc_mot2) * ctrMotVol * 0.42;
-            // Its own planetary reduction whine -- present but softer than
-            // the rear bank's, and at a different ratio so the two mesh
-            // layers never sit on top of each other.
-            ctrSample += Math.Sin(2.0 * Math.PI * ph_zfc_mesh) * ctrMotVol * 0.30;
-            ph_zfc_mot1  = (ph_zfc_mot1  + zfc_motorHzSmooth          * invSR) % 1.0;
-            ph_zfc_mot2  = (ph_zfc_mot2  + zfc_motorHzSmooth * 2.0    * invSR) % 1.0;
-            ph_zfc_mesh  = (ph_zfc_mesh  + (215.0 + zfc_motorHzSmooth * 2.05) * invSR) % 1.0;
+            // Accelera/ELFA centre-axle builds: the in-wheel hub motor (same
+            // voice as DoElfa3CenterAxleDSP) in place of the ZF centre bank.
+            float hubTop = 480f * xe_ps;
+            float hubTarget = Mathf.Max((spd / MAX_SPD) * hubTop, XeLaunchFloorHz(ldS, 480f / 610f));
+            zfh_hzSmooth += (hubTarget - zfh_hzSmooth) * (hubTarget > zfh_hzSmooth ? 0.008f : 0.005f);
+            if (zfh_hzSmooth < 0.3f) zfh_hzSmooth = 0f;
+            ctrSpdFrac = Mathf.Clamp01(zfh_hzSmooth / hubTop);
+            float hubVolTarget = ctrSpdFrac > 0.001f
+                ? (0.032f + ctrSpdFrac * ctrSpdFrac * 0.065f + ld * 0.028f) * npcVolumeScale * engVolPersonality * xe_gain : 0f;
+            zfh_volSmooth += (hubVolTarget - zfh_volSmooth) * 0.01f;
+            if (zfh_hzSmooth > 0.3f)
+            {
+                ctrSample = Math.Sin(2.0 * Math.PI * ph_zfh_1) * zfh_volSmooth * xe_wF
+                          + Math.Sin(2.0 * Math.PI * ph_zfh_1 * 0.5) * zfh_volSmooth * 0.38 * xe_w2
+                          + Math.Sin(2.0 * Math.PI * ph_zfh_2) * zfh_volSmooth * 0.20;
+                double hubCog = 1.0 + (isStopped ? Math.Sin(2.0 * Math.PI * ph_zfh_cog) * 0.10 : 0.0);
+                ctrSample = Math.Tanh(ctrSample * hubCog * 1.12) * 0.94 * xe_shAM;
+            }
+            ph_zfh_1   = (ph_zfh_1   + zfh_hzSmooth * xe_fl  * invSR) % 1.0;
+            ph_zfh_2   = (ph_zfh_2   + zfh_hzSmooth * 1.997  * invSR) % 1.0;
+            ph_zfh_cog = (ph_zfh_cog + 1.7                    * invSR) % 1.0;
+        }
+        else
+        {
+            float ctrTop = 548f * xe_ps; // lower than the rear bank's
+            float ctrMotTarget = Mathf.Max((spd / MAX_SPD) * ctrTop, XeLaunchFloorHz(ldS, 548f / 610f));
+            zfc_motorHzSmooth += (ctrMotTarget - zfc_motorHzSmooth) * (ctrMotTarget > zfc_motorHzSmooth ? 0.009f : 0.006f);
+            if (zfc_motorHzSmooth < 0.3f) zfc_motorHzSmooth = 0f;
+            ctrSpdFrac = Mathf.Clamp01(zfc_motorHzSmooth / ctrTop);
+            float ctrMotVol = ctrSpdFrac > 0.001f
+                ? (0.030f + ctrSpdFrac * ctrSpdFrac * 0.062f + ldS * 0.020f) * npcVolumeScale * engVolPersonality * (1f + ldS * 0.35f) * xe_gain
+                : 0f;
+            if (ctrMotVol > 0.0005f)
+            {
+                ctrSample = Math.Sin(2.0 * Math.PI * ph_zfc_mot1) * ctrMotVol * xe_wF
+                          + Math.Sin(2.0 * Math.PI * ph_zfc_mot2) * ctrMotVol * 0.42 * xe_w2;
+                ctrSample += Math.Sin(2.0 * Math.PI * ph_zfc_mesh) * ctrMotVol * 0.30;
+                ph_zfc_mot1  = (ph_zfc_mot1  + zfc_motorHzSmooth          * invSR) % 1.0;
+                ph_zfc_mot2  = (ph_zfc_mot2  + zfc_motorHzSmooth * 2.0    * invSR) % 1.0;
+                ph_zfc_mesh  = (ph_zfc_mesh  + (215.0 + (zfc_motorHzSmooth / xe_ps) * 2.05) * xe_ps * invSR) % 1.0;
+            }
         }
         engineSample += ctrSample;
 
@@ -12818,7 +12923,7 @@ private void DoEP4xDSP(ref double txSample, ref double engineSample,
         double pumpTone = Math.Sin(2.0 * Math.PI * ph_zfa_pump) * 0.007 * npcVolumeScale * engVolPersonality;
         ph_zfa_pump = (ph_zfa_pump + 45.0 * invSR) % 1.0;
 
-        engineSample = Math.Sin(2.0 * Math.PI * ph_zfa_hum) * zfa_humVolSmooth * cogAM + motSample
+        engineSample += Math.Sin(2.0 * Math.PI * ph_zfa_hum) * zfa_humVolSmooth * cogAM + motSample
                      + (zfa_contactorPulse > 0f ? noiseHp * zfa_contactorPulse * 0.28 * npcVolumeScale : 0)
                      + pumpTone;
 
@@ -12837,16 +12942,20 @@ private void DoEP4xDSP(ref double txSample, ref double engineSample,
                  + thermalFan;
 
         ph_zfa_hum   = (ph_zfa_hum   + 58.0                 * invSR) % 1.0;
-        ph_zfa_motL1 = (ph_zfa_motL1 + zfa_motorHzSmooth           * invSR) % 1.0;
-        ph_zfa_motL2 = (ph_zfa_motL2 + zfa_motorHzSmooth * 2.0     * invSR) % 1.0;
-        ph_zfa_motL3 = (ph_zfa_motL3 + zfa_motorHzSmooth * 2.997   * invSR) % 1.0;
+        ph_zfa_motL1 = (ph_zfa_motL1 + zfa_motorHzSmooth * xe_fl         * invSR) % 1.0;
+        ph_zfa_motL2 = (ph_zfa_motL2 + zfa_motorHzSmooth * 2.0 * xe_fl   * invSR) % 1.0;
+        ph_zfa_motL3 = (ph_zfa_motL3 + zfa_motorHzSmooth * 2.997 * xe_fl * invSR) % 1.0;
+        ph_xe_ov     = (ph_xe_ov     + zfa_motorHzSmooth * 5.0           * invSR) % 1.0;
         ph_zfa_slot  = (ph_zfa_slot  + zfa_motorHzSmooth * 5.98    * invSR) % 1.0;
         // [FIX, kept from prior pass] Right bank detune dropped from
         // ~0.5-0.6% to ~0.02-0.03% — old values produced a several-Hz beat
         // (audible fast wobble); these produce a beat period of several
         // seconds (reads as thickness, not motion).
-        ph_zfa_motR1 = (ph_zfa_motR1 + zfa_motorHzSmooth * 1.0002  * invSR) % 1.0;
-        ph_zfa_motR2 = (ph_zfa_motR2 + zfa_motorHzSmooth * 2.0003  * invSR) % 1.0;
+        // Below 70 km/h: near-unison (beat period of seconds). Above: drifts to
+        // a ~1.4 Hz beat for the twin-motor pound.
+        double rDet = (xe_wob > 0f && zfa_motorHzSmooth > 1f) ? 1.0 + xe_beatHz / zfa_motorHzSmooth : 1.0002;
+        ph_zfa_motR1 = (ph_zfa_motR1 + zfa_motorHzSmooth * rDet * xe_fl                    * invSR) % 1.0;
+        ph_zfa_motR2 = (ph_zfa_motR2 + zfa_motorHzSmooth * 2.0 * (xe_wob > 0f ? rDet : 1.00015) * invSR) % 1.0;
         ph_zfa_regenTone1 = (ph_zfa_regenTone1 + zfa_motorHzSmooth * 0.85               * invSR) % 1.0;
         ph_zfa_regenTone2 = (ph_zfa_regenTone2 + zfa_motorHzSmooth * 0.85 * 1.998 / 2.0 * invSR) % 1.0;
         ph_zfa_mesh1 = (ph_zfa_mesh1 + meshHz                      * invSR) % 1.0;
@@ -12855,6 +12964,8 @@ private void DoEP4xDSP(ref double txSample, ref double engineSample,
         ph_zfa_inv2  = (ph_zfa_inv2  + invHzUsed * 1.5             * invSR) % 1.0;
         ph_zfa_comp1 = (ph_zfa_comp1 + zfa_compHzSmooth            * invSR) % 1.0;
         ph_zfa_comp2 = (ph_zfa_comp2 + zfa_compHzSmooth * 1.5      * invSR) % 1.0;
+
+        XeIrlEnd(ref engineSample, ldS, engVolPersonality, invSR);
     }
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -13107,7 +13218,7 @@ private void DoEP4xDSP(ref double txSample, ref double engineSample,
         if (tx == "elfa2_centeraxle" || tx == "accelera_fc_centeraxle")
         {
             bool legacyElfa2 = tx == "elfa2_centeraxle";
-            DoElfa3CenterAxleDSP(ref engineSample, ref txSample, ld, engVolPersonality, noiseHp, invSR, legacyElfa2);
+            DoZFAVE130DSP(ref engineSample, ref txSample, ld, engVolPersonality, noiseHp, invSR, legacyElfa2, true);
         }
         else
         {

@@ -553,6 +553,7 @@ public partial class BusAudioEngine
             : DoDieselCore(p, hz, rn, ld, engMul, noiseClt, noiseInd, invSR);
 
         engineSample = core;
+        if (l9c_preset != null) engineSample += L9CharLayer(core, hz, rn, ld, engMul); // L9/ISL9 + Gen4 Allison character
 
         // [ADD] Gillig is genuinely more hollow-bodied than the Xcelsior --
         // engine and transmission whine both read louder/more present
@@ -1420,7 +1421,7 @@ public partial class BusAudioEngine
         {
             double invHz = 900.0 + rn * 750.0; // mid-high register -- a whistle-in-a-duct pitch, not a low growl
             double invTone = Math.Sin(2.0 * Math.PI * ph_cb_inv1) * 0.26;
-            double invAir  = noise_hi * 0.60 + noise_lp * 0.12; // mostly airy hiss, hollow body underneath
+            double invAir  = (noise_hi * 0.60 + noise_lp * 0.12) * L9AirK; // mostly airy hiss, hollow body underneath
             cb_invFilterMod = 1.0 + (invTone + invAir) * cb_invOverlayVol;
             ph_cb_inv1 = (ph_cb_inv1 + invHz * invSR) % 1.0;
         }
@@ -1549,7 +1550,7 @@ public partial class BusAudioEngine
         {
             double invHz = 900.0 + rn * 750.0;
             double invTone = Math.Sin(2.0 * Math.PI * ph_cb_inv1) * 0.26;
-            double invAir  = noise_hi * 0.60 + noise_lp * 0.12;
+            double invAir  = (noise_hi * 0.60 + noise_lp * 0.12) * L9AirK;
             cb_invFilterMod = 1.0 + (invTone + invAir) * cb_invOverlayVol;
             ph_cb_inv1 = (ph_cb_inv1 + invHz * invSR) % 1.0;
         }
@@ -1567,12 +1568,12 @@ public partial class BusAudioEngine
         double turboHz = (240.0 + cb_turboVolSmooth * 620.0) * p.turboBright;
         double pipeTone = Math.Sin(2.0 * Math.PI * ph_cb_turbo) * 0.30
                          + Math.Sin(2.0 * Math.PI * ph_cb_turbo * 0.5) * 0.18;
-        double pipeNoise = noise_hi * 0.45 + noise_lp * 0.35;
+        double pipeNoise = (noise_hi * 0.45 + noise_lp * 0.35) * L9AirK;
         double turbo = (pipeTone + pipeNoise) * turboV * 0.55;
         ph_cb_turbo = (ph_cb_turbo + turboHz * invSR) % 1.0;
 
         double turboWhineHz = turboHz * TURBO_BLADE_COUNT;
-        double turboWhine = (Math.Sin(2.0 * Math.PI * ph_cb_turboWhine) * 0.35 + noise_hi * 0.45) * turboV * 0.36
+        double turboWhine = (Math.Sin(2.0 * Math.PI * ph_cb_turboWhine) * 0.35 + noise_hi * 0.45 * L9AirK) * turboV * 0.36
                            * (0.7 + 0.3 * fire); // breathes with the firing pulse instead of an isolated oscillator
         ph_cb_turboWhine = (ph_cb_turboWhine + turboWhineHz * invSR) % 1.0;
 
@@ -2095,7 +2096,7 @@ public partial class BusAudioEngine
         if (under3 && !l9_wasUnder3 && accel < 0.05f) l9_brakePuffVol = 1.0f;
         l9_wasUnder3 = under3;
         l9_brakePuffVol *= (1.0f - 12.0f * (float)invSR);
-        engineSample += (noise_hi * 0.8 + noise_lp * 0.2) * Math.Max(0, l9_brakePuffVol - 0.05f) * engMul;
+        engineSample += (noise_hi * 0.8 + noise_lp * 0.2) * L9AirK * Math.Max(0, l9_brakePuffVol - 0.05f) * engMul;
 
         float coastTarget = (accel <= 0.01f && spd > 10f) ? 1.0f : 0f;
         l9_coastGroanVol += (coastTarget - l9_coastGroanVol) * (coastTarget > l9_coastGroanVol ? 0.012f : 0.0035f);

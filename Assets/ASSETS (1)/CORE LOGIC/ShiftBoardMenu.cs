@@ -53,6 +53,7 @@ public class ShiftBoardMenu : MonoBehaviour
     private bool _stylesReady;
     private GUIStyle _lblTitle, _lblSub, _lblDim, _lblBody, _lblCyan, _lblAmber, _lblGreen, _lblBig, _lblLocked;
     private GUIStyle _btnPrimary, _btnSecond, _btnDisabled, _btnDanger;
+    private GUIStyle _starOn, _starOff;
 
     private class RouteOption
     {
@@ -614,6 +615,15 @@ public class ShiftBoardMenu : MonoBehaviour
         GUI.Label(new Rect(r.x + 14, r.y + 8, 200, 26), $"Route {opt.routeNumber}", _lblCyan);
         GUI.Label(new Rect(r.x + 14, r.y + 32, w - 28, 18), dirLabel, _lblDim);
 
+        // [ADD] Favorite toggle -- drawn (and hit-tested) BEFORE the whole-card
+        // button below so a click here consumes the event and doesn't also
+        // register as picking the card. Favoriting is per plain route number
+        // (see FavoriteRouteData), so it applies across all of this route's
+        // variants/short turns together.
+        bool favorite = FavoriteRouteData.Instance != null && FavoriteRouteData.Instance.IsFavorite(opt.routeNumber);
+        if (GUI.Button(new Rect(r.xMax - 40, r.y + 6, 30, 28), favorite ? "★" : "☆", favorite ? _starOn : _starOff))
+            FavoriteRouteData.Instance?.Toggle(opt.routeNumber);
+
         string depStr = BusScheduler.MinutesToTimeString(opt.departureAbsMin % 1440f);
         GUI.Label(new Rect(r.x + 14, r.y + 52, w - 28, 18), $"Departs {depStr}  ·  {LapPlanText(opt.route, opt.laps)}", _lblBody);
         string idleTag = opt.idleEligibleCount > 0
@@ -999,5 +1009,7 @@ public class ShiftBoardMenu : MonoBehaviour
         _btnSecond   = MDT_UITheme.MakeButton(MDT_UITheme.BGButton, MDT_UITheme.TextSecond, 11);
         _btnDisabled = MDT_UITheme.MakeButton(MDT_UITheme.BGButton, MDT_UITheme.TextDim, 11);
         _btnDanger   = MDT_UITheme.MakeButton(new Color(0.35f, 0.08f, 0.08f, 1f), MDT_UITheme.TextRed, 11, FontStyle.Bold);
+        _starOn      = MDT_UITheme.MakeButton(new Color(0.35f, 0.28f, 0.03f, 1f), MDT_UITheme.TextAmber, 16, FontStyle.Bold);
+        _starOff     = MDT_UITheme.MakeButton(MDT_UITheme.BGButton, MDT_UITheme.TextDim, 16);
     }
 }

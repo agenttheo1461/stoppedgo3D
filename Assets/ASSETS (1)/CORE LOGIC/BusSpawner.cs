@@ -158,6 +158,14 @@ private void Start()
         go.name = $"Bus_{slot.fleetNumber}";
         slot.spawnedInstance = go;
 
+        // [CHANGE 2026-09-29] Multiplayer, rebuilt architecture: buses no longer carry a
+        // NetworkObject at all -- every process (host and every client) spawns its own full local
+        // fleet exactly like this, unconditionally, and NetworkGameBridge (one singleton, living on
+        // the NetworkManager scene object) keys position/state sync off busID instead of a
+        // per-bus NetworkObject. See NetworkGameBridge's header comment for the full reasoning.
+        // This removes the old IsSceneObject/reflection/Spawn() dance entirely -- there is nothing
+        // left here for multiplayer to do at spawn time.
+
         // Get or add NPCBusController
 var ctrl = go.GetComponentInChildren<NPCBusController>();
         if (ctrl == null)

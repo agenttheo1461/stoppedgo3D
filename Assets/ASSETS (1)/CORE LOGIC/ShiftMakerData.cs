@@ -46,7 +46,7 @@ public class ShiftMakerData : MonoBehaviour
             }
         }
         public string DayLabel => dayOffset <= 0 ? "Today" : dayOffset == 1 ? "+1 day" : $"+{dayOffset} days";
-        public string RouteLabel => string.IsNullOrEmpty(variantLetter) ? $"Route {routeNumber}" : $"Route {routeNumber}{variantLetter}";
+        public string RouteLabel => $"Route {BusRouteData.RouteLabel(routeNumber, variantLetter)}";
         public string DirLabel => outbound ? "A → Z" : "Z → A";
     }
 

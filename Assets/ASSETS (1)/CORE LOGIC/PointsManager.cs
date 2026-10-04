@@ -314,6 +314,16 @@ public class PointsManager : MonoBehaviour
         return EndLegAndCalculate(out _, out _);
     }
 
+    /// <summary>Route Manager: points and XP for dispatching well. Counts toward the same level, XP and points
+    /// shown in the main menu. Returns true if it caused a level-up.</summary>
+    public bool AwardManagerScore(int points, int xpAmount)
+    {
+        if (points > 0) { sessionPoints += points; lifetimePoints += points; }
+        bool leveled = AddXP(xpAmount);
+        SaveProgress();
+        return leveled;
+    }
+
     // ============================================================
     // XP
     // ============================================================

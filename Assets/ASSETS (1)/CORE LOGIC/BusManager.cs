@@ -117,6 +117,10 @@ public class BusManager : MonoBehaviour
     private List<int>                  _idlePool   = new();
     private int                        _nextBusID  = 0;
 
+    // [REMOVED 2026-09-29] ClearAllRegistrations -- multiplayer, rebuilt architecture: a network
+    // client keeps its own full local fleet/registrations unconditionally now, same as
+    // single-player/host. Nothing clears this before connecting any more.
+
     // FIX: buses that have retired (RetireBusFromRoute) but haven't finished
     // physically driving to the depot yet (NotifyBusParkedAtDepot) live in
     // neither _busRecords.isActive nor _idlePool — completely invisible to
@@ -337,7 +341,7 @@ BusScheduler.Instance.OnBusRetiredFromRoute += _onBusRetiredFromRouteHandler;
             return;
         }
 
-        int dispatchID = GetIdleBusForRoute(slot.routeNumber);
+        int dispatchID = GetIdleBusForRoute(slot.routeNumber, slot.scheduledDeparture % 1440f, slot.variantLetter);
         if (dispatchID < 0)
         {
             Debug.LogWarning($"[BusManager] No idle bus for Route {slot.FullRouteLabel} " +
@@ -358,6 +362,15 @@ BusScheduler.Instance.OnBusRetiredFromRoute += _onBusRetiredFromRouteHandler;
         var route = BusScheduler.Instance.GetRouteData(slot.routeNumber);
         if (route == null) { Debug.LogError($"[BusManager] Route {slot.routeNumber} not found."); return; }
 
+        // Ask the scheduler FIRST. If it refuses this bus (vehicle policy, route full), the bus stays where it is.
+        // Going ahead anyway sent a physical bus onto the route with no trip behind it, the slot stayed empty,
+        // and the next retry sent another one, again and again.
+        // [FIX-C] Only tell the scheduler if this slot isn't already committed.
+        // If assignedBusID is already set to this bus, CommitAssignment already
+        // ran (e.g. from ClaimNextAvailableSlot) — calling it again would double-
+        // increment _busesPerRoute.
+        if (slot.assignedBusID != busID && !BusScheduler.Instance.AssignBusToSlot(slot, busID)) return;
+
         // isActive/isIdle are now derived from record.controller.State -- the
         // AssignRouteWithProgress/SpawnParkedAtTerminal call below is what
         // actually moves State off Idle, so nothing needs setting here.
@@ -368,13 +381,6 @@ BusScheduler.Instance.OnBusRetiredFromRoute += _onBusRetiredFromRouteHandler;
             record.idleZone.currentCount--;
             record.idleZone = null;
         }
-
-        // [FIX-C] Only tell the scheduler if this slot isn't already committed.
-        // If assignedBusID is already set to this bus, CommitAssignment already
-        // ran (e.g. from ClaimNextAvailableSlot) — calling it again would double-
-        // increment _busesPerRoute.
-        if (slot.assignedBusID != busID)
-            BusScheduler.Instance.AssignBusToSlot(slot, busID);
 
         record.controller.variantLetter = slot.variantLetter;
 
@@ -531,7 +537,11 @@ private void HandleReplacementNeeded(int playerBusID)
         // failure-branch fix covers the other half). OnReplacementSearchFailed
         // resets relief state and gives the player a real way out.
         Debug.LogWarning($"[BusManager] No eligible replacement available for Route {routeNumber ?? "(unknown, no active slot for player)"}.");
-        PlayerHandoff.Instance?.OnReplacementSearchFailed();
+        // [FIX] Was a bare PlayerHandoff.Instance?.OnReplacementSearchFailed() -- on the HOST that
+        // always means the HOST's OWN local player, never the remote client that actually called
+        // RequestRelief (playerBusID here is that client's real per-connection sentinel whenever
+        // this fired via the network path). NotifyReplacementSearchFailed routes to the right one.
+        BusScheduler.NotifyReplacementSearchFailed(playerBusID);
         return;
     }
 
@@ -546,7 +556,11 @@ private void HandleReplacementNeeded(int playerBusID)
     // that actually calls TryClaimNextReliefSlotForReplacement. Claiming
     // here too meant every relief request double-claimed the same slot,
     // the second call always failing because the first already succeeded.
-    PlayerHandoff.Instance?.OnReplacementFound(replacementID);
+    // [FIX] Was a bare PlayerHandoff.Instance?.OnReplacementFound(...) -- same
+    // wrong-target bug as the search-failed case above. NotifyReplacementFound
+    // routes to whichever player (host-local or a specific remote client) this
+    // playerBusID actually belongs to.
+    BusScheduler.NotifyReplacementFound(playerBusID, replacementID);
 }
 
 
@@ -704,26 +718,30 @@ private void PullBusToIdle(int busID)
     /// longer runs its own broken duplicate search.</summary>
     public void InitiateReliefSearch(string terminalCode)
     {
+        int playerBusID = PlayerHandoff.Instance != null ? PlayerHandoff.Instance.PlayerBusID : BusScheduler.PLAYER_BUS_ID;
         string routeNumber = null;
         if (BusScheduler.Instance != null
-            && BusScheduler.Instance.TryGetAssignedSlot(PlayerHandoff.Instance != null ? PlayerHandoff.Instance.PlayerBusID : BusScheduler.PLAYER_BUS_ID, out var slot)
+            && BusScheduler.Instance.TryGetAssignedSlot(playerBusID, out var slot)
             && slot != null)
             routeNumber = slot.routeNumber;
 
         if (string.IsNullOrEmpty(routeNumber))
         {
             Debug.LogWarning("[BusManager] InitiateReliefSearch: no active player route to search relief for.");
-            PlayerHandoff.Instance?.OnReplacementSearchFailed();
+            BusScheduler.NotifyReplacementSearchFailed(playerBusID);
             return;
         }
 
-        BusScheduler.Instance?.InitiateReliefSearch(terminalCode, routeNumber);
+        BusScheduler.Instance?.InitiateReliefSearch(terminalCode, routeNumber, playerBusID);
     }
     // [FIX] Was private -- FleetDispatcher now also needs this (to find a
     // spare when a bus's own due slot can't be served because it's disabled/
     // possessed, see TryReassignSlotAwayFromUnavailableBus), same policy/
     // depot/distance-scored search everything else here already uses.
-    public int GetIdleBusForRoute(string routeNumber)
+    /// <param name="minuteOfDay">Minute of the day (0-1439) the trip departs. Pass it so night-only bus pools are honoured;
+    /// -1 (default) checks the daytime rules only.</param>
+    /// <param name="variantLetter">The trip's route version, if it has one.</param>
+    public int GetIdleBusForRoute(string routeNumber, float minuteOfDay = -1f, string variantLetter = "")
     {
         if (_idlePool.Count == 0 && _depotBoundBuses.Count == 0) return -1;
 
@@ -742,14 +760,21 @@ private void PullBusToIdle(int busID)
         foreach (int busID in _idlePool.Concat(_depotBoundBuses))
         {
             if (BusScheduler.FreeAgentBusIDs.Contains(busID)) continue; // CHIP-type free agents aren't fleet spares
+            if (ManagerLocks.IsBusLocked(busID)) continue; // Route Manager: a bus the manager fixed by hand isn't a spare
             if (!_busRecords.TryGetValue(busID, out var rec)) continue;
 
             if (DepotManager.Instance != null &&
                 !DepotManager.Instance.CanServeRoute(rec.controller.fleetNumber, routeNumber))
                 continue;
 
-            if (routeData != null && !routeData.IsBusAllowed(rec.controller.fleetNumber))
-                continue;
+            if (routeData != null)
+            {
+                var variantData = !string.IsNullOrEmpty(variantLetter) ? routeData.GetVariant(variantLetter) : null;
+                bool allowedNow = variantData != null
+                    ? routeData.IsBusAllowedForVariant(rec.controller.fleetNumber, variantData, minuteOfDay)
+                    : routeData.IsBusAllowed(rec.controller.fleetNumber, minuteOfDay);
+                if (!allowedNow) continue;
+            }
 
             float score = routeData.GetAssignmentScore(rec.controller.fleetNumber);
             float distance = routeStart == Vector3.zero

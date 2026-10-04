@@ -14,7 +14,8 @@ public class LatenessTracker
     private readonly HashSet<int> _expressDeadRunBuses = new();
 
     public void Tick(IReadOnlyDictionary<int, TimetableSlot> slotByBus, float gameTimeMinutes,
-                      Func<int, NPCBusController> resolveController, Func<string, BusRouteData> getRouteData)
+                      Func<int, NPCBusController> resolveController, Func<string, BusRouteData> getRouteData,
+                      Func<TimetableSlot, float> tripMinutesFor = null)
     {
         foreach (var kv in slotByBus)
         {
@@ -32,7 +33,9 @@ public class LatenessTracker
                 if (ctrl == null) continue;
 
                 var routeData = getRouteData(slot.routeNumber);
-                float tripMins = routeData?.oneWayTripMinutes ?? 45f;
+                // The trip time the TIMETABLE uses for this departure (it is shorter in the overnight window, longer at peak),
+                // not the flat all-day figure, or every bus in a scaled window reads early or late all trip long.
+                float tripMins = tripMinutesFor != null ? tripMinutesFor(slot) : (routeData?.oneWayTripMinutes ?? 45f);
                 float progress = Mathf.Clamp01(ctrl.GetRouteProgressFraction());
 
                 float expectedElapsed = progress * tripMins;

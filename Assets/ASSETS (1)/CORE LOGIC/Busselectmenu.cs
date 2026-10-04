@@ -1499,6 +1499,12 @@ NPCBusController[] controllers = UnityEngine.Object.FindObjectsByType<NPCBusCont
         _activeBus = bus;
         _possessedRoot.tag = "Player";
 
+        // [FIX] Computed here (was further down, after the adopt-slot call) so the
+        // completion callback below can close over it. On a network client,
+        // AdoptInServiceSlot's real scheduler transfer is an RPC round-trip -- this
+        // value has to be captured now rather than read after the call returns.
+        string txFull = _txLabel.TryGetValue(txForBus, out var tl) ? tl : txForBus;
+
         var ph = PlayerHandoff.Instance;
         if (ph != null)
         {
@@ -1509,7 +1515,31 @@ NPCBusController[] controllers = UnityEngine.Object.FindObjectsByType<NPCBusCont
             {
                 // Sets playerBus + FleetNumber and transfers the NPC's active
                 // scheduler slot to PLAYER_BUS_ID — single identity end to end.
-                ph.AdoptInServiceSlot(targetNPC.busID, bus, targetNPC);
+                // [FIX] On a network client this is async (an RPC round-trip to the
+                // host), unlike single-player/host where it resolves synchronously
+                // inside this same call. Checking ph.IsOnDuty right after the call
+                // returns (the old code, below) was correct for single-player/host
+                // but would read STALE state on a client -- the round-trip hasn't
+                // come back yet, so it would always look like adoption failed and
+                // print the wrong "Join a route to begin" message even when the
+                // adopt was about to succeed. The completion callback fires at the
+                // right time either way: synchronously here for single-player/host,
+                // after the round-trip for a client.
+                ph.AdoptInServiceSlot(targetNPC.busID, bus, targetNPC, success =>
+                {
+                    // AdoptInServiceSlot (or its networked counterpart) already
+                    // prints its own "Possessed Fleet #..." line and puts the
+                    // player on duty when the scheduler transfer succeeds -- a
+                    // second "ready" line here would just be redundant noise.
+                    // Only the failure case (adoption fell back to Free Drive
+                    // via ResetForFreshPossession) needs the "join a route"
+                    // prompt, since PlayerHandoff never printed one for that.
+                    if (!success)
+                    {
+                        DriverConsole.Instance?.Print(
+                            $"Bus ready — Fleet #{_selFleetNum} / {def.engineType} / {txFull}. Join a route to begin.");
+                    }
+                });
             }
             else
             {
@@ -1548,31 +1578,14 @@ NPCBusController[] controllers = UnityEngine.Object.FindObjectsByType<NPCBusCont
             dirty?.SetValue(MDT_LiveMap.Instance, true);
         }
 
-        string txFull = _txLabel.TryGetValue(txForBus, out var tl) ? tl : txForBus;
-
-        if (!adoptExistingSlot)
-        {
-            // Board-claim flow (adoptExistingSlot == false): the caller is
-            // about to call JoinTransferredSlot/JoinRouteWithSlot right
-            // after this returns, which prints its own "Route confirmed —
-            // dead-run to Terminal" line. Printing a generic "ready" line
-            // here too is just redundant noise ahead of that.
-        }
-        // AdoptInServiceSlot (above) already puts the player on duty and
-        // prints its own "Possessed Fleet #..." line when the scheduler
-        // transfer succeeds. Only show the "join a route" prompt when that
-        // didn't happen -- otherwise this contradicts PlayerHandoff's state
-        // and the player's next "join" gets rejected with "Already on duty."
-        else if (ph != null && ph.IsOnDuty)
-        {
-            DriverConsole.Instance?.Print(
-                $"Bus ready — Fleet #{_selFleetNum} / {def.engineType} / {txFull}.");
-        }
-        else
-        {
-            DriverConsole.Instance?.Print(
-                $"Bus ready — Fleet #{_selFleetNum} / {def.engineType} / {txFull}. Join a route to begin.");
-        }
+        // Board-claim flow (adoptExistingSlot == false): the caller is about to
+        // call JoinTransferredSlot/JoinRouteWithSlot right after this returns,
+        // which prints its own "Route confirmed — dead-run to Terminal" line.
+        // Printing a generic "ready" line here too is just redundant noise
+        // ahead of that. The adoptExistingSlot == true case's messaging is
+        // handled by the AdoptInServiceSlot completion callback above instead
+        // of here, since that call may now be asynchronous (see the callback's
+        // own comment).
     }
 
     // ═════════════════════════════════════════════════════════════════════════

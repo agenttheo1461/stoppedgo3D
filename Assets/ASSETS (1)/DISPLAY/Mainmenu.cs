@@ -38,7 +38,7 @@ public class MainMenu : MonoBehaviour
     // Ctrl+Shift+F12 NPC toggle) all fired even while this menu was open,
     // letting a player poke at live game state (or just get confused by
     // console spam) before ever picking a route. Single place to check.
-    public static bool BlocksInput => Instance != null && Instance.IsOpen;
+    public static bool BlocksInput => (Instance != null && Instance.IsOpen) || GameMode.IsManage; // Route Manager blocks driving hotkeys too
 
     private string _nameInput = "";
     private string _createError = null;
@@ -74,6 +74,13 @@ public class MainMenu : MonoBehaviour
         // player's own saved plan (ShiftMakerData) rather than the normal
         // auto-picked live routes, so the card can call that out.
         public bool isCustomPick;
+        // [ADD] Favorite routes -- true when this route number is in
+        // FavoriteRouteData. Set every RefreshRouteOptions() pass so it stays
+        // current even for a card that isn't itself freshly built (the
+        // "soonest 8" auto-picks). Clicking a favorited card opens the A→Z /
+        // Z→A / later chooser (DrawDirectionPicker) instead of jumping
+        // straight into bus selection.
+        public bool isFavorite;
     }
 
     private class DepotBusOption
@@ -88,6 +95,19 @@ public class MainMenu : MonoBehaviour
     private readonly List<RouteOption> _options = new List<RouteOption>();
     private readonly List<DepotBusOption> _depotBuses = new List<DepotBusOption>();
     private RouteOption _selectedRoute;
+
+    // [ADD] Favorite routes -- clicking a favorited card expands IT in place
+    // (the rest of the list stays put, nothing navigates away) to offer
+    // A→Z / Z→A now, a scrollable "later" list per direction, or planning a
+    // trip by LOCAL clock time (saved to ShiftMakerData + notified about,
+    // not claimed immediately -- see DrawFavoriteExpansion).
+    private enum FavSubView { Buttons, LaterOutbound, LaterInbound, PlanLocal, PlanLocalResults }
+    private string _expandedFavoriteRoute;   // routeNumber of the one expanded card, or null
+    private FavSubView _favSubView = FavSubView.Buttons;
+    private Vector2 _laterScroll;
+    private string _planLocalTimeInput = "19:00";
+    private string _planLocalError;
+    private readonly List<TimetableSlot> _planLocalCandidates = new List<TimetableSlot>();
     private Vector2 _routeScroll, _busScroll;
     private string _pickError;
     private float _pickErrorAt = -999f;
@@ -118,6 +138,7 @@ public class MainMenu : MonoBehaviour
     private GUIStyle _lblTitle, _lblSub, _lblDim, _lblBody, _lblBig, _lblError, _lblCyan, _lblAmber;
     private GUIStyle _btnPrimary, _btnSecond;
     private GUIStyle _textField;
+    private GUIStyle _starOn, _starOff;
 
     private void Awake()
     {
@@ -170,6 +191,13 @@ public class MainMenu : MonoBehaviour
     private void FullResetOnOpen()
     {
         PlayerHandoff.Instance?.EndShiftFully();
+
+        // [ADD] Favorite-card expansion is menu-session state, not something
+        // that should still be sitting open next time the player opens Main Menu.
+        _expandedFavoriteRoute = null;
+        _favSubView = FavSubView.Buttons;
+        _planLocalError = null;
+        _planLocalCandidates.Clear();
 
         ShiftBoardMenu.Instance?.Close();
         DispatchConsole.Instance?.Close();
@@ -259,8 +287,20 @@ public class MainMenu : MonoBehaviour
     // ═════════════════════════════════════════════════════════════════════
     //  MAIN SCREEN — header strip, route list (left), bus preview/pick (right)
     // ═════════════════════════════════════════════════════════════════════
+    // Top-of-screen switch between the two modes.
+    private void DrawModeSwitch()
+    {
+        float w = 170f, h = 34f, x = Screen.width * 0.5f - w - 4f, y = 18f;
+        bool manage = GameMode.IsManage;
+        if (GUI.Button(new Rect(x, y, w, h), "DRIVE", manage ? _btnSecond : _btnPrimary) && manage)
+            GameMode.ExitToDrive();
+        if (GUI.Button(new Rect(x + w + 8f, y, w, h), "ROUTE MANAGER", manage ? _btnPrimary : _btnSecond) && !manage)
+            GameMode.EnterManage();
+    }
+
     private void DrawMainScreen()
     {
+        DrawModeSwitch();
         var profile = DriverProfile.Instance;
         var pm = PointsManager.Instance;
 
@@ -355,29 +395,53 @@ public class MainMenu : MonoBehaviour
             return;
         }
 
-        float cardH = 114f, gap = 10f; // [ADD] +18 to fit the IRL real-time line
-        float contentH = Mathf.Max(listArea.height, _options.Count * (cardH + gap));
+        // [ADD] A favorited card expands IN PLACE (taller, right where it already sits) instead of
+        // taking over the whole column, so favoriting several routes never costs you sight of the
+        // rest of the list or feels like it "reset" you back to some other screen.
+        const float cardH = 114f, gap = 10f, expandExtra = 214f;
+        float CardHeight(RouteOption o) => (o.isFavorite && o.routeNumber == _expandedFavoriteRoute) ? cardH + expandExtra : cardH;
+
+        float running = 0f;
+        for (int i = 0; i < _options.Count; i++) running += CardHeight(_options[i]) + gap;
+        float contentH = Mathf.Max(listArea.height, running);
+
         _routeScroll = GUI.BeginScrollView(listArea, _routeScroll, new Rect(0, 0, listArea.width - 20, contentH));
+        float y = 0f;
         for (int i = 0; i < _options.Count; i++)
-            DrawRouteCard(_options[i], new Rect(0, i * (cardH + gap), listArea.width - 24, cardH));
+        {
+            float h = CardHeight(_options[i]);
+            DrawRouteCard(_options[i], new Rect(0, y, listArea.width - 24, h));
+            y += h + gap;
+        }
         GUI.EndScrollView();
     }
 
     private void DrawRouteCard(RouteOption opt, Rect r)
     {
+        bool expanded = opt.isFavorite && opt.routeNumber == _expandedFavoriteRoute;
+        var head = new Rect(r.x, r.y, r.width, 114f); // the normal card content always lives in this top slice
+
         // [ADD] Item 14 -- elevation + hover + a real accent border on the
         // selected card instead of just a flat background swap, so picking
         // a route reads as "this one lifted off the stack" rather than
         // "this rect changed color."
         bool selected = _selectedRoute == opt;
-        bool hover    = Event.current.type == EventType.Repaint && r.Contains(Event.current.mousePosition);
-        if (selected || hover) MDT_UITheme.DrawSoftShadow(r, 16f, offsetY: selected ? 5f : 3f, spread: selected ? 12f : 6f);
+        bool hover    = Event.current.type == EventType.Repaint && head.Contains(Event.current.mousePosition);
+        if (selected || hover || expanded) MDT_UITheme.DrawSoftShadow(r, 16f, offsetY: selected || expanded ? 5f : 3f, spread: selected || expanded ? 12f : 6f);
 
+        // [ADD] A favorite with a bus ready to go RIGHT NOW gets its own accent
+        // even unselected/unexpanded -- "your favorite is available" should be
+        // visible at a glance, not just present in the list somewhere.
+        bool ready = opt.isFavorite && opt.idleEligibleCount > 0;
         Color fill = selected ? new Color(0.10f, 0.22f, 0.14f, 1f)
                    : hover    ? MDT_UITheme.BGRowHover
                    : MDT_UITheme.BGRowEven;
         if (selected)
             MDT_UITheme.DrawRoundedRectBordered(r, 16f, fill, MDT_UITheme.TextGreen * new Color(1, 1, 1, 0.55f), 2);
+        else if (expanded)
+            MDT_UITheme.DrawRoundedRectBordered(r, 16f, fill, MDT_UITheme.TextAmber * new Color(1, 1, 1, 0.55f), 2);
+        else if (ready)
+            MDT_UITheme.DrawRoundedRectBordered(r, 16f, fill, MDT_UITheme.TextAmber * new Color(1, 1, 1, 0.35f), 1);
         else
             MDT_UITheme.DrawRoundedRect(r, 16f, fill);
 
@@ -388,18 +452,30 @@ public class MainMenu : MonoBehaviour
         // for this route yet, DrawRouteMap already renders a quiet
         // "(no snapshot)" placeholder instead of leaving a blank hole.
         float mapSize = 76f;
-        var mapRect = new Rect(r.xMax - mapSize - 10f, r.y + 10f, mapSize, mapSize - 12f);
+        var mapRect = new Rect(head.xMax - mapSize - 10f, head.y + 10f, mapSize, mapSize - 12f);
         var snap = RouteSnapshotViewerUI.Instance != null ? RouteSnapshotViewerUI.Instance.FindRoute(opt.routeNumber) : null;
         RouteSnapshotViewerUI.DrawRouteMap(mapRect, snap, MDT_UITheme.BGDeep, MDT_UITheme.TextCyan, MDT_UITheme.TextAmber, 1.5f);
 
         // [ADD] Variant badge -- previously nothing on the card distinguished
         // Route 87A from Route 87B, they both just said "Route 87".
-        string routeLabel = string.IsNullOrEmpty(opt.variantLetter) ? $"Route {opt.routeNumber}" : $"Route {opt.routeNumber}{opt.variantLetter}";
+        string routeLabel = $"Route {BusRouteData.RouteLabel(opt.routeNumber, opt.variantLetter)}";
         if (opt.isCustomPick) routeLabel = "★ " + routeLabel; // [ADD] Shift Maker pick, called out on the card
-        string dirLabel = opt.outbound ? "A → Z" : "Z → A";
-        float textW = r.width - mapSize - 24f; // leave room for the preview thumbnail on the right
-        GUI.Label(new Rect(r.x + 14, r.y + 8, textW, 24), routeLabel, _lblCyan);
-        GUI.Label(new Rect(r.x + 14, r.y + 32, textW, 18), dirLabel, _lblDim);
+        string dirLabel = opt.isFavorite ? (ready ? "Favorite — ready now, tap to expand" : "Favorite — tap to expand") : (opt.outbound ? "A → Z" : "Z → A");
+        float textW = head.width - mapSize - 24f; // leave room for the preview thumbnail on the right
+
+        // [ADD] Favorite toggle -- drawn (and hit-tested) BEFORE the whole-card
+        // button below so a click here consumes the event rather than also
+        // registering as picking the card. Sits just left of the mini map.
+        bool favorite = FavoriteRouteData.Instance != null && FavoriteRouteData.Instance.IsFavorite(opt.routeNumber);
+        if (GUI.Button(new Rect(head.x + textW - 6, head.y + 6, 30, 28), favorite ? "★" : "☆", favorite ? _starOn : _starOff))
+        {
+            FavoriteRouteData.Instance?.Toggle(opt.routeNumber);
+            // Was favorited (about to be un-favorited by the toggle above) and currently expanded -- collapse it.
+            if (favorite && _expandedFavoriteRoute == opt.routeNumber) _expandedFavoriteRoute = null;
+        }
+
+        GUI.Label(new Rect(head.x + 14, head.y + 8, textW - 40, 24), routeLabel, _lblCyan);
+        GUI.Label(new Rect(head.x + 14, head.y + 32, textW, 18), dirLabel, _lblDim);
         string depStr = BusScheduler.MinutesToTimeString(opt.departureAbsMin % 1440f);
 
         // [ADD] Live headway/window label. GetActiveSchedule already falls
@@ -418,18 +494,264 @@ public class MainMenu : MonoBehaviour
         // SimClock), so this is exact, not a guess, letting the player plan
         // against their actual IRL schedule.
         string realTimeStr = SimClock.AbsoluteGameMinutesToRealLocalTime(opt.departureAbsMin).ToString("ddd h:mm tt");
-        GUI.Label(new Rect(r.x + 14, r.y + 52, textW, 18), $"Departs {depStr}  ·  {LapPlanText(opt.route, opt.laps)}  ·  {headwayStr}", _lblBody);
-        GUI.Label(new Rect(r.x + 14, r.y + 92, textW, 14), $"IRL: {realTimeStr}", _lblAmber);
+        GUI.Label(new Rect(head.x + 14, head.y + 52, textW, 18), $"Departs {depStr}  ·  {LapPlanText(opt.route, opt.laps)}  ·  {headwayStr}", _lblBody);
+        GUI.Label(new Rect(head.x + 14, head.y + 92, textW, 14), $"IRL: {realTimeStr}", _lblAmber);
         string idleTag = opt.idleEligibleCount > 0 ? $"{opt.idleEligibleCount} idle at {opt.requiredDepotLabel}" : "0 idle — none available";
-        GUI.Label(new Rect(r.x + 14, r.y + 72, textW, 18), idleTag, opt.idleEligibleCount > 0 ? _lblAmber : _lblError);
+        GUI.Label(new Rect(head.x + 14, head.y + 72, textW, 18), idleTag, opt.idleEligibleCount > 0 ? _lblAmber : _lblError);
 
-        if (GUI.Button(r, GUIContent.none, GUIStyle.none))
+        if (GUI.Button(head, GUIContent.none, GUIStyle.none))
         {
-            _selectedRoute = opt;
-            _selectedBusFleet = -1;
-            RefreshDepotBuses(opt);
-            _busScroll = Vector2.zero;
+            if (opt.isFavorite)
+            {
+                // [ADD] Favorited route -- expand THIS card in place instead of
+                // jumping straight to bus selection. Tapping an already-expanded
+                // card collapses it back down.
+                if (_expandedFavoriteRoute == opt.routeNumber) { _expandedFavoriteRoute = null; }
+                else { _expandedFavoriteRoute = opt.routeNumber; _favSubView = FavSubView.Buttons; _planLocalError = null; }
+            }
+            else
+            {
+                _selectedRoute = opt;
+                _selectedBusFleet = -1;
+                RefreshDepotBuses(opt);
+                _busScroll = Vector2.zero;
+            }
         }
+
+        if (expanded)
+        {
+            var ext = new Rect(r.x, head.yMax + 4f, r.width, r.height - head.height - 8f);
+            MDT_UITheme.DrawDivider(ext.x + 10, ext.y, ext.width - 20);
+            DrawFavoriteExpansion(opt, new Rect(ext.x, ext.y + 8f, ext.width, ext.height - 8f));
+        }
+    }
+
+    // ═════════════════════════════════════════════════════════════════════
+    //  Favorite-route inline expansion -- lives INSIDE the card, see above.
+    // ═════════════════════════════════════════════════════════════════════
+    private void DrawFavoriteExpansion(RouteOption opt, Rect area)
+    {
+        string rn = opt.routeNumber;
+
+        if (_favSubView == FavSubView.Buttons)
+        {
+            float bw = (area.width - 24 - 12) * 0.5f, y = area.y;
+            if (GUI.Button(new Rect(area.x + 12, y, bw, 46), "A → Z now", _btnPrimary)) PickDirectionNow(rn, true);
+            if (GUI.Button(new Rect(area.x + 12 + bw + 12, y, bw, 46), "Z → A now", _btnPrimary)) PickDirectionNow(rn, false);
+            y += 54;
+            if (GUI.Button(new Rect(area.x + 12, y, bw, 40), "A → Z later ▸", _btnSecond))
+            { _favSubView = FavSubView.LaterOutbound; _laterScroll = Vector2.zero; }
+            if (GUI.Button(new Rect(area.x + 12 + bw + 12, y, bw, 40), "Z → A later ▸", _btnSecond))
+            { _favSubView = FavSubView.LaterInbound; _laterScroll = Vector2.zero; }
+            y += 48;
+            if (GUI.Button(new Rect(area.x + 12, y, area.width - 24, 40), "Plan by my local time ▸", _btnSecond))
+            { _favSubView = FavSubView.PlanLocal; _planLocalError = null; }
+            return;
+        }
+
+        // Every other sub-view gets a "← back" row first.
+        if (GUI.Button(new Rect(area.x + 12, area.y, 76, 24), "← back", _btnSecond))
+        {
+            _favSubView = FavSubView.Buttons;
+            return;
+        }
+        float top = area.y + 30f;
+
+        if (_favSubView == FavSubView.LaterOutbound || _favSubView == FavSubView.LaterInbound)
+        {
+            bool outbound = _favSubView == FavSubView.LaterOutbound;
+            var slots = UpcomingSlotsForDirection(rn, outbound, 10);
+            DrawSlotList(new Rect(area.x, top, area.width, area.yMax - top), slots,
+                s => $"Departs {BusScheduler.MinutesToTimeString(s.scheduledDeparture % 1440f)}" + (string.IsNullOrEmpty(s.variantLetter) ? "" : $"  ·  {s.variantLetter}"),
+                _ => outbound ? "A → Z" : "Z → A",
+                SelectSlotAndClose, ref _laterScroll, "Nothing scheduled soon in that direction.");
+            return;
+        }
+
+        if (_favSubView == FavSubView.PlanLocal)
+        {
+            GUI.Label(new Rect(area.x + 12, top, area.width - 24, 18), "Your local clock time (e.g. 19:00 for 7pm):", _lblDim);
+            top += 22;
+            _planLocalTimeInput = GUI.TextField(new Rect(area.x + 12, top, 90, 28), _planLocalTimeInput, 5, _textField);
+            if (GUI.Button(new Rect(area.x + 110, top, area.width - 122, 28), "FIND SHIFTS", _btnPrimary))
+                RunPlanLocalSearch(rn);
+            top += 34;
+            if (!string.IsNullOrEmpty(_planLocalError))
+                GUI.Label(new Rect(area.x + 12, top, area.width - 24, 32), _planLocalError, _lblError);
+            return;
+        }
+
+        if (_favSubView == FavSubView.PlanLocalResults)
+        {
+            DrawSlotList(new Rect(area.x, top, area.width, area.yMax - top), _planLocalCandidates,
+                s => $"{SimClock.AbsoluteGameMinutesToRealLocalTime(s.scheduledDeparture):ddd h:mm tt}" + (string.IsNullOrEmpty(s.variantLetter) ? "" : $"  ·  {s.variantLetter}"),
+                s => s.isOutbound ? "A → Z" : "Z → A",
+                ConfirmPlanForLater, ref _laterScroll, "Nothing found near that time.");
+        }
+    }
+
+    /// <summary>Shared scrollable pick-a-slot list -- used by both the "later" direction lists and the
+    /// local-time planner's results, which show the same shape of row but different label text/action.</summary>
+    private void DrawSlotList(Rect listRect, List<TimetableSlot> slots,
+        System.Func<TimetableSlot, string> lineLabel, System.Func<TimetableSlot, string> dirTag,
+        System.Action<TimetableSlot> onPick, ref Vector2 scroll, string emptyMessage)
+    {
+        if (slots.Count == 0)
+        {
+            GUI.Label(new Rect(listRect.x, listRect.y, listRect.width, 24), emptyMessage, _lblDim);
+            return;
+        }
+        float rowH = 40f, gap = 6f;
+        float contentH = Mathf.Max(listRect.height, slots.Count * (rowH + gap));
+        scroll = GUI.BeginScrollView(listRect, scroll, new Rect(0, 0, listRect.width - 20, contentH));
+        for (int i = 0; i < slots.Count; i++)
+        {
+            var s = slots[i];
+            var rr = new Rect(0, i * (rowH + gap), listRect.width - 24, rowH);
+            MDT_UITheme.DrawRoundedRect(rr, 8f, MDT_UITheme.BGRowEven);
+            GUI.Label(new Rect(rr.x + 10, rr.y + 2, rr.width - 20, 18), lineLabel(s), _lblBody);
+            GUI.Label(new Rect(rr.x + 10, rr.y + 20, rr.width - 20, 16), dirTag(s), _lblDim);
+            if (GUI.Button(rr, GUIContent.none, GUIStyle.none)) onPick(s);
+        }
+        GUI.EndScrollView();
+    }
+
+    private void PickDirectionNow(string routeNumber, bool outbound)
+    {
+        var slots = UpcomingSlotsForDirection(routeNumber, outbound, 1);
+        if (slots.Count == 0)
+        {
+            _pickError = $"Nothing scheduled {(outbound ? "A → Z" : "Z → A")} on Route {routeNumber} right now.";
+            _pickErrorAt = Time.realtimeSinceStartup;
+            return;
+        }
+        SelectSlotAndClose(slots[0]);
+    }
+
+    private void SelectSlotAndClose(TimetableSlot slot)
+    {
+        var opt = BuildOptionFromSlot(slot);
+        if (opt == null) return;
+        _selectedRoute = opt;
+        _selectedBusFleet = -1;
+        RefreshDepotBuses(opt);
+        _busScroll = Vector2.zero;
+        _expandedFavoriteRoute = null;
+        _favSubView = FavSubView.Buttons;
+    }
+
+    /// <summary>[ADD] "Plan by local time" -- converts the typed LOCAL clock time (not game time) to its
+    /// exact game-minute equivalent via SimClock.RealLocalTimeToAbsoluteGameMinutes, then lists the
+    /// route's real upcoming slots (either direction) closest to that moment -- the opposite direction
+    /// from every other clock in this project, which only ever converts game time TO local for display.</summary>
+    private void RunPlanLocalSearch(string routeNumber)
+    {
+        _planLocalError = null;
+        _planLocalCandidates.Clear();
+
+        if (!TryParseTimeOfDay(_planLocalTimeInput, out int h, out int m))
+        {
+            _planLocalError = "Enter a time as HH:MM, e.g. 19:00.";
+            return;
+        }
+        if (BusScheduler.Instance == null || SimClock.Instance == null) { _planLocalError = "Scheduler not ready."; return; }
+
+        var now = System.DateTime.Now;
+        var target = new System.DateTime(now.Year, now.Month, now.Day, h, m, 0);
+        if (target <= now) target = target.AddDays(1); // next occurrence of that local clock time
+
+        float targetAbsGameMin = SimClock.RealLocalTimeToAbsoluteGameMinutes(target);
+        float nowAbsGameMin = SimClock.Instance.AbsoluteGameMinutes;
+        float lead = BusScheduler.BoardingLeadFor(nowAbsGameMin);
+
+        var candidates = BusScheduler.Instance.AllSlots
+            .Where(s => s.routeNumber == routeNumber && s.state != SlotState.Completed
+                        && s.scheduledDeparture >= nowAbsGameMin + lead)
+            .OrderBy(s => Mathf.Abs(s.scheduledDeparture - targetAbsGameMin))
+            .Take(8)
+            .ToList();
+
+        if (candidates.Count == 0) { _planLocalError = "Nothing found — that route may not be running soon."; return; }
+
+        _planLocalCandidates.AddRange(candidates);
+        _laterScroll = Vector2.zero;
+        _favSubView = FavSubView.PlanLocalResults;
+    }
+
+    /// <summary>[ADD] Saves the picked slot to ShiftMakerData (so it also shows up in "Plan My Day" and
+    /// gets resolved by AppendResolvedCustomEntries) and schedules the same 30/15/10-real-minute-before
+    /// reminders ShiftCountdownNotifier gives an actively-assigned shift -- except this one fires before
+    /// the player has claimed anything, since the whole point of "plan for later" is not needing to be
+    /// sitting in the menu right now to lock it in. Does NOT claim a bus -- that still happens close to
+    /// departure, same as every other pick in this menu.</summary>
+    private void ConfirmPlanForLater(TimetableSlot slot)
+    {
+        int dayOffset = SimClock.Instance != null ? Mathf.Max(0, slot.dayNumber - SimClock.Instance.GameDayNumber) : 0;
+        float dep = ((slot.scheduledDeparture % 1440f) + 1440f) % 1440f;
+        float winStart = ((dep - 10f) + 1440f) % 1440f, winEnd = (dep + 10f) % 1440f;
+        ShiftMakerData.Instance?.AddEntry(slot.routeNumber, slot.variantLetter ?? "", slot.isOutbound, dayOffset, winStart, winEnd);
+
+        string label = $"Route {BusRouteData.RouteLabel(slot.routeNumber, slot.variantLetter)}";
+        string dirTxt = slot.isOutbound ? "A → Z" : "Z → A";
+        string localTxt = SimClock.AbsoluteGameMinutesToRealLocalTime(slot.scheduledDeparture).ToString("ddd h:mm tt");
+        foreach (int mins in new[] { 30, 15, 10 })
+        {
+            var fireAt = SimClock.AbsoluteGameMinutesToRealLocalTime(slot.scheduledDeparture).AddMinutes(-mins);
+            PlatformNotifications.ScheduleAt($"favplan_{slot.routeNumber}_{slot.variantLetter}_{slot.isOutbound}_{slot.scheduledDeparture}_{mins}",
+                "Planned Shift", $"{label} ({dirTxt}) departs in about {mins} minutes.", fireAt);
+        }
+        NotificationToast.Show("Added to Plan", $"{label} {dirTxt} at {localTxt} — you'll get reminders as it gets close.");
+
+        _expandedFavoriteRoute = null;
+        _favSubView = FavSubView.Buttons;
+        _planLocalCandidates.Clear();
+    }
+
+    private static bool TryParseTimeOfDay(string text, out int hour, out int minute)
+    {
+        hour = 0; minute = 0;
+        if (string.IsNullOrEmpty(text)) return false;
+        var parts = text.Split(':');
+        if (parts.Length != 2) return false;
+        if (!int.TryParse(parts[0], out hour) || !int.TryParse(parts[1], out minute)) return false;
+        return hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59;
+    }
+
+    /// <summary>Upcoming, not-yet-completed slots for a route in one direction, soonest first.
+    /// Ignores variant -- favoriting is per plain route number, so a later pick can land on any
+    /// of the route's variants/short turns, same as the soonest-departure card would.</summary>
+    private static List<TimetableSlot> UpcomingSlotsForDirection(string routeNumber, bool outbound, int maxCount)
+    {
+        var result = new List<TimetableSlot>();
+        if (BusScheduler.Instance == null || SimClock.Instance == null) return result;
+        float now = SimClock.Instance.AbsoluteGameMinutes;
+        float lead = BusScheduler.BoardingLeadFor(now);
+        return BusScheduler.Instance.AllSlots
+            .Where(s => s.routeNumber == routeNumber && s.isOutbound == outbound
+                        && s.state != SlotState.Completed
+                        && s.scheduledDeparture >= now + lead)
+            .OrderBy(s => s.scheduledDeparture)
+            .Take(maxCount)
+            .ToList();
+    }
+
+    private RouteOption BuildOptionFromSlot(TimetableSlot slot)
+    {
+        var route = BusScheduler.Instance?.managedRoutes?.FirstOrDefault(r => r != null && r.routeNumber == slot.routeNumber);
+        if (route == null) return null;
+        var depot = DepotManager.Instance != null ? DepotManager.Instance.GetDepotForRoute(route.routeNumber) : null;
+        return new RouteOption
+        {
+            route = route,
+            routeNumber = route.routeNumber,
+            outbound = slot.isOutbound,
+            variantLetter = slot.variantLetter ?? "",
+            departureAbsMin = slot.scheduledDeparture,
+            laps = EstimateLapsForBlock(route, new BusScheduler.RouteBusEntry { scheduledDeparture = slot.scheduledDeparture, isOutbound = slot.isOutbound, variantLetter = slot.variantLetter, busID = -1 }),
+            requiredDepotLabel = depot != null ? depot.depotName : "Any depot",
+            idleEligibleCount = CountIdleEligibleBuses(route.routeNumber),
+            isFavorite = true,
+        };
     }
 
     private int _selectedBusFleet = -1;
@@ -514,6 +836,9 @@ public class MainMenu : MonoBehaviour
             return;
         }
 
+        // Pressing PLAY while in the Route Manager: switch driving back on first, then claim as usual.
+        if (GameMode.IsManage) ManagerMode.Instance?.ExitForPlay();
+
         var realSlot = ResolveRealSlot(_selectedRoute);
         if (realSlot == null)
         {
@@ -574,6 +899,7 @@ public class MainMenu : MonoBehaviour
         }
 
         AppendResolvedCustomEntries(now);
+        AppendFavoriteEntries(now, day);
 
         // Keep the player's pick across the once-a-minute refresh if that
         // exact departure is still on offer.
@@ -660,6 +986,68 @@ public class MainMenu : MonoBehaviour
                 isCustomPick = true,
             });
         }
+    }
+
+    /// <summary>[ADD] Favorite routes (FavoriteRouteData) always show in the
+    /// list -- tags any option already present (from the "soonest 8" or a
+    /// Shift Maker pick) as a favorite, then adds a card for any favorited,
+    /// currently-live route that didn't otherwise make the cut, so it's never
+    /// hidden just because it wasn't among the network's soonest departures.
+    /// Those new cards go at the front, ahead of everything else, since the
+    /// whole point is "tell me this one's available" without scrolling.
+    /// Favoriting is per plain route number -- one card covers all of that
+    /// route's variants/short turns, whichever direction departs soonest.</summary>
+    private void AppendFavoriteEntries(float now, int day)
+    {
+        if (FavoriteRouteData.Instance == null || BusScheduler.Instance == null) return;
+        var favorites = FavoriteRouteData.Instance.Favorites;
+        if (favorites.Count == 0) return;
+
+        foreach (var opt in _options)
+            if (favorites.Contains(opt.routeNumber)) opt.isFavorite = true;
+
+        var extras = new List<RouteOption>();
+        foreach (var routeNumber in favorites)
+        {
+            if (_options.Any(o => o.routeNumber == routeNumber)) continue;
+
+            var route = BusScheduler.Instance.managedRoutes?.FirstOrDefault(r => r != null && r.routeNumber == routeNumber);
+            if (route == null || !RouteCoversNow(route, now)) continue;
+
+            var upcoming = BusScheduler.Instance.GetTodaysBusesForRoute(routeNumber, day)
+                .Where(e => e.scheduledDeparture >= now + BusScheduler.BoardingLeadFor(now))
+                .OrderBy(e => e.scheduledDeparture)
+                .FirstOrDefault();
+            if (upcoming.scheduledDeparture <= 0f) continue;
+
+            var depot = DepotManager.Instance != null ? DepotManager.Instance.GetDepotForRoute(routeNumber) : null;
+            extras.Add(new RouteOption
+            {
+                route = route,
+                routeNumber = routeNumber,
+                outbound = upcoming.isOutbound,
+                variantLetter = upcoming.variantLetter ?? "",
+                departureAbsMin = upcoming.scheduledDeparture,
+                laps = EstimateLapsForBlock(route, upcoming),
+                requiredDepotLabel = depot != null ? depot.depotName : "Any depot",
+                idleEligibleCount = CountIdleEligibleBuses(routeNumber),
+                isFavorite = true,
+            });
+        }
+        if (extras.Count > 0)
+            _options.AddRange(extras);
+
+        // [ADD] Favorites always lead the list -- and among favorites, ones with an idle bus ready
+        // RIGHT NOW lead over ones that don't, so "is my favorite available" never needs scrolling or
+        // scanning to answer. Non-favorites keep their original soonest-departure order behind them.
+        var favs = _options.Where(o => o.isFavorite)
+            .OrderByDescending(o => o.idleEligibleCount > 0)
+            .ThenBy(o => o.routeNumber, System.StringComparer.Ordinal)
+            .ToList();
+        var rest = _options.Where(o => !o.isFavorite).ToList();
+        _options.Clear();
+        _options.AddRange(favs);
+        _options.AddRange(rest);
     }
 
     private static TimetableSlot ResolveRealSlot(RouteOption opt)
@@ -770,5 +1158,7 @@ public class MainMenu : MonoBehaviour
         _btnPrimary = MDT_UITheme.MakeButton(new Color(0.05f, 0.30f, 0.14f, 1f), MDT_UITheme.TextGreen, 16, FontStyle.Bold);
         _btnSecond  = MDT_UITheme.MakeButton(MDT_UITheme.BGButton, MDT_UITheme.TextSecond, 12);
         _textField  = new GUIStyle(GUI.skin.textField) { fontSize = 14, alignment = TextAnchor.MiddleLeft };
+        _starOn     = MDT_UITheme.MakeButton(new Color(0.35f, 0.28f, 0.03f, 1f), MDT_UITheme.TextAmber, 16, FontStyle.Bold);
+        _starOff    = MDT_UITheme.MakeButton(MDT_UITheme.BGButton, MDT_UITheme.TextDim, 16);
     }
 }

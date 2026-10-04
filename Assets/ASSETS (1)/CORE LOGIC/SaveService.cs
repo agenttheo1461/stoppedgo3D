@@ -157,7 +157,7 @@ public class DayAssignmentSave
 {
     /// <summary>Bump whenever BusScheduler's pre-assignment logic changes in a way that should not be
     /// masked by plans saved under the old logic. v2: night-only buses (nightFleetSeries) now enter the pool.</summary>
-    public const int CurrentPlanVersion = 2;
+    public const int CurrentPlanVersion = 3; // 3: night pools widened on routes 1, 10, 73, 87, 136, 199
 
     public int planVersion; // deliberately 0 by default: JsonUtility leaves it 0 for files written before versioning
     public int dayNumber;

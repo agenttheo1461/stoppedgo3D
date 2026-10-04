@@ -30,6 +30,7 @@ public static class SettingsData
     private const string KeyDeveloperMode   = "Settings_DeveloperMode";
     private const string KeyNotifyShift     = "Settings_NotifyShiftCountdown";
     private const string KeyNotifyStarred   = "Settings_NotifyStarredBuses";
+    private const string KeyNotifyFavRoutes = "Settings_NotifyFavoriteRoutes";
     private const string KeyUseOsPush       = "Settings_UseOsPush";
     private const string KeyUiScaleOverride = "Settings_UiScaleOverride";
     private const string KeyUseMetric       = "Settings_UseMetricUnits";
@@ -49,6 +50,7 @@ public static class SettingsData
     private static bool _cDeveloperMode = Application.isEditor;
     private static bool _cNotifyShift = true;
     private static bool _cNotifyStarred = true;
+    private static bool _cNotifyFavRoutes = true;
     private static bool _cUseOsPush = true;
     private static bool _cUseMetric = false;
     private static bool _cShapeIndicators = false;
@@ -64,6 +66,7 @@ public static class SettingsData
         _cDeveloperMode   = PlayerPrefs.GetInt(KeyDeveloperMode, Application.isEditor ? 1 : 0) != 0;
         _cNotifyShift     = PlayerPrefs.GetInt(KeyNotifyShift, 1) != 0;
         _cNotifyStarred   = PlayerPrefs.GetInt(KeyNotifyStarred, 1) != 0;
+        _cNotifyFavRoutes = PlayerPrefs.GetInt(KeyNotifyFavRoutes, 1) != 0;
         _cUseOsPush       = PlayerPrefs.GetInt(KeyUseOsPush, 1) != 0;
         _cUseMetric       = PlayerPrefs.GetInt(KeyUseMetric, 0) != 0;
         _cShapeIndicators = PlayerPrefs.GetInt(KeyShapeIndicators, 0) != 0;
@@ -96,6 +99,12 @@ public static class SettingsData
     {
         get { return _cNotifyStarred; }
         set { _cNotifyStarred = value; PlayerPrefs.SetInt(KeyNotifyStarred, value ? 1 : 0); }
+    }
+
+    public static bool NotifyFavoriteRoutes
+    {
+        get { return _cNotifyFavRoutes; }
+        set { _cNotifyFavRoutes = value; PlayerPrefs.SetInt(KeyNotifyFavRoutes, value ? 1 : 0); }
     }
 
     /// <summary>If false, only NotificationToast (in-game, foreground) fires

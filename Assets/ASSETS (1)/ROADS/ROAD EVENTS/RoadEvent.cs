@@ -205,7 +205,125 @@ public bool          inboundReentrySet    = false;
         _divertedBusIDs.Clear();
         Debug.Log($"[RoadEvent] '{eventLabel}' ({severity} {eventType}) ACTIVATED. " +
                   $"Duration: {(durationMinutes > 0 ? durationMinutes + " game-min" : "manual")}");
+        AutoComputeDetourIfNeeded();
         SyncActiveState();
+    }
+
+    // ── Auto-detour ───────────────────────────────────────────────────────────
+    /// <summary>
+    /// A hand-authored detour (outboundDetourNodes / inboundDetourNodes set in the
+    /// Inspector) always wins. When a direction has none, this activates a fallback:
+    /// find the road segment nearest this event, remove it from the graph, and path
+    /// around it with a plain Dijkstra. Self-contained here on purpose -- it never
+    /// touches RoadGraphPathfinder (the depot/route pathing everything else relies
+    /// on), so a bad auto-detour can only ever affect a RoadEvent that had no
+    /// hand-authored one anyway. Untested in Unity.
+    /// </summary>
+    private void AutoComputeDetourIfNeeded()
+    {
+        if (severity == RoadEventSeverity.Minor) return;
+        var graph = CityManager.Instance != null ? CityManager.Instance.Graph : null;
+        if (graph == null) return;
+
+        if (outboundDetourNodes.Count == 0) TryAutoDetour(graph, outbound: true);
+        if (inboundDetourNodes.Count == 0)  TryAutoDetour(graph, outbound: false);
+    }
+
+    private void TryAutoDetour(RoadGraph graph, bool outbound)
+    {
+        if (!graph.FindNearestEdgePoint(eventWorldPosition, out var blockedEdge, out _)) return;
+        RoadSegment blockedSegment = blockedEdge.segment;
+
+        RoadNode start = outbound ? blockedEdge.from : blockedEdge.to;
+        RoadNode goal  = outbound ? blockedEdge.to   : blockedEdge.from;
+
+        var pathEdges = FindPathAroundSegment(graph, start, goal, blockedSegment);
+        if (pathEdges == null || pathEdges.Count == 0)
+        {
+            Debug.LogWarning($"[RoadEvent '{eventLabel}'] Auto-detour found no route around the blockage " +
+                              $"({(outbound ? "outbound" : "inbound")}) -- author one by hand.");
+            return;
+        }
+
+        var waypoints = new List<Vector3>(pathEdges.Count + 1);
+        const float waypointSpacing = 5f;
+        foreach (var edge in pathEdges)
+        {
+            int steps = Mathf.Max(1, Mathf.CeilToInt(Mathf.Max(edge.Length, 0.01f) / waypointSpacing));
+            for (int i = 0; i <= steps; i++)
+            {
+                float t = Mathf.Lerp(edge.tStart, edge.tEnd, i / (float)steps);
+                waypoints.Add(edge.segment.GetBusOffsetPosition(t, edge.isOneWay, !edge.Forward));
+            }
+        }
+
+        if (outbound)
+        {
+            outboundDetourNodes  = waypoints;
+            outboundReentryPoint = goal.position;
+            outboundReentrySet   = true;
+        }
+        else
+        {
+            inboundDetourNodes  = waypoints;
+            inboundReentryPoint = goal.position;
+            inboundReentrySet   = true;
+        }
+        Debug.Log($"[RoadEvent '{eventLabel}'] Auto-computed {(outbound ? "outbound" : "inbound")} detour: " +
+                  $"{waypoints.Count} waypoints around the blocked segment.");
+    }
+
+    /// Plain Dijkstra from start to goal over `graph`, with every edge on
+    /// `excludeSegment` removed -- i.e. "the road the event sits on is gone,
+    /// find the shortest way around it." Non-negative costs only (RoadEdge.Cost
+    /// always is), so no A* heuristic is needed for correctness here.
+    private static List<RoadEdge> FindPathAroundSegment(RoadGraph graph, RoadNode start, RoadNode goal, RoadSegment excludeSegment)
+    {
+        if (start == null || goal == null) return null;
+        if (start == goal) return new List<RoadEdge>();
+
+        var dist = new Dictionary<RoadNode, float> { [start] = 0f };
+        var cameFromEdge = new Dictionary<RoadNode, RoadEdge>();
+        var visited = new HashSet<RoadNode>();
+        var frontier = new List<RoadNode> { start };
+
+        while (frontier.Count > 0)
+        {
+            int bestIdx = 0;
+            for (int i = 1; i < frontier.Count; i++)
+                if (dist[frontier[i]] < dist[frontier[bestIdx]]) bestIdx = i;
+
+            RoadNode current = frontier[bestIdx];
+            frontier.RemoveAt(bestIdx);
+            if (!visited.Add(current)) continue;
+            if (current == goal) break;
+
+            foreach (var edge in current.outgoing)
+            {
+                if (edge.segment == excludeSegment) continue;
+                if (visited.Contains(edge.to)) continue;
+
+                float tentative = dist[current] + edge.Cost;
+                if (!dist.TryGetValue(edge.to, out float known) || tentative < known)
+                {
+                    dist[edge.to] = tentative;
+                    cameFromEdge[edge.to] = edge;
+                    frontier.Add(edge.to);
+                }
+            }
+        }
+
+        if (!cameFromEdge.ContainsKey(goal) && start != goal) return null;
+
+        var path = new List<RoadEdge>();
+        RoadNode node = goal;
+        while (cameFromEdge.TryGetValue(node, out var edge))
+        {
+            path.Add(edge);
+            node = edge.from;
+        }
+        path.Reverse();
+        return path;
     }
 
     public void Deactivate()

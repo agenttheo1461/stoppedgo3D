@@ -188,7 +188,7 @@ public class DispatchConsole : MonoBehaviour
             if (GUI.Button(r, "", GUIStyle.none)) _selectedBusID = busID;
 
             string routeLabel = bus.CurrentRoute != null
-                ? $"{bus.CurrentRoute.routeNumber}{bus.variantLetter}"
+                ? BusRouteData.RouteLabel(bus.CurrentRoute.routeNumber, bus.variantLetter)
                 : "—";
             string lateStr = lateness > 0.5f ? $"+{lateness:0.0}m" : "on time";
 
@@ -213,7 +213,7 @@ public class DispatchConsole : MonoBehaviour
         float y = 0f;
         GUI.Label(new Rect(0, y, w, 22), $"Fleet #{bus.fleetNumber}", _lblTitle); y += 26f;
         GUI.Label(new Rect(0, y, w, 18),
-            $"Route {bus.CurrentRoute?.routeNumber}{bus.variantLetter} · {(bus.IsOutbound ? "A→Z" : "Z→A")}",
+            $"Route {BusRouteData.RouteLabel(bus.CurrentRoute?.routeNumber, bus.variantLetter)} · {(bus.IsOutbound ? "A→Z" : "Z→A")}",
             _lblDim); y += 20f;
         GUI.Label(new Rect(0, y, w, 18), $"State: {bus.State}", _lblDim); y += 20f;
 

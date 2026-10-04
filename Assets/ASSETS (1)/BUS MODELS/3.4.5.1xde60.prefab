@@ -5042,6 +5042,7 @@ MonoBehaviour:
   diwaOpt1_5: 0
   diwaOpt1_6: 0
   diwaOpt1_7: 0
+  diwaOpt1_8: 0
   rpm: 0
   spd: 0
   accel: 0
@@ -5099,6 +5100,7 @@ MonoBehaviour:
   diwaOpt1_5: 0
   diwaOpt1_6: 0
   diwaOpt1_7: 0
+  diwaOpt1_8: 0
   isArticulated: 0
   ratedTierOverride: 360
   isGillig: 0
@@ -5147,12 +5149,6 @@ MonoBehaviour:
   trailerMeshRestOffset: {x: 0, y: 180, z: 0}
   trailerLateralTrim: 0
   pivotRelativeOffset: {x: 0, y: 0, z: 0}
-  bobStartKph: 45
-  bobFullKph: 85
-  frontBobAmplitude: 1.4
-  backBobAmplitude: 0.7
-  bobFrequencyHz: 3.2
-  bobBackPhaseOffsetDeg: 55
   bellowsMeshFilter: {fileID: 0}
   bellowsLength: 1.8
   maxBendDegrees: 45
@@ -5174,6 +5170,7 @@ MonoBehaviour:
   steerRateDegPerSec: 35
   maxLatAccel: 3.5
   articHingeSafetyMargin: 0.9
+  invertSteeringInReverse: 1
   economyMode: 0
   acLevel: 75
   hillMode: 0
