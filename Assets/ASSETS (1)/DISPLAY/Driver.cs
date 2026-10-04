@@ -465,7 +465,8 @@ public class DriverConsole : MonoBehaviour
         {
             string paxStr   = $"{ph.PredictedBoardingPax} on";
             string distStr  = $"[{dist:F0}m]";
-            string reasonTag = adaPending ? "[ADA PAX]" : "[STOP REQUESTED]";
+            // [FIX] Was a single generic "[ADA PAX]" for both boarding and alighting -- say which one.
+            string reasonTag = adaPending ? (ph.AdaAlightRequested ? "[ADA OFF]" : "[ADA BOARDING]") : "[STOP REQUESTED]";
             row2 = showLit
                 ? $"{paxStr} / {ph.AlightCount} off  -  {reasonTag}  -  {distStr}"
                 : $"{paxStr} / 0 off  -  {distStr}";

@@ -356,6 +356,19 @@ public ArticulationRig rig = new ArticulationRig();
     public bool  groundPitchInverted = false;
     private float _groundPitchDegSmoothed = 0f;
 
+    // Trailer Speed Bob (QoL -- TractrixJoint only). Same feel as
+    // PLAYER/BusController.cs's own back-bob. Kept private for now so every
+    // bus uses these exact values instead of a stale per-prefab Inspector
+    // override from before the latest tuning pass.
+    private bool  bobEnabled = true;
+    private float bobStartKph = 45f;
+    private float bobFullKph = 55f;
+    private float backBobAmplitude = 0.2f;
+    private float bobFrequencyHz = 3.2f;
+    private float bobDownhillPitchForExtreme = 8f;
+    private float bobDownhillExtremeMultiplier = 1.5f;
+    private float _bobPhaseAccum = 0f;
+
     private readonly List<float>      _rotHistoryTimes  = new List<float>();
     private readonly List<Quaternion> _rotHistoryValues = new List<Quaternion>();
     private Quaternion _lastAppliedTrailerRot;
@@ -404,7 +417,7 @@ public ArticulationRig rig = new ArticulationRig();
     // ═════════════════════════════════════════════════════════════════════════
     int IBusDisplaySource.BusID => busID;
 
-    string IBusDisplaySource.RouteNumber => _route != null ? _route.routeNumber : "";
+    string IBusDisplaySource.RouteNumber => _route != null ? _route.BoardNumberFor(variantLetter) : "";
 
     // LCD boards show the plain route number and the destination of whatever this bus is running (a short turn
     // shows its own turnback destination). The '~' short-turn symbol is for consoles / the 2D driver board only.
@@ -590,6 +603,95 @@ public bool IsBlockedByLight => _blockedByLight;
     }
     public BusState State { get; private set; } = BusState.Idle;
 
+    /// <summary>[ADD] Multiplayer display-only override -- a network CLIENT never runs this bus's
+    /// own AI/state machine locally (BusUpdateManager is fully gated off for a pure client), so
+    /// State was frozen at whatever it happened to be when the client connected and never updated
+    /// again. That's what made a client's live map show stale colors (e.g. a depot-ingress bus
+    /// still showing its old route color forever) -- nothing was wrong with the map's own color
+    /// logic, the State it reads just never changed. Called from NetworkGameBridge's world-state
+    /// broadcast apply step; never called on the host, which always has the real, locally-ticking
+    /// State already.</summary>
+    public void ApplyNetworkState(BusState state) => State = state;
+
+    /// <summary>[ADD] Multiplayer -- a bus a REMOTE player/AI process controls receives its
+    /// position/rotation from the network, so it must NOT be driven by this instance's own
+    /// display-only route/direction. NetworkGameBridge's broadcast (host -> everyone) calls this
+    /// for the possessed buses it knows about, keeping the destination sign/tracker/map readable
+    /// on every machine instead of frozen at whatever route the bus was running as an NPC right
+    /// before it got taken.</summary>
+    public void ApplyNetworkRouteInfo(string routeNumber, string variantLetterIn, bool isOutbound)
+    {
+        _route = BusScheduler.Instance != null ? BusScheduler.Instance.GetRouteData(routeNumber) : null;
+        _isOutbound = isOutbound;
+        _currentVariantLetter = variantLetterIn ?? "";
+        variantLetter = _currentVariantLetter;
+    }
+
+    // [REVERT] The smoothing version of this (store a target, lerp toward it every rendered frame
+    // in ManagedTick) made possessed/remote buses stop moving entirely for the user -- reverted
+    // back to the direct-apply "old system" per explicit request rather than debugging the
+    // smoothing blind. Back to a straight snap, same as before that attempt. tickInterval was
+    // lowered instead (see NetworkGameBridge) to shrink the visible step size without adding a
+    // new moving part.
+    // [ADD] Multiplayer -- read-through accessors for NetworkGameBridge to broadcast this bus's
+    // REAL light state (see BroadcastWorldState's own comment for why a locally-derived
+    // approximation wasn't good enough). _extLights/_intLightsAll are private; these expose just
+    // enough to read the current values without opening the fields up entirely.
+    public bool ExtHeadlightsOn  => _extLights != null && _extLights.HeadlightsOn;
+    public bool ExtBrakeOn       => _extLights != null && _extLights.BrakeOn;
+    public bool ExtLeftSignalOn  => _extLights != null && _extLights.LeftSignalOn;
+    public bool ExtRightSignalOn => _extLights != null && _extLights.RightSignalOn;
+    public bool ExtHazardsOn     => _extLights != null && _extLights.HazardsOn;
+    public BusInteriorLightController.InteriorLightMode InteriorMode =>
+        (_intLightsAll != null && _intLightsAll.Length > 0 && _intLightsAll[0] != null)
+            ? _intLightsAll[0].CurrentMode
+            : BusInteriorLightController.InteriorLightMode.Off;
+
+    /// <summary>[ADD] Multiplayer -- applies the REAL light state received over the network,
+    /// fanning out to every exterior/interior light controller found under this bus (root section
+    /// + trailer/child sections), same pattern UpdateAutoLights already uses locally. Called from
+    /// NetworkGameBridge's world-state broadcast apply step for every bus this machine doesn't
+    /// locally simulate; never called on the host for its own AI-driven buses, which still derive
+    /// this live via UpdateAutoLights as always.</summary>
+    public void ApplyNetworkLights(bool headlights, bool brake, bool leftSignal, bool rightSignal, bool hazards, BusInteriorLightController.InteriorLightMode interiorMode)
+    {
+        // [FIX] THE actual reason exterior/interior lights weren't showing in EITHER direction --
+        // not the sync itself (SetHeadlights/SetMode below were always receiving the right values),
+        // but a gate downstream of them. BOTH BusExteriorLightController and BusInteriorLight-
+        // Controller check "is the battery on" before actually rendering anything (ApplyHeadlight-
+        // Materials/Apply, both read an AudioEngine property) -- and that property's fallback,
+        // for a bus THIS machine isn't locally driving, reads straight through to THIS bus's own
+        // NPCBusController.audioEngine -- a COMPLETELY SEPARATE BusAudioEngine instance from
+        // whichever machine's BusSimulationController.audioEngine is the REAL one actually being
+        // driven. If this bus was idle-shutdown (UpdateIdleEngineShutdown sets batteryOn = false
+        // after it sits parked long enough -- exactly the state a depot bus offered for pickup is
+        // normally in, same recurring pattern as the renderer/trailer bugs earlier this session)
+        // before it ever got possessed, NOTHING on an observing machine ever flips this specific
+        // audioEngine's batteryOn back to true -- the one code path that does requires State to be
+        // exactly TerminalEgress/DepotEgress/InService at the instant it runs, unreliable timing
+        // for a bus that's ACTUALLY being driven by a human. A possessed bus's battery is,
+        // definitionally, always on -- force it directly rather than trust that heuristic.
+        if (IsNetworkPossessed && audioEngine != null) audioEngine.batteryOn = true;
+
+        for (int i = 0; i < (_extLightsAll?.Length ?? 0); i++)
+        {
+            var lc = _extLightsAll[i];
+            if (lc == null) continue;
+            lc.SetHeadlights(headlights);
+            lc.SetBrake(brake);
+            lc.SetLeftSignal(leftSignal);
+            lc.SetRightSignal(rightSignal);
+            lc.SetHazards(hazards);
+        }
+        for (int i = 0; i < (_intLightsAll?.Length ?? 0); i++)
+            _intLightsAll[i]?.SetMode(interiorMode);
+    }
+
+    public void ApplyNetworkTransform(Vector3 position, Quaternion rotation)
+    {
+        transform.SetPositionAndRotation(position, rotation);
+    }
+
     // ── Route data ────────────────────────────────────────────────────────────
     private BusRouteData        _route;
     private bool                _isOutbound;
@@ -679,7 +781,10 @@ public bool IsBlockedByLight => _blockedByLight;
     // isPlayer), so bus-ahead detection only needs one cache instead of two.
     private static readonly Dictionary<int, NPCBusController> _busColliderCache = new();
 
-    private static NPCBusController GetCachedBus(Collider col)
+    // internal, not private: PLAYER/BusController.cs's own ground-pitch raycast
+    // (SampleGroundY) reuses this same cache/filter instead of a second,
+    // unfiltered Raycast -- see that method's comment for the bug this fixes.
+    internal static NPCBusController GetCachedBus(Collider col)
     {
         int id = col.GetInstanceID();
         if (!_busColliderCache.TryGetValue(id, out var bus))
@@ -896,8 +1001,47 @@ public int oldBusVariant = 0;
     private const float AUDIO_CULL_HYSTERESIS  = 10f;
     private bool        _audioCulled           = false;
 
+    /// <summary>[ADD] Multiplayer: is this bus currently possessed by ANY player (local or
+    /// remote)? Grabbed live off NetworkGameBridge's possession registry rather than cached --
+    /// this bus's own possession state can change (taken/released) at any time, and the check
+    /// itself is cheap (a NetworkList.Contains). Single-player/no-session: NetworkGameBridge.Instance
+    /// is null, so this is always false and every distance-cull below behaves exactly as before.
+    /// Used to exempt a possessed bus from renderer/audio culling -- see each call site's own
+    /// comment for why a bus with a real human driving it (even remotely) shouldn't just silently
+    /// disappear past the normal NPC LOD distance.</summary>
+    // [FIX] Was private -- BusUpdateManager.FixedUpdate now needs to read this too, to skip AI
+    // movement physics for a possessed bus regardless of who's authoritative for it (see its own
+    // header comment on why the old "just disable the whole component" approach broke culling).
+    public bool IsNetworkPossessed => NetworkGameBridge.Instance != null && NetworkGameBridge.Instance.IsPossessed(busID);
+
     private void UpdateAudioCulling()
     {
+        // [FIX] This possessed-bus check used to sit BELOW the `_listener == null` early-return --
+        // meaning if Camera.main simply hadn't resolved yet when THIS bus's Start() ran (a real,
+        // plausible race: ~400 buses can Instantiate around the same frame as the camera rig, and
+        // whichever ones lose that race cache a null _listener forever, per _listener's own
+        // assignment at Start()), audio for a possessed bus never got a chance to enable AT ALL,
+        // regardless of distance -- silently, on whichever buses happened to lose that race. A
+        // possessed bus's audio doesn't need distance data to decide "on" in the first place (it's
+        // unconditional), so check it FIRST, entirely independent of _listener. Real 3D spatial
+        // falloff (the AudioSource's own spatialBlend/rolloff curve) still naturally makes it
+        // louder as any listener gets physically closer once the source itself is enabled -- this
+        // is what "enable audio when close" actually comes from, not a second hand-rolled distance
+        // check duplicating what Unity's audio engine already does.
+        if (ManagerFarMode)
+        {
+            if (_audioSource != null && _audioSource.enabled) _audioSource.enabled = false;
+            _audioCulled = true;
+            return;
+        }
+
+        if (IsNetworkPossessed)
+        {
+            _audioSource.enabled = true;
+            _audioCulled = false;
+            return;
+        }
+
         if (_listener == null) return;
         float dist = Vector3.Distance(_busPosition, _listenerPosition);
 
@@ -1048,7 +1192,9 @@ public int oldBusVariant = 0;
     // Populated in Awake. No lazy-init overhead; never touches GetComponentsInChildren again.
     private Collider[] _ownColliders;
 
-    private bool IsOwnCollider(Collider col)
+    // internal, not private: shared with PLAYER/BusController.cs's own
+    // ground-pitch raycast (same GameObject's paired component).
+    internal bool IsOwnCollider(Collider col)
     {
         for (int i = 0; i < _ownColliders.Length; i++)
             if (_ownColliders[i] == col) return true;
@@ -1479,7 +1625,24 @@ public int oldBusVariant = 0;
 
     public void ManagedTick(float dt, float ts)
     {
-        CheckFallThroughRecovery();
+        // [FIX] This whole method used to never run at all on a pure network
+        // client (BusUpdateManager blanket-gated it). Now it always runs, so
+        // per-camera visual/audio upkeep (LOD tier, renderer cull, audio
+        // cull -- all below) actually executes everywhere, including for a
+        // remote player's possessed bus as seen on THIS client. What must
+        // stay host-authoritative is genuine AI/movement DECISION logic --
+        // this bus's transform is either locally simulated (host / single-
+        // player) or overwritten wholesale by NetworkGameBridge's broadcast
+        // (pure client), so running independent movement decisions on top of
+        // a network-driven transform would just fight it. `localAuthority`
+        // is the one exception carved out for it: a network-possessed bus
+        // (this one has a real human driving it, just not on this machine)
+        // still needs its engine audio actually ticking (audioEngine.running
+        // set true) or OnAudioFilterRead silences it regardless of the cull
+        // flag -- see UpdateAudioCulling/UpdateSimulationTick below.
+        bool localAuthority = NetworkAuthority.ShouldSimulate || IsNetworkPossessed;
+
+        if (localAuthority) CheckFallThroughRecovery();
 
         if (State == BusState.Idle) return;
 
@@ -1491,7 +1654,7 @@ public int oldBusVariant = 0;
         if (_lodTimer >= 0.5f)
         {
             _lodTimer = 0f;
-            float dist = Vector3.Distance(_busPosition, _listenerPosition);
+            float dist = ManagerFarMode ? 100000f : Vector3.Distance(_busPosition, _listenerPosition);
             if      (dist < NEAR_DIST) { _fixedInterval = 1;          _checkInterval = 1;          }
             else if (dist < MID_DIST)  { _fixedInterval = MID_FIXED;  _checkInterval = MID_CHECK;  }
             else                       { _fixedInterval = FAR_FIXED;   _checkInterval = FAR_CHECK;  }
@@ -1502,24 +1665,53 @@ public int oldBusVariant = 0;
         if (_visTimer >= 0.4f)
         {
             _visTimer = 0f;
-            float d   = Vector3.Distance(_busPosition, _listenerPosition);
-            bool wantOn = d < (_renderersEnabled ? RENDER_HIDE : RENDER_SHOW);
+            // [ADD] Multiplayer: a bus with an actual human driving it -- even a REMOTE player,
+            // possibly far from THIS machine's own camera -- shouldn't distance-cull the same way
+            // an ordinary unattended NPC does. Without this, the host's own camera being near ITS
+            // bus and far from a remote player's meant that player's bus (and its audio, see
+            // UpdateAudioCulling below) just silently disappeared past RENDER_HIDE, looking like
+            // multiplayer sync wasn't working at all when it actually was.
+            bool wantOn = !ManagerFarMode && (IsNetworkPossessed || (Vector3.Distance(_busPosition, _listenerPosition) < (_renderersEnabled ? RENDER_HIDE : RENDER_SHOW)));
             SetRenderersEnabled(wantOn);
+
+            // [FIX] Articulated buses' rear section (trailerPivot) is a SEPARATE GameObject that
+            // SetDepotComponentsActive(false) deactivates outright (SetActive(false)), not just a
+            // Renderer this loop's SetRenderersEnabled call ever touches -- a possessed articulated
+            // bus that was idle at a depot at the moment it got taken kept its whole rear half
+            // switched off forever, same root cause as the renderer-cache bug above but a
+            // completely separate mechanism (GameObject active state, not Renderer.enabled), so
+            // that fix didn't cover it. Toggling a GameObject's own active state doesn't have a
+            // stale-cache problem the way the renderer/audio dedup guards did -- SetActive(true) on
+            // an already-active object is a harmless no-op -- so this just needs to run.
+            if (IsNetworkPossessed && trailerPivot != null && !trailerPivot.gameObject.activeSelf)
+                trailerPivot.gameObject.SetActive(true);
         }
+
+        // [REVERT] Used to call ApplyBusLights() (-> UpdateAutoLights(), a LOCAL approximation
+        // from State/night-check/live yaw rate) manually here for a bus this machine doesn't
+        // simulate. Not accurate enough -- replaced with the REAL light state, now sent over the
+        // network as part of WorldStateClientRpc and applied directly via ApplyNetworkLights (see
+        // NetworkGameBridge.BroadcastWorldState). Calling the local approximation here too would
+        // just fight the real synced value every frame between broadcast ticks, so it's gone
+        // entirely for the network-driven case -- FollowRoute's own ApplyBusLights call still
+        // handles the normal locally-simulated case (host/single-player's own NPC AI) unchanged.
 
         if (isPlayer) PollPlayerInput();
 
-        // [REVERT] Tick-rate throttle removed per report -- was causing real
-        // audio issues (audible pitch/RPM stepping as far buses only got
-        // real DSP updates every 3rd/6th frame instead of every frame).
-        // Back to full-rate every frame, unconditionally, same as before
-        // that optimization existed. The CPU-cost tradeoff this was meant
-        // to address is still real at fleet scale, but a broken-sounding
-        // fix is worse than the perf problem it was solving -- revisit with
-        // a different approach later if needed.
-        UpdateSimulationTick(ts);
+        // [FIX] UpdateSimulationTick drives the engine-audio DSP from accel/
+        // spd/rpm/gear -- fields that only ever get computed by movement
+        // DECISION logic below (or by HandlePlayerDriving), which is exactly
+        // what must stay off a pure client for a bus it doesn't control. Skip
+        // it there UNLESS this bus is network-possessed, in which case we
+        // still need audioEngine.running set true so OnAudioFilterRead
+        // doesn't hard-silence it -- it'll play whatever accel/spd it last
+        // had (no worse than the alternative of no sound at all) rather than
+        // fight a transform this machine doesn't drive. UpdateAudioCulling
+        // stays unconditional (see its own header comment) -- it's pure
+        // presentation state, not a decision.
+        if (localAuthority) UpdateSimulationTick(ts);
         UpdateAudioCulling();
-        if (!isPlayer) UpdateIdleEngineShutdown(dt);
+        if (!isPlayer && localAuthority) UpdateIdleEngineShutdown(dt);
 
         // Movement-only work (obstacle avoidance, unstuck recovery, breakdown
         // FX) is meaningless for a bus that's dwelling/parked and not going
@@ -1529,9 +1721,13 @@ public int oldBusVariant = 0;
         // still run unconditionally for these states -- they're what settle
         // presentation state over time and are load-bearing (see ManagedTick
         // header comment / TerminalDwell's "Deliberately NOT SetIdle" note).
+        // [FIX] Also gated by localAuthority now -- these are AI movement
+        // DECISIONS (where to steer, when to brake for an obstacle), which
+        // must stay host-authoritative; a pure client's copy of a bus it
+        // doesn't control gets its transform from NetworkGameBridge instead.
         bool stationaryParked = !isPlayer && (State == BusState.AtStop || State == BusState.AtTerminal || State == BusState.WaitingAtDepot
                                               || State == BusState.AtFuelStation || State == BusState.AtMaintenanceBay);
-        if (!stationaryParked)
+        if (!stationaryParked && localAuthority)
         {
             // Raycasts — throttled
             _checkCounter++;
@@ -1549,14 +1745,47 @@ public int oldBusVariant = 0;
             }
         }
 
-        // Re-register only if stale (e.g. after a domain reload in editor)
-        if (!BusRegistry.ActiveBuses.TryGetValue(busID, out var cached) || cached != this)
+        // [FIX] THE TRACKER OVERFLOW BUG: this unconditional re-register used to be harmless
+        // because a possessed bus's whole NPCBusController got disabled (see BusUpdateManager's
+        // and NetworkGameBridge's own fix comments) -- so ManagedTick, and therefore this line,
+        // never ran for a possessed bus at all. Now that the component stays enabled/registered
+        // for a REMOTELY-possessed bus (so its visual/audio cull ticking keeps working), this line
+        // runs for it every frame too -- and kept silently undoing the deliberate
+        // BusRegistry.ActiveBuses.Remove(busID) that BusSelectMenu/NetworkGameBridge's possession
+        // handlers do specifically so a possessed bus stops being treated as ordinary, available
+        // NPC capacity. The bus re-appeared in ActiveBuses one frame later, every frame -- so it
+        // showed up TWICE everywhere that reads ActiveBuses as "the NPC list" (BusTrackerService's
+        // arrivals, MDT_LiveMap's NPC chip loop) -- once via PlayerRegistry as the real player
+        // entry, once more via ActiveBuses as if it were an unattended NPC -- and worse, could
+        // make dispatch logic elsewhere treat a human-driven bus as free NPC capacity again.
+        // Re-register only if stale (e.g. after a domain reload in editor) AND not possessed.
+        if (!IsNetworkPossessed && (!BusRegistry.ActiveBuses.TryGetValue(busID, out var cached) || cached != this))
             BusRegistry.ActiveBuses[busID] = this;
     }
 
     // ── ManagedFixedTick — called every FixedUpdate by BusUpdateManager ───────
+    /// <summary>Route Manager: while true this bus stands still where it is (set from the Route Manager's "Hold bus").</summary>
+    public bool ManagerHold;
+    /// <summary>Route Manager "Depart now": a bus waiting at the start of its trip leaves immediately instead of at the timetable time.</summary>
+    public bool ManagerDepartNow;
+    /// <summary>Route Manager: hold the bus the next time it is at a stop or terminal.</summary>
+    public bool ManagerHoldAtNextStop;
+
+    /// <summary>Route Manager: no 3D view or sound is wanted, so every NPC bus drops to its cheapest state
+    /// (no renderers, no audio, slowest update tier). Movement and scheduling are unchanged.</summary>
+    public static bool ManagerFarMode;
+
     public void ManagedFixedTick(float fdt)
     {
+        if (ManagerHoldAtNextStop && !isPlayer && (State == BusState.AtStop || State == BusState.AtTerminal))
+        { ManagerHold = true; ManagerHoldAtNextStop = false; }
+
+        if (ManagerHold && !isPlayer)
+        {
+            accel = 0f; bkPd = 1f; spd = 0f;
+            if (_rb != null) _rb.linearVelocity = Vector3.zero;
+            return;
+        }
         if (!isPlayer && (State == BusState.Idle || State == BusState.AtStop || State == BusState.AtTerminal))
         {
             accel = 0f; bkPd = 1f; spd = 0f;
@@ -2919,7 +3148,11 @@ public void ReleaseHeldIdleZoneBayForPossession()
     // -- SetDoorOpen only ever reached the first BusInteriorLightController
     // GetComponentInChildren found, so a trailer/articulated section's own
     // interior lights never learned the doors had opened.
-    private void SetIntDoorOpenAll(bool open)
+    // [FIX] Was private -- NetworkGameBridge needs to trigger this too, for a bus whose doors
+    // open/close because of NETWORK-received door state (own possession push, or the world-state
+    // broadcast for any other bus) rather than this bus's own local door-toggle code, which is
+    // exactly what's skipped on a machine that isn't the one actually opening these doors.
+    public void SetIntDoorOpenAll(bool open)
     {
         for (int i = 0; i < (_intLightsAll?.Length ?? 0); i++)
             _intLightsAll[i]?.SetDoorOpen(open);
@@ -3031,7 +3264,12 @@ public void ReleaseHeldIdleZoneBayForPossession()
             // how this bus's forward/rotation is set up elsewhere in this
             // file). If a given rig turns out mirrored, swap the two
             // SetLeftSignal/SetRightSignal calls below rather than the sign.
-            float dt = Mathf.Max(BusFixedDt, 0.0001f);
+            // [FIX] Was Mathf.Max(BusFixedDt, 0.0001f) -- BusFixedDt is only ever written inside
+            // ManagedFixedTick, so it stayed frozen (stale) whenever this method gets called
+            // manually from ManagedTick instead (see ApplyBusLights's own call-site comment) --
+            // exactly the possessed-bus case this whole batch of fixes is about. Time.deltaTime is
+            // correct and available in either calling context.
+            float dt = Mathf.Max(Time.deltaTime, 0.0001f);
             float yawNow = transform.eulerAngles.y;
             float yawRate = Mathf.DeltaAngle(_lastFacingYaw, yawNow) / dt;
             _lastFacingYaw = yawNow;
@@ -3409,12 +3647,37 @@ if (PaxSimManager.Instance != null)
 // (PaxSimManager-clamped) numbers are known — update it here.
 onboardPax = Mathf.Max(0, onboardPax + boarding - alighting);
 
+// custom51: transfer chain bookkeeping -- only for the real NPC path (a real
+// stopIndex/_stopSequence to roll an alighting stop code from). The generic
+// player fallback branch above has neither, so it's skipped there on purpose;
+// PlayerHandoff.cs (the actual player bus class) registers its own pax directly.
+if (stopIndex >= 0 && _route != null)
+{
+    for (int i = 0; i < boarding; i++)
+        PaxTransferSystem.RegisterBoarding(fleetNumber, _route.routeNumber, _isOutbound, RollNpcTransferAlightStopCode(stopIndex));
+    if (alighting > 0 && SimClock.Instance != null)
+        PaxTransferSystem.RegisterAlighting(fleetNumber, alighting, SimClock.Instance.AbsoluteGameMinutes);
+}
+
         if (alighting == 0 && boarding == 0)
         {
 if (verboseLogging) Debug.Log($"[{stopCode}] No passengers boarded or alighted.");
             return false;
         }
         return true;
+    }
+
+    /// <summary>Uniform "stops ahead" roll for a newly-boarded NPC rider, converted straight to a
+    /// real stop code so PaxTransferSystem can look up transfer candidates from it. Doesn't use
+    /// DesirableZone weighting like PlayerHandoff's RollPassengerDestination -- NPC riders are flavor
+    /// data nobody scrutinizes as closely, so the extra weighting isn't worth the coupling here.</summary>
+    private string RollNpcTransferAlightStopCode(int stopIndex)
+    {
+        if (_stopSequence == null || stopIndex < 0) return null;
+        int stopsRemaining = _stopSequence.Count - stopIndex - 1;
+        if (stopsRemaining <= 0) return null;
+        int idx = stopIndex + UnityEngine.Random.Range(1, stopsRemaining + 1);
+        return (idx >= 0 && idx < _stopSequence.Count) ? _stopSequence[idx].stopCode : null;
     }
 
     /// <summary>Onboard pax count — tracked here now for both modes instead
@@ -3624,7 +3887,24 @@ private IEnumerator StopDwell()
     // pattern so NPC buses switch to the ALL-zones lighting config too.
     SetIntDoorOpenAll(doorsOpen || rearDoorsOpen);
 
-    if (floorDwell > 0f) yield return new WaitForSeconds(floorDwell);
+    // custom51: poll for transfer riders arriving at the curb WHILE dwelling
+    // (not just at door-open) -- in ~1s slices instead of one flat wait, so a
+    // transfer whose walk timer elapses mid-dwell still gets picked up before
+    // the doors close.
+    float dwellRemaining = floorDwell;
+    while (dwellRemaining > 0f)
+    {
+        float slice = Mathf.Min(1f, dwellRemaining);
+        yield return new WaitForSeconds(slice);
+        dwellRemaining -= slice;
+
+        if (_route != null && SimClock.Instance != null)
+        {
+            int picked = PaxTransferSystem.PullArrivingTransfers(stop.stopCode, _route.routeNumber, _isOutbound,
+                                                                  SimClock.Instance.AbsoluteGameMinutes, fleetNumber);
+            if (picked > 0) onboardPax += picked;
+        }
+    }
 
     // Signal intent to close...
     doorsOpen = false;
@@ -4166,13 +4446,14 @@ private IEnumerator StopDwell()
             spd = 0f; accel = 0f; bkPd = 1f; State = BusState.AtTerminal;
         }
 
-        while (BusScheduler.Instance.GameTimeMinutes < mySlot.scheduledDeparture + departureOffsetMinutes)
+        while (!ManagerDepartNow && BusScheduler.Instance.GameTimeMinutes < mySlot.scheduledDeparture + departureOffsetMinutes)
         {
             if (SlotTakenByOther(mySlot)) { SendHomeAfterSlotTaken(); yield break; }
             yield return _wait2s;
         }
         if (SlotTakenByOther(mySlot)) { SendHomeAfterSlotTaken(); yield break; }
 
+        ManagerDepartNow = false;
         BusScheduler.Instance.RecordActualDeparture(busID, BusScheduler.Instance.GameTimeMinutes);
 
         _currentVariantLetter = mySlot.variantLetter;
@@ -4888,7 +5169,7 @@ private void SendHomeAfterSlotTaken()
 
 private IEnumerator WaitForScheduledDeparture(TimetableSlot slot)
 {
-    while (BusScheduler.Instance.GameTimeMinutes < slot.scheduledDeparture + departureOffsetMinutes)
+    while (!ManagerDepartNow && BusScheduler.Instance.GameTimeMinutes < slot.scheduledDeparture + departureOffsetMinutes)
     {
         if (SlotTakenByOther(slot)) { SendHomeAfterSlotTaken(); yield break; }
         yield return _wait2s;
@@ -4906,6 +5187,7 @@ private IEnumerator WaitForScheduledDeparture(TimetableSlot slot)
         _claimedBayIdx = -1;
     }
 
+    ManagerDepartNow = false;
     BusScheduler.Instance.RecordActualDeparture(busID, BusScheduler.Instance.GameTimeMinutes);
     State = BusState.InService;
     bkPd = 0f;
@@ -4960,6 +5242,19 @@ private IEnumerator WaitForScheduledDeparture(TimetableSlot slot)
             }
         }
         if (_audioSource != null) _audioSource.enabled = active;
+        // [FIX] THE ACTUAL ROOT CAUSE of the culling bug that survived every previous fix: this
+        // method writes each Renderer's .enabled DIRECTLY, but never updated the separate
+        // _renderersEnabled cache SetRenderersEnabled uses -- so after going idle here (active=
+        // false, renderers really disabled), _renderersEnabled was left stuck at its stale value
+        // (defaults true, or whatever it last was). SetRenderersEnabled(true) has an early-exit
+        // dedup guard (`if (_renderersEnabled == on) return;`) -- if the cache still read `true`
+        // (its untouched default) while the real renderers were actually false, that guard
+        // silently refused to ever re-enable them: it believed nothing needed to change. This is
+        // exactly the case for a bus that was idle at a depot (SetIdle -> here) at the moment it
+        // got possessed -- ManagedTick's own IsNetworkPossessed exemption computed the right
+        // `wantOn = true` and called SetRenderersEnabled(true), but the guard threw it away every
+        // single time. Keeping the cache honest here closes the gap.
+        _renderersEnabled = active;
         if (_allRenderers != null)
             for (int i = 0; i < _allRenderers.Length; i++)
             {
@@ -5337,7 +5632,35 @@ private float CurrentSignedForwardSpeed()
         float groundPitchTarget = ComputeGroundPitchTargetDeg(hitch, _rearAxleWorld);
         _groundPitchDegSmoothed = Mathf.MoveTowards(
             _groundPitchDegSmoothed, groundPitchTarget, groundPitchSmoothDegPerSec * dt);
-        Quaternion groundPitchRot = Quaternion.Euler(_groundPitchDegSmoothed, 0f, 0f);
+
+        // ── QoL: hinge speed-bob, same feel as PLAYER/BusController.cs's own
+        // back-bob for a possessed bus (backBobAmplitude/bobStartKph/etc), ported here
+        // so an NPC-driven artic bobs the same way. Amplitude fades in with speed, and
+        // gets boosted further by however much REAL terrain pitch this tick's ground
+        // rays already found (groundPitchTarget, unsmoothed -- a bridge crest/dip or a
+        // steep grade), so it reads as "extreme" specifically where the road actually
+        // justifies it, using data this rig already computes for its own real purpose.
+        float bobDeg = 0f;
+        if (bobEnabled)
+        {
+            float speedKph = Mathf.Abs(CurrentSignedForwardSpeed()) * 3.6f;
+            float speedFrac = Mathf.Clamp01(Mathf.InverseLerp(bobStartKph, Mathf.Max(bobStartKph + 0.01f, bobFullKph), speedKph));
+            if (speedFrac > 0f)
+            {
+                float freqNow = Mathf.Lerp(bobFrequencyHz * 0.4f, bobFrequencyHz, speedFrac);
+                _bobPhaseAccum += freqNow * 360f * dt; // degrees
+                if (_bobPhaseAccum > 360f) _bobPhaseAccum -= 360f;
+
+                // Smoothed pitch, not the raw per-tick groundPitchTarget -- raw was
+                // spiking on a single noisy raycast (bump/seam/missed frame) and
+                // instantly multiplying the bob, reading as a sudden "kick" at speed.
+                float terrainFactor = Mathf.Clamp01(Mathf.Abs(_groundPitchDegSmoothed) / Mathf.Max(0.01f, bobDownhillPitchForExtreme));
+                float amplitude = backBobAmplitude * speedFrac * (1f + terrainFactor * bobDownhillExtremeMultiplier);
+                bobDeg = Mathf.Sin(_bobPhaseAccum * Mathf.Deg2Rad) * amplitude;
+            }
+        }
+
+        Quaternion groundPitchRot = Quaternion.Euler(_groundPitchDegSmoothed + bobDeg, 0f, 0f);
         Quaternion restPlusPitch  = restOff * groundPitchRot; // dynamic pitch rides ON the baked rest offset
 
         Quaternion finalRot = trailerMeshFacesBackward
@@ -5998,8 +6321,10 @@ private float CurrentSignedForwardSpeed()
         if (State != BusState.InService || _route == null || _segments == null || _segments.Count == 0)
             return 0f;
 
-        // If no stops are defined, use segment progress as fallback
-        if (_stopSequence == null || _stopSequence.Count == 0)
+        // Progress is measured by DISTANCE along the route, always. It used to count stops passed, but a bus
+        // skips stops nobody uses (_nextStopIdx jumps ahead at once), so a bus that had only just left the
+        // terminal was credited with most of the route and showed ~25 minutes early.
+        if (_segments != null && _segments.Count > 0)
         {
             // Progress through segments: current / total
             if (_segments.Count == 0) return 0f;

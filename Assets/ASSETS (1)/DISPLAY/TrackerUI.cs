@@ -260,6 +260,11 @@ public class MDT_UI_Controller : MonoBehaviour
 
         GUI.Label(new Rect(12, 28, panelWidth - 90, 18), crumb, _styleBreadcrumb);
 
+        // [ADD] Service alert banner(s) for the route currently being viewed -- yellow bg/black text,
+        // posted automatically on a breakdown (player or NPC) or a road event; auto-expires on its own.
+        if (_selectedRoute != null)
+            RouteServiceAlertMonitor.DrawForRoute(_selectedRoute.routeNumber, 12, HEADER_H, panelWidth - 24);
+
         // Back button
         if (_screen != Screen.Routes)
         {

@@ -30,15 +30,106 @@ public class TimetableSlot
     public bool IsShortTurn => variantLetter == BusRouteData.ShortTurnSymbol;
 
     public bool isPlayerSlot => state == SlotState.AssignedPlayer;
-    public string FullRouteLabel => routeNumber + variantLetter;
+    public string FullRouteLabel => BusRouteData.RouteLabel(routeNumber, variantLetter);
     public string DirectionLabel => isOutbound ? "A→Z" : "Z→A";
 }
 
-public class BusScheduler : MonoBehaviour
+public partial class BusScheduler : MonoBehaviour
 {
     public static BusScheduler Instance { get; private set; }
-    public const int PLAYER_BUS_ID = -2;
-    public static bool IsPlayer(int busID) => busID == PLAYER_BUS_ID;
+
+    // [CHANGE] Multiplayer: was `public const int PLAYER_BUS_ID = -2;` -- a single hardcoded
+    // sentinel used as one shared dictionary key (_slotByBus[PLAYER_BUS_ID]) throughout this
+    // file, with zero way to tell two different human players apart. Converted to a computed
+    // property driven by an ambient "who is this scheduler call actually for" context
+    // (BeginPlayerContext), which is ONLY ever set by NetworkGameBridge's server-side RPC handlers
+    // while processing a specific remote client's request. Outside that scope -- which covers
+    // every single-player call site and every call the HOST makes for its own local play,
+    // completely unchanged -- this still returns exactly -2, the same value it always has.
+    // Confirmed safe to convert from const: grepped the whole project for `case ... PLAYER_BUS_ID`
+    // or `case -2:` (which would require a compile-time constant) -- no hits.
+    private static ulong? _networkPlayerContext;
+
+    public static int PLAYER_BUS_ID => _networkPlayerContext.HasValue
+        ? (int)(-1000L - (long)_networkPlayerContext.Value)
+        : -2;
+
+    /// <summary>Wrap a scheduler call made ON THE SERVER on behalf of a specific remote client in
+    /// this (see NetworkGameBridge's adopt-slot ServerRpc), so PLAYER_BUS_ID resolves to that
+    /// client's own unique sentinel for the duration instead of colliding with -2 (the host's own
+    /// local player) or with any other remote client. Never used outside that one RPC handler.</summary>
+    public readonly struct PlayerContextScope : System.IDisposable
+    {
+        private readonly ulong? _previous;
+        public PlayerContextScope(ulong clientId) { _previous = _networkPlayerContext; _networkPlayerContext = clientId; }
+        public void Dispose() => _networkPlayerContext = _previous;
+    }
+    public static PlayerContextScope BeginPlayerContext(ulong clientId) => new PlayerContextScope(clientId);
+
+    /// <summary>-2 (single-player/host) or any per-client sentinel from BeginPlayerContext (always
+    /// &lt;= -1000 by construction) both count as "a player," not just the original -2.</summary>
+    public static bool IsPlayer(int busID) => busID == -2 || busID <= -1000;
+
+    /// <summary>[ADD] The REAL bug behind "teleported to a terminal idle zone for a later shift"
+    /// that long predates multiplayer: a physical bus (e.g. Bus#96, fleet 1909) that a player picks
+    /// up via the schedule board -- for a completely different route than whatever it was already
+    /// pre-assigned to run -- keeps its OWN independent, day-generation-time NPC schedule sitting
+    /// in _allSlots (state == AssignedNPC, assignedBusID == that same real busID), totally unaware
+    /// the physical bus is now secretly a human's. Nothing ever cancelled/reassigned it, because
+    /// the player's session lives under a completely different key (PLAYER_BUS_ID's sentinel, not
+    /// the bus's own real busID) in _slotByBus. When that leftover NPC slot's own departure (or
+    /// the early-dispatch window before it) comes due, the dispatcher finds `!_slotByBus.
+    /// ContainsKey(96)` true (nothing's there under the REAL id) and happily dispatches/teleports
+    /// the physical GameObject a human is currently sitting in.
+    ///
+    /// Fix: every place that's about to treat a slot's real assignedBusID as "just an NPC" (the
+    /// early-dispatch loop and HandleSlotDue's AssignedNPC case) checks this first and skips if the
+    /// physical bus is secretly possessed by anyone right now. Two sources, by design (the user's
+    /// own proposed shape): PlayerHandoff.Instance.PossessedPhysicalBusID catches the host's own
+    /// local possession without needing any networking involved at all (this is what makes it work
+    /// correctly in single-player, where SchedulerTick runs the exact same code); NetworkGameBridge's
+    /// possession registry is checked as a second, independent source so a REMOTE client's
+    /// physically-possessed bus is caught too (that registry is authoritative host-side regardless
+    /// of whose local PlayerHandoff it belongs to). Either one matching is enough.</summary>
+    public static bool IsPhysicalBusSecretlyPossessed(int physicalBusID)
+    {
+        if (PlayerHandoff.Instance != null && PlayerHandoff.Instance.PossessedPhysicalBusID == physicalBusID) return true;
+        if (NetworkGameBridge.Instance != null && NetworkGameBridge.Instance.IsPossessed(physicalBusID)) return true;
+        return false;
+    }
+
+    /// <summary>Reverses BeginPlayerContext's encoding. Only meaningful when busID &lt;= -1000
+    /// (a real per-client sentinel, not the classic -2).</summary>
+    public static ulong DecodeClientId(int playerBusID) => (ulong)(-1000L - (long)playerBusID);
+
+    /// <summary>[ADD] Delivers a relief-search result to whoever actually asked for it. Both
+    /// relief-search call sites (the real player flow via OnReplacementNeeded, and the
+    /// debug/CmdBreakdown flow via InitiateReliefSearch) used to bare-call
+    /// PlayerHandoff.Instance?.OnReplacementFound/OnReplacementSearchFailed directly -- which,
+    /// on the HOST, always means the HOST's OWN local player, never an actual remote client that
+    /// requested relief through NetworkGameBridge's RequestRelief RPC. For -2 (single-player/host,
+    /// completely unchanged) this still calls PlayerHandoff.Instance directly; for a per-client
+    /// sentinel it decodes the real clientId and sends a targeted ClientRpc instead.</summary>
+    public static void NotifyReplacementFound(int playerBusID, int replacementBusID)
+    {
+        if (playerBusID <= -1000)
+        {
+            NetworkGameBridge.Instance?.SendReplacementFoundToClient(DecodeClientId(playerBusID), replacementBusID);
+            return;
+        }
+        PlayerHandoff.Instance?.OnReplacementFound(replacementBusID);
+    }
+
+    /// <summary>Counterpart to NotifyReplacementFound for the no-eligible-bus case.</summary>
+    public static void NotifyReplacementSearchFailed(int playerBusID)
+    {
+        if (playerBusID <= -1000)
+        {
+            NetworkGameBridge.Instance?.SendReplacementSearchFailedToClient(DecodeClientId(playerBusID));
+            return;
+        }
+        PlayerHandoff.Instance?.OnReplacementSearchFailed();
+    }
 
     /// <summary>Bus IDs currently possessed by a free-agent brain (AIBusController /
     /// CHIP) instead of running the normal scheduled fleet. Checked in CanAssign
@@ -302,6 +393,14 @@ public class BusScheduler : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         _reportTimer = scheduleReportInterval;
 
+        // The route list can carry the same route twice (the prefab's first entry plus a scene override
+        // both pointed at route 1). Keep the first of each route number; nulls go too.
+        if (managedRoutes != null)
+        {
+            var seenRoutes = new HashSet<string>();
+            managedRoutes = managedRoutes.Where(r => r != null && seenRoutes.Add(r.routeNumber)).ToArray();
+        }
+
         _lateness = new LatenessTracker
         {
             dwellCutoffMinutes = latenessDwellCutoffMinutes,
@@ -430,7 +529,8 @@ foreach (var slot in _allSlots.Where(s => s.assignedBusID >= 0 && s.state == Slo
             _dynamicLatenessTimer = 0f;
             _lateness.Tick(_slotByBus, SimClock.Instance.AbsoluteGameMinutes,
                 busID => BusManager.Instance?.GetRecord(busID)?.controller as NPCBusController,
-                GetRouteData);
+                GetRouteData,
+                TripMinutesForSlot);
         }
 
         // [FIX M2] This ran unconditionally every scheduleReportInterval
@@ -564,11 +664,28 @@ foreach (var slot in _allSlots.Where(s => s.assignedBusID >= 0 && s.state == Slo
     /// vehicle policy only — variant-specific overrides aren't worth the cost
     /// here, this is just an ordering heuristic, not a real allocation).
     /// Lower count = scarcer = processed first.</summary>
+    // [FIX] Ordering by raw pool size alone still let a route get starved by a
+    // shared-pool neighbor: a route can have a perfectly respectable ABSOLUTE
+    // eligible-bus count and still lose every contested slot if a neighbor
+    // sharing most of that same pool needs several times as many buses
+    // concurrently. Confirmed real via a live repro: Route 140 (needs ~2
+    // concurrent buses, series pool overlaps heavily with two much
+    // hungrier neighbors) still got double-booked with Route 136 (needs ~7,
+    // same two series) even with this scarcity sort already in place,
+    // because 140's raw pool size wasn't small enough to sort it ahead of
+    // 136 under the old key — despite 140 being the one that actually runs
+    // dry first once 136 (and others earlier in line) take their share.
+    // Dividing pool size by the route's own bus cap turns this into a
+    // genuine PRESSURE ratio (how many times over would this route's need
+    // exhaust its own eligible pool) instead of a bare headcount — a route
+    // that's both small-pool AND high-need now sorts ahead of one that's
+    // merely small-pool, matching which one is actually more likely to come
+    // up empty.
     private IEnumerable<BusRouteData> RoutesByPoolScarcity()
     {
         return managedRoutes
             .Where(r => r != null)
-            .OrderBy(EstimateEligiblePoolSize);
+            .OrderBy(r => EstimateEligiblePoolSize(r) / (float)Mathf.Max(1, r.GetCurrentBusCap()));
     }
 
     private int EstimateEligiblePoolSize(BusRouteData route)
@@ -894,32 +1011,28 @@ foreach (var slot in _allSlots.Where(s => s.assignedBusID >= 0 && s.state == Slo
 
                     if (newBusID < 0)
                     {
-                        // Every bus in this route's pool is already committed
-                        // elsewhere for this window — genuinely not enough
-                        // buses to cover it without double-booking. Falls
-                        // back to the old forced-reuse behavior rather than
-                        // leaving the slot Unassigned, but the warning now
-                        // says what's actually happening. Still prefers a
-                        // night-eligible candidate where one exists in the
-                        // pool, rather than blindly forcing whichever bus is
-                        // next in the shuffle onto a leg it isn't allowed on.
-                        int eligibleIdx = pool.FindIndex(b => route.IsBusAllowedForVariant(ResolveFleetNumber(b), groupVariant, slotMinuteOfDay));
-                        if (eligibleIdx >= 0)
-                        {
-                            newBusID = pool[eligibleIdx];
-                            poolIdx = eligibleIdx + 1;
-                        }
-                        else
-                        {
-                            if (poolIdx >= pool.Count) poolIdx = 0;
-                            newBusID = pool[poolIdx++];
-                        }
+                        // [FIX] Every bus in this route's pool is already committed elsewhere
+                        // for this window — genuinely not enough buses to cover it without
+                        // double-booking. This used to force a reuse anyway ("forced a
+                        // double-booking... rather than leave the slot unassigned") — but a
+                        // double-booked bus is scheduling fiction (a physical bus can't
+                        // actually be in two places), and it's exactly what a live repro
+                        // confirmed: Route 140 (small pool, shares its depot series with much
+                        // hungrier Route 136) showed the SAME bus, at the SAME time, assigned
+                        // to two completely different routes' timetables ("YOU" on both boards
+                        // at once). RoutesByPoolScarcity (see its own updated comment) now
+                        // weighs need against pool size instead of raw pool size alone, which
+                        // should make this fallback fire far less often — but when the fleet
+                        // genuinely is short for this window even with fairer ordering, leaving
+                        // the slot Unassigned (shown as TBD) is the honest outcome. A visible
+                        // service gap beats a bus silently pretending to run two trips at once.
                         if (logDispatches)
                         {
                             Debug.LogWarning($"[BusScheduler] Route {route.routeNumber}{(string.IsNullOrEmpty(slot.variantLetter) ? "" : slot.variantLetter)}: " +
                                               $"every eligible bus for this depot/policy is already committed to another route during this window — " +
-                                              $"forced a double-booking on Bus#{newBusID} rather than leave the slot unassigned.");
+                                              $"leaving this slot Unassigned (TBD) instead of double-booking.");
                         }
+                        continue;
                     }
                     else if (poolIdx > pool.Count && logDispatches && !warnedExhausted)
                     {
@@ -1057,6 +1170,14 @@ data.entries.Add(new DayAssignmentEntry
     private float EmitWindowDirection(float winStart, float winEnd, float headway, string routeNumber, string vLetter, bool outbound, int dayNumber, float dayBase, float lastEmitted, float phaseOffsetMinutes = 0f)
     {
         if (headway <= 0f) return lastEmitted;
+
+        // Live-event hook: a ReducedService/NoService/AdditionalService event covering this
+        // route+direction+day scales headway (or, at 0, skips the window outright) -- see
+        // LiveEventManager.GetServiceMultiplier. ModifiedService/Detour never reach here.
+        float liveMultiplier = LiveEventManager.Instance != null
+            ? LiveEventManager.Instance.GetServiceMultiplier(routeNumber, outbound, dayNumber) : 1f;
+        if (liveMultiplier <= 0f) return lastEmitted;
+        if (liveMultiplier != 1f) headway = Mathf.Max(1f, headway / liveMultiplier);
 
         float wEnd = ResolveWrappedEnd(winStart, winEnd);
         float phase = ((phaseOffsetMinutes % headway) + headway) % headway; // normalize into [0, headway)
@@ -1416,7 +1537,28 @@ public int CountActiveBusesOnRoute(string routeNumber)
             }
             else if (IsPlayer(slot.assignedBusID))
             {
-                fleetNum = PlayerHandoff.Instance != null ? PlayerHandoff.Instance.FleetNumber : -1;
+                // [FIX 2] The first fix here was still wrong -- "-2 means MY OWN local player" is
+                // only true on the machine actually hosting. -2 is PLAYER_BUS_ID's plain DEFAULT
+                // value (what it reads as on every machine outside a BeginPlayerContext scope), so
+                // a CLIENT resolving a slot showing "-2" (the HOST's own bus) would match its own
+                // PlayerHandoff.Instance by coincidence, not because it's really the same bus --
+                // see BusTrackerService.ResolveFleetLabel's identical bug/fix for the confirmed
+                // repro. Compare against THIS machine's actual PlayerBusID instead of hardcoding -2.
+                if (PlayerHandoff.Instance != null && slot.assignedBusID == PlayerHandoff.Instance.PlayerBusID)
+                {
+                    fleetNum = PlayerHandoff.Instance.FleetNumber;
+                }
+                else if (NetworkGameBridge.Instance != null)
+                {
+                    ulong clientId = NetworkGameBridge.SentinelToClientId(slot.assignedBusID);
+                    int physicalBusID = NetworkGameBridge.Instance.GetPossessedBusID(clientId);
+                    var ctrl = physicalBusID >= 0 ? BusManager.Instance?.GetRecord(physicalBusID)?.controller : null;
+                    fleetNum = ctrl != null ? ctrl.fleetNumber : -1;
+                }
+                else
+                {
+                    fleetNum = -1;
+                }
             }
             else
             {
@@ -1670,8 +1812,17 @@ public int CountActiveBusesOnRoute(string routeNumber)
             return null;
         }
 
-        var state = IsPlayer(busID) ? SlotState.AssignedPlayer : SlotState.AssignedNPC;
+        bool isPlayerClaim = IsPlayer(busID);
+        var state = isPlayerClaim ? SlotState.AssignedPlayer : SlotState.AssignedNPC;
         if (!CommitAssignment(slot, busID, state)) return null;
+        // [FIX] Same missing step as ReservePlayerSlot -- CommitAssignment deliberately skips
+        // resetting chainLegIndex for a player (see its own comment); the NPC branch already
+        // resets it internally, so only the player case needs it done here.
+        if (isPlayerClaim)
+        {
+            slot.chainLegIndex = 1;
+            slot.serviceMinutesAccum = TripMinutesForSlot(slot);
+        }
         TopUpChain(busID, slot);
         return slot;
     }
@@ -1681,6 +1832,14 @@ public int CountActiveBusesOnRoute(string routeNumber)
         var slot = PeekUpcomingSlots(routeNumber, "", isOutbound, 1).FirstOrDefault();
         if (slot == null) return null;
         if (!CommitAssignment(slot, PLAYER_BUS_ID, SlotState.AssignedPlayer)) return null;
+        // [FIX] CommitAssignment deliberately doesn't stamp a player's chain index (see its own
+        // comment, and the same pattern already followed correctly by TryCrossRouteHandoff and
+        // CompleteSlot's fresh-claim continuation) -- every player-assigning caller is expected to
+        // set it explicitly. This one (a genuinely fresh board join, not a continuation of
+        // anything) was missing that step entirely, so it inherited whatever chainLegIndex the
+        // slot happened to carry from initial day-generation instead of starting a new chain at 1.
+        slot.chainLegIndex = 1;
+        slot.serviceMinutesAccum = TripMinutesForSlot(slot);
         TopUpChain(PLAYER_BUS_ID, slot);
         return slot;
     }
@@ -1689,6 +1848,9 @@ public int CountActiveBusesOnRoute(string routeNumber)
     {
         if (target == null || target.state != SlotState.Unassigned) return null;
         if (!CommitAssignment(target, PLAYER_BUS_ID, SlotState.AssignedPlayer)) return null;
+        // [FIX] Same missing step as ReservePlayerSlot above -- see that comment.
+        target.chainLegIndex = 1;
+        target.serviceMinutesAccum = TripMinutesForSlot(target);
         TopUpChain(PLAYER_BUS_ID, target);
         return target;
     }
@@ -1990,6 +2152,8 @@ public int CountActiveBusesOnRoute(string routeNumber)
             var s = _allSlots[i];
             if (s.assignedBusID == busID && s.state != SlotState.Unassigned && s.state != SlotState.Completed)
             {
+                // Route Manager: a trip the manager fixed by hand stays with its bus.
+                if (s.state == SlotState.AssignedNPC && ManagerLocks.IsSlotLocked(s)) continue;
                 s.assignedBusID = -1;
                 s.state = SlotState.Unassigned;
                 freed++;
@@ -2023,17 +2187,20 @@ public int CountActiveBusesOnRoute(string routeNumber)
         return true;
     }
 
-    public void AssignBusToSlot(TimetableSlot slot, int busID)
+    /// <summary>Returns false when the bus was refused (vehicle policy, route full, slot already taken) — the caller
+    /// must NOT go on to send that bus out on the route, or the road fills with buses the timetable doesn't know.</summary>
+    public bool AssignBusToSlot(TimetableSlot slot, int busID)
     {
         var routeData = GetRouteData(slot.routeNumber);
         var variant = !string.IsNullOrEmpty(slot.variantLetter) ? routeData?.GetVariant(slot.variantLetter) : null;
         if (!CanAssign(busID, routeData, variant, out string reason, slot.scheduledDeparture % 1440f))
         {
             Debug.LogError($"[BusScheduler] AssignBusToSlot BLOCKED: Bus#{busID} on Route {slot.FullRouteLabel} ({reason}).");
-            return;
+            return false;
         }
-        if (!CommitAssignment(slot, busID, IsPlayer(busID) ? SlotState.AssignedPlayer : SlotState.AssignedNPC)) return;
+        if (!CommitAssignment(slot, busID, IsPlayer(busID) ? SlotState.AssignedPlayer : SlotState.AssignedNPC)) return false;
         TopUpChain(busID, slot);
+        return true;
     }
 
     public void RecordActualDeparture(int busID, float gameTimeMinutes, TimetableSlot knownSlot = null)
@@ -2078,6 +2245,16 @@ public int CountActiveBusesOnRoute(string routeNumber)
         _slotByBus.Remove(busID);
         OnSlotCompleted?.Invoke(slot, isPlayer, busID);
 
+        // Route Manager: "move after this trip" — this bus finishes here and goes to the garage,
+        // so the manager can give it its new trip once it is parked.
+        if (!isPlayer && ManagerLocks.TakeParkAfterTrip(busID))
+        {
+            ReleaseChain(busID);
+            OnBusRetiredFromRoute?.Invoke(busID, completedRoute);
+            OnIdleBus?.Invoke(slot);
+            return;
+        }
+
 int completedLap = slot.chainLegIndex > 0 ? slot.chainLegIndex : 1;
 // [FIX] _slotByBus.Remove(busID) already ran above -- the busID-only lookup
 // GetEffectiveLapThreshold falls back to would silently miss this bus's route
@@ -2115,7 +2292,13 @@ if (!isPlayer && serviceBudgetReached)
         var variantForRetirement = !string.IsNullOrEmpty(slot.variantLetter)
             ? routeDataForRetirement?.GetVariant(slot.variantLetter)
             : null;
-        float retirementNotBefore = completedDep + TripMinutesForSlot(slot) + minLayoverMinutes;
+        // [ADD] A road event still active on this route/direction means the NEXT bus into that same
+        // detour is just as delayed as this one was -- push the earliest-next-assignment time out by
+        // however much extra driving time RoadEventRegistry says that detour currently costs, instead
+        // of scheduling as if the road were clear again the instant this trip ended.
+        float roadEventExtra = RoadEventRegistry.Instance != null
+            ? RoadEventRegistry.Instance.GetExtraMinutes(completedRoute, completedWasOutbound) : 0f;
+        float retirementNotBefore = completedDep + TripMinutesForSlot(slot) + minLayoverMinutes + roadEventExtra;
         var freshNext = GetNextUnassignedSlot(completedRoute, slot.variantLetter, retirementNotBefore, !completedWasOutbound);
         if (IsTooFarAhead(freshNext)) freshNext = null; // leave it for dispatch when it's due instead of parking for hours
 
@@ -2203,7 +2386,10 @@ if (!isPlayer && serviceBudgetReached)
             // rarely even reach once Bug 5 is fixed elsewhere, but it has the
             // identical stale-time-basis bug in its own right: floor against
             // the actual current clock, not just completedDep + trip + layover.
-            float continuationNotBefore = Mathf.Max(completedDep + TripMinutesForSlot(slot) + minLayoverMinutes,
+            // [ADD] Same road-event allowance as the retirement path above.
+            float continuationRoadEventExtra = RoadEventRegistry.Instance != null
+                ? RoadEventRegistry.Instance.GetExtraMinutes(completedRoute, completedWasOutbound) : 0f;
+            float continuationNotBefore = Mathf.Max(completedDep + TripMinutesForSlot(slot) + minLayoverMinutes + continuationRoadEventExtra,
                                                       SimClock.Instance.AbsoluteGameMinutes);
 
             if (!CanContinueRoute(busID, routeData, variant, out string denyReason, continuationNotBefore % 1440f))
@@ -2330,7 +2516,11 @@ if (!isPlayer && serviceBudgetReached)
     /// only ever gets offered here if it would actually be accepted later.
     /// Also now genuinely prefers the nearest candidate to terminalCode
     /// instead of ignoring it.</summary>
-    public void InitiateReliefSearch(string terminalCode, string routeNumber)
+    /// <summary>playerBusID (optional, defaults to -2) identifies who this search is actually
+    /// for -- pass BusScheduler.PLAYER_BUS_ID from the caller's own context so the result routes
+    /// back to the right player via NotifyReplacementFound/NotifyReplacementSearchFailed instead
+    /// of always landing on the host's own local PlayerHandoff.Instance.</summary>
+    public void InitiateReliefSearch(string terminalCode, string routeNumber, int playerBusID = -2)
     {
         var routeData = GetRouteData(routeNumber);
         var terminalStop = FindStopByCode(terminalCode);
@@ -2369,12 +2559,12 @@ if (!isPlayer && serviceBudgetReached)
         {
             if (best.State == NPCBusController.BusState.DepotIngress) best.AbortDepotIngress();
             if (logDispatches) Debug.Log($"[BusScheduler] Relief found: busID={best.busID} fleet#{best.fleetNumber}, eligible for Route {routeNumber}.");
-            PlayerHandoff.Instance?.OnReplacementFound(best.busID);
+            NotifyReplacementFound(playerBusID, best.busID);
         }
         else
         {
             Debug.LogWarning($"[BusScheduler] No eligible replacement bus found for Route {routeNumber} near {terminalCode}.");
-            PlayerHandoff.Instance?.OnReplacementSearchFailed();
+            NotifyReplacementSearchFailed(playerBusID);
         }
     }
 
@@ -2388,6 +2578,15 @@ if (!isPlayer && serviceBudgetReached)
         while (true)
         {
             yield return new WaitForSeconds(1f);
+
+            // [ADD] Multiplayer: dispatch/scheduling decisions are server-authoritative -- a
+            // network client must not independently decide which NPC buses launch, retire, or get
+            // early-staged. It still has its own full local fleet (see NetworkGameBridge's header
+            // comment), but its OWN dispatch decisions would never match the host's, so it just
+            // displays whatever the host's broadcast says instead. Single-player and host both
+            // keep ticking normally.
+            if (!NetworkAuthority.ShouldSimulate) continue;
+
             float now = SimClock.Instance.AbsoluteGameMinutes;
             while (_processedUpTo < _allSlots.Count && _allSlots[_processedUpTo].scheduledDeparture <= now)
             {
@@ -2402,6 +2601,10 @@ if (!isPlayer && serviceBudgetReached)
                 if (s.state != SlotState.AssignedNPC || s.assignedBusID < 0) continue;
                 if (_slotByBus.ContainsKey(s.assignedBusID)) continue; // already spawned/attached
                 if (_earlyStaged.Contains(s)) continue;
+                // [FIX] This slot still SAYS AssignedNPC, but the physical bus it names might have
+                // been picked up by a player for a completely different route since this slot was
+                // generated -- see IsPhysicalBusSecretlyPossessed's own comment for the full story.
+                if (IsPhysicalBusSecretlyPossessed(s.assignedBusID)) continue;
 
                 _earlyStaged.Add(s);
                 OnDispatchBus?.Invoke(s);
@@ -2436,6 +2639,18 @@ if (!isPlayer && serviceBudgetReached)
                 break;
 
             case SlotState.AssignedNPC:
+                // [FIX] Same exception as the early-dispatch loop above (see
+                // IsPhysicalBusSecretlyPossessed's own comment) -- this slot still says
+                // AssignedNPC, but the physical bus it names might have been picked up by a
+                // player for a completely different route since this slot was generated. Retire
+                // it quietly instead of dispatching/teleporting the bus a human is currently
+                // sitting in.
+                if (IsPhysicalBusSecretlyPossessed(slot.assignedBusID))
+                {
+                    slot.state = SlotState.Completed;
+                    if (logDispatches) Debug.Log($"[BusScheduler] {GameTimeString} Skipped stale NPC slot for Bus#{slot.assignedBusID} -- that physical bus is secretly player-possessed now. Route {slot.FullRouteLabel} {slot.DirectionLabel} @ {MinutesToTimeString(slot.scheduledDeparture)}");
+                    break;
+                }
                 if (slot.assignedBusID >= 0 && !_slotByBus.ContainsKey(slot.assignedBusID))
 {
                     AttachToBus(slot, slot.assignedBusID, SlotState.AssignedNPC);

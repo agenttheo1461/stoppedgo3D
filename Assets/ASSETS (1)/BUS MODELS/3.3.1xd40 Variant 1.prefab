@@ -741,6 +741,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BusKneelBody
   bodyGroup: {fileID: 5569963811284346745}
   bodyGroupNameContains: Body
+  extraBodyGroups: []
   kneelDropDistance: 0.08
   kneelRightLeanDegrees: 2.5
   kneelSpeed: 3

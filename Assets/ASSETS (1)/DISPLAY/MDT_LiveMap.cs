@@ -91,7 +91,7 @@ public class MapAreaLabel
     public Color labelColor = new Color(0.85f, 0.90f, 0.95f, 0.95f);
 }
 
-public class MDT_LiveMap : MonoBehaviour
+public partial class MDT_LiveMap : MonoBehaviour
 {
     // ── QoL: persistent view settings ────────────────────────────────────────
 private const string PrefZoom      = "MDTMap_Zoom";
@@ -282,11 +282,13 @@ private const int RECENT_BUS_CAP = 5;
         // DrawBreakdownRings just reads a bool off the chip it's already
         // iterating.
         public bool isLocked;
+        public string seriesName;
+        public bool facingWest;
 
         public void BuildDisplayStrings()
         {
             dirLabelCached     = (isOutbound ? "↗ OUB" : "↙ INB");
-            routeDisplayCached = string.IsNullOrEmpty(variantLetter) ? routeNumber : routeNumber + variantLetter;
+            routeDisplayCached = BusRouteData.RouteLabel(routeNumber, variantLetter);
             fleetNumberCached  = fleetNumber.ToString();
         }
     }
@@ -315,6 +317,8 @@ private const int RECENT_BUS_CAP = 5;
         // out none of them were visible.
         public Vector2 minB;
         public Vector2 maxB;
+        // Route Manager: the road's real width in world units (0 for route lines).
+        public float worldWidth;
     }
 
     private readonly List<RoutePolyline> _roadLines = new List<RoutePolyline>(512);
@@ -455,6 +459,7 @@ private void Tick3DInput()
 
 private void Update()
 {
+    if (_mgr) { ManagerUpdate(); return; } // Route Manager draws and refreshes its own map
     _lastMousePos = Input.mousePosition;
     if (_mode3D) Tick3DInput();
 
@@ -674,7 +679,8 @@ if (!_junctionsBuilt) BuildRoadJunctionsOnce();
                     col   = new Color(0.22f, 0.25f, 0.28f, 0.70f),
                     layer = 0,
                     minB  = gMin,
-                    maxB  = gMax
+                    maxB  = gMax,
+                    worldWidth = road.roadWidth
                 });
             }
         }
@@ -836,6 +842,33 @@ if (player?.playerBus != null)
     _chips.Add(playerChip);
 }
 
+        // ── [FIX] Other players' chips, via PlayerRegistry ────────────────────────
+        // Used to manually rescan NetworkGameBridge.GetPossessedBusIDs() here, with its own
+        // hand-rolled "skip my own physical busID" check -- a second copy of the exact lookup
+        // BusTrackerService also needed, which is how these things drift (see PlayerRegistry's
+        // own header comment). One canonical list now; empty outside a network session, so this
+        // loop is simply a no-op in single-player, same as before.
+        foreach (var p in PlayerRegistry.GetAll())
+        {
+            if (p.IsLocal) continue; // already drawn as playerChip above
+            if (!IsDirectionVisible(p.IsOutbound)) continue;
+
+            var otherRoute = BusScheduler.Instance?.GetRouteData(p.RouteNumber);
+            var otherChip = new BusChip
+            {
+                worldPos      = p.Transform.position,
+                fleetNumber   = p.FleetNumber,
+                isPlayer      = true,
+                isOutbound    = p.IsOutbound,
+                routeColor    = otherRoute != null ? otherRoute.routeColor : new Color(0.55f, 0.75f, 1f),
+                routeNumber   = p.RouteNumber ?? "?",
+                variantLetter = p.VariantLetter,
+                busID         = p.PhysicalBusID,
+                isLocked      = BusBreakdownSystem.Instance != null && BusBreakdownSystem.Instance.IsBusLocked(p.PhysicalBusID),
+            };
+            otherChip.BuildDisplayStrings();
+            _chips.Add(otherChip);
+        }
 
         // ── NPC chips ──────────────────────────────────────────────────────────
         foreach (var kv in BusRegistry.ActiveBuses)
@@ -881,6 +914,8 @@ if (player?.playerBus != null)
                 variantLetter = ctrl.variantLetter,
                 busID         = kv.Key,
                 isLocked      = BusBreakdownSystem.Instance != null && BusBreakdownSystem.Instance.IsBusLocked(kv.Key),
+                seriesName    = FleetMetadata.Get(ctrl.fleetNumber)?.seriesName,
+                facingWest    = (-ctrl.transform.forward).x < 0f,
             };
             npcChip.BuildDisplayStrings(); // [PERF FIX] see BusChip struct comment
             _chips.Add(npcChip);
@@ -1220,6 +1255,7 @@ private bool _junctionsBuilt = false;
     }
 private void OnGUI()
 {
+    if (_mgr) return; // the Route Manager screen draws the map itself
     if (!_visible) return;
     BuildStyles();
 
@@ -2100,39 +2136,44 @@ private void HandleInput(int w, int mh)
         }
 
         DrawRoadEventChips(w, mh);
+        DrawServiceAlertStrip(w);
 
         float worldVis = (viewRadius * 2f) / _zoom;
         MDT_UITheme.DrawScaleBar(new Rect(mapRect.x + 8, mapRect.y, w - 16, mh), worldVis, _styleLegend);
     }
 
-    // ── [MAP-4] ETA popup (single bus) ────────────────────────────────────────
+    // ── [MAP-4] Onboard-pax popup (single bus) ────────────────────────────────
+    // [REWRITE — custom51] This used to show "next stop" + upcoming arrivals
+    // (BusTrackerService.GetNextArrivals). That's now on the tracker panel;
+    // clicking a bus chip on the LIVE MAP is about who's actually riding it --
+    // regular riders vs. transfer chains ("5 [OUB] → 199 [OUB]"), read straight
+    // from PaxTransferSystem.GetOnboard so it works for both NPC and player buses.
     private void OpenEtaPopup(BusChip chip, Vector2 screenPos)
     {
         if (_etaPopupFleet == chip.fleetNumber) { _etaPopupFleet = -1; return; } // toggle off
 
-        _etaPopupFleet    = chip.fleetNumber;
+        _etaPopupFleet     = chip.fleetNumber;
         _etaPopupScreenPos = screenPos;
         _etaPopupArrivals.Clear();
-        _etaPopupNextStop = "";
 
-        // Find the bus's current next stop
-        NPCBusController ctrl = null;
-        foreach (var kv in BusRegistry.ActiveBuses)
-            if (kv.Value != null && kv.Value.fleetNumber == chip.fleetNumber)
-            { ctrl = kv.Value; break; }
+        var onboard = PaxTransferSystem.GetOnboard(chip.fleetNumber);
+        _etaPopupNextStop = $"{onboard.Count} onboard";
 
-        if (ctrl?.CurrentRoute == null || BusTrackerService.Instance == null) return;
-
-        var route = ctrl.CurrentRoute;
-        var stops = ctrl.IsOutbound ? route.resolvedOutboundStops : route.resolvedInboundStops;
-        int nextIdx = Mathf.Clamp(ctrl.NextStopIndex, 0, (stops?.Count ?? 1) - 1);
-
-        if (stops != null && nextIdx < stops.Count)
+        var counts = new Dictionary<string, int>();
+        var order  = new List<string>();
+        foreach (var rec in onboard)
         {
-            _etaPopupNextStop = stops[nextIdx].stopName ?? stops[nextIdx].stopCode;
-            _etaPopupArrivals = BusTrackerService.Instance.GetNextArrivals(
-                route, ctrl.IsOutbound, stops[nextIdx].stopCode);
+            string chain = rec.FormatChain();
+            if (!counts.ContainsKey(chain)) { counts[chain] = 0; order.Add(chain); }
+            counts[chain]++;
         }
+        order.Sort((a, b) => counts[b].CompareTo(counts[a]));
+
+        const int maxLines = 8;
+        for (int i = 0; i < order.Count && i < maxLines; i++)
+            _etaPopupArrivals.Add(counts[order[i]] > 1 ? $"×{counts[order[i]]}  {order[i]}" : order[i]);
+        if (order.Count > maxLines)
+            _etaPopupArrivals.Add($"+ {order.Count - maxLines} more chain(s)");
     }
 
     private void DrawEtaPopup(int w, int mh)
@@ -2150,7 +2191,7 @@ private void HandleInput(int w, int mh)
         MDT_UITheme.DrawRect(new Rect(px, py, pw, ph), MDT_UITheme.BGDeep);
 
         GUI.Label(new Rect(px + 4, py + 3, pw - 8, 14),
-            $"Fleet #{_etaPopupFleet} — next stop:",
+            $"Fleet #{_etaPopupFleet} — riders:",
             MDT_UITheme.MakeLabel(7, FontStyle.Bold, TextAnchor.MiddleLeft, MDT_UITheme.TextCyan));
 
         GUI.Label(new Rect(px + 4, py + 14, pw - 8, 12),
@@ -2166,7 +2207,7 @@ private void HandleInput(int w, int mh)
 
         if (_etaPopupArrivals.Count == 0)
         {
-            GUI.Label(new Rect(px + 4, py + 26, pw - 8, 16), "No arrivals found.",
+            GUI.Label(new Rect(px + 4, py + 26, pw - 8, 16), "No transfer riders onboard.",
                 MDT_UITheme.MakeLabel(8, FontStyle.Normal, TextAnchor.MiddleLeft, MDT_UITheme.TextDim));
         }
     }
@@ -2205,6 +2246,25 @@ private void HandleInput(int w, int mh)
     // ── Road event chips ──────────────────────────────────────────────────────
     public void OnRoadEventActivated(RoadEvent ev) => _dataDirty = true;
     public void OnRoadEventCleared(RoadEvent ev)   => _dataDirty = true;
+
+    /// <summary>[ADD] Every currently-active service alert (breakdown or road event delay), stacked at
+    /// the top of the map -- yellow bg/black text, same banner MDT_LiveMap's tracker counterpart draws
+    /// per-route. This one's network-wide since the map doesn't have a single "current route" concept.</summary>
+    private void DrawServiceAlertStrip(int w)
+    {
+        var active = RouteServiceAlertMonitor.GetAllActive();
+        float y = HEADER_H;
+        var bg   = new Color(0.95f, 0.85f, 0.10f, 0.96f);
+        var text = new GUIStyle(GUI.skin.label) { fontSize = 10, fontStyle = FontStyle.Bold, wordWrap = true };
+        text.normal.textColor = Color.black;
+        foreach (var a in active)
+        {
+            var r = new Rect(4, y, w - 8, 22);
+            GUI.DrawTexture(r, Texture2D.whiteTexture, ScaleMode.StretchToFill, false, 0, bg, 0, 0);
+            GUI.Label(new Rect(r.x + 4, r.y, r.width - 8, r.height), a.message, text);
+            y += 24f;
+        }
+    }
 
     private void DrawRoadEventChips(int w, int mh)
     {
@@ -2246,8 +2306,7 @@ private void HandleInput(int w, int mh)
         if (_hoveredBus.HasValue)
         {
             var chip    = _hoveredBus.Value;
-            string variant = string.IsNullOrEmpty(chip.variantLetter) ? "" : $" [{chip.variantLetter}]";
-            string text = $"Fleet #{chip.fleetNumber}\nRte {chip.routeNumber}{variant}\n" +
+            string text = $"Fleet #{chip.fleetNumber}\nRte {BusRouteData.RouteLabel(chip.routeNumber, chip.variantLetter)}\n" +
                           (chip.isOutbound ? "A → Z (Outbound)" : "Z → A (Inbound)") +
                           "\n[click] lock & show ETA";
             MDT_UITheme.DrawTooltip(Event.current.mousePosition, text, _styleTooltip);

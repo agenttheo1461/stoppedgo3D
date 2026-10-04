@@ -100,7 +100,7 @@ public class SettingsWindow : MonoBehaviour
 
         float x = _windowRect.x + 14, y = 0, w = _windowRect.width - 28;
         var scrollArea = new Rect(x, _windowRect.y + 44, w, _windowRect.height - 58);
-        _scroll = GUI.BeginScrollView(scrollArea, _scroll, new Rect(0, 0, w - 20, 1450));
+        _scroll = GUI.BeginScrollView(scrollArea, _scroll, new Rect(0, 0, w - 20, 1560));
         y = 0;
 
         y = DrawSection(w, y, "DISPLAY");
@@ -114,7 +114,19 @@ public class SettingsWindow : MonoBehaviour
         y = DrawSection(w, y, "NOTIFICATIONS");
         y = DrawToggleRow(w, y, "Shift countdown reminders", SettingsData.NotifyShiftCountdown, v => SettingsData.NotifyShiftCountdown = v);
         y = DrawToggleRow(w, y, "Starred bus availability nudges", SettingsData.NotifyStarredBuses, v => SettingsData.NotifyStarredBuses = v);
+        y = DrawToggleRow(w, y, "Favorite route availability nudges", SettingsData.NotifyFavoriteRoutes, v => SettingsData.NotifyFavoriteRoutes = v);
         y = DrawToggleRow(w, y, "Real OS push (Android/iOS/macOS)", SettingsData.UseOsPush, v => SettingsData.UseOsPush = v);
+
+        // [ADD] Second layer -- a route picker gets a whole second window
+        // (RouteRosterWindow), same as MY BUSES on the main menu footer does
+        // for starred buses, rather than trying to cram a scrollable route
+        // list into this already-tall single-page settings sheet.
+        y += 10;
+        y = DrawSection(w, y, "ROUTES");
+        var routesRow = new Rect(0, y, w, 34);
+        if (GUI.Button(routesRow, "Manage favorite routes ▸", _btnSecond))
+            RouteRosterWindow.Instance?.Open();
+        y += 38;
 
         y += 10;
         y = DrawSection(w, y, "DEVELOPER");

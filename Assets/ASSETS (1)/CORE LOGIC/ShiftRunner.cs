@@ -1537,12 +1537,11 @@ public class ShiftRunner : MonoBehaviour
         }
         else
         {
-            int busID =
-                PlayerHandoff.Instance.PlayerBusID;
-
-
-            BusScheduler.Instance?
-                .ReleasePlayerSlot(busID);
+            // [FIX] Was BusScheduler.Instance?.ReleasePlayerSlot(busID) directly -- a silent
+            // no-op on a network client, since that local BusScheduler.Instance never has the
+            // host's real data. PlayerHandoff.ReleasePlayerSlot() routes through the same
+            // network-aware path its own internal call sites use.
+            PlayerHandoff.Instance.ReleasePlayerSlot();
         }
 
 

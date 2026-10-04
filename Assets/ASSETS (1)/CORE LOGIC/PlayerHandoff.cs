@@ -93,7 +93,17 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
     {
         if (bus == null) return;
         playerBus = bus;
+
         var npc = bus.GetComponent<NPCBusController>();
+
+        // [CHANGE] Multiplayer, rebuilt architecture: claiming a bus is now possession
+        // bookkeeping on NetworkGameBridge (busID-keyed), not NetworkObject ownership --
+        // buses no longer have a NetworkObject at all. Fire-and-forget: single-player/host
+        // resolves synchronously (see RequestPossessBus's !IsSpawned fast path), a real
+        // network client accepts the narrow race of two players grabbing the same bus in
+        // the same instant rather than blocking every SetPlayerBus call site on a round trip.
+        if (npc != null) NetworkGameBridge.Instance?.RequestPossessBus(npc.busID, null);
+
         if (npc != null) _cachedFleetNumber = npc.fleetNumber;
         // New bus means any cached suspension reference is stale — force a
         // fresh GetComponent lookup next time the kneel key is pressed.
@@ -178,6 +188,18 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
     public void ResetForFreshPossession(BusSimulationController bus, int displayFleetNumber = -1, NPCBusController formerNpc = null)
     {
         if (bus != null) playerBus = bus;
+
+        // [FIX] This is the Free Drive entry point -- the one PlayerHandoff.SetPlayerBus's own
+        // possession-request hook was missing, since ResetForFreshPossession sets playerBus
+        // directly rather than calling SetPlayerBus. Free Drive is exactly the path a network
+        // client uses to grab a bus (see ClientBusPickerWindow, which does its own AWAITED
+        // RequestPossessBus call before ever calling in here -- this fire-and-forget one covers
+        // every OTHER caller of ResetForFreshPossession that doesn't already do that handshake).
+        if (bus != null)
+        {
+            int busID = formerNpc != null ? formerNpc.busID : GetBusID(bus);
+            NetworkGameBridge.Instance?.RequestPossessBus(busID, null);
+        }
 
         // Same reason as AdoptInServiceSlot: if this bus was sitting idle
         // (e.g. parked at a depot bay) right before being possessed,
@@ -274,11 +296,72 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         PrintTagged($"Relief requested for Route {ActiveRouteLabel} {(_isOutbound ? "A→Z" : "Z→A")}.", "info");
         OnReliefRequested?.Invoke(_activeSlot.assignedBusID);
 
-        if (BusScheduler.Instance != null)
-            BusScheduler.Instance.RequestRelief(PlayerBusID, _activeRoute, _isOutbound);
-        else
-            PrintTagged("⚠ Scheduler unavailable — relief request could not be sent.", "warn");
+        RequestReliefAcrossNetwork();
         DriverConsole.Instance?.RefreshStopHUD();
+    }
+
+    /// <summary>[ADD] Sends the relief request to the host's real BusScheduler on a network
+    /// client (fire-and-forget -- this bus's own local relief-pending state already changed
+    /// above exactly as in single-player); calls BusScheduler.Instance directly, unchanged,
+    /// for single-player/host.</summary>
+    private void RequestReliefAcrossNetwork()
+    {
+        if (NetworkAuthority.IsPureClient)
+        {
+            NetworkGameBridge.Instance?.RequestRelief(_activeRoute, _isOutbound);
+            return;
+        }
+        BusScheduler.Instance?.RequestRelief(PlayerBusID, _activeRoute, _isOutbound);
+    }
+
+    /// <summary>[ADD] Counterpart for slot completion -- same fire-and-forget pattern as
+    /// RequestReliefAcrossNetwork above. On a client, routes to the host via RPC so the
+    /// host's authoritative BusScheduler (the one that actually owns the slot/route state)
+    /// learns the slot finished; this bus's own local shift-state change is applied by the
+    /// caller either way, exactly as in single-player.</summary>
+    private void CompleteSlotAcrossNetwork(bool retire)
+    {
+        if (NetworkAuthority.IsPureClient)
+        {
+            NetworkGameBridge.Instance?.RequestCompleteSlot(retire);
+            return;
+        }
+        var scheduler = BusScheduler.Instance;
+        if (retire) scheduler?.CompleteSlotAndRetire(PlayerBusID);
+        else        scheduler?.CompleteSlot(PlayerBusID);
+    }
+
+    /// <summary>[ADD] Same fire-and-forget pattern as CompleteSlotAcrossNetwork above, for the 4
+    /// call sites (EndCurrentLegForShiftAdvance, EndShiftFully, EndShift,
+    /// ReleaseAutoAdoptedSlotForBoardClaim) that used to call
+    /// BusScheduler.Instance?.ReleasePlayerSlot(PlayerBusID) directly -- a silent no-op on a
+    /// client, since that local BusScheduler.Instance never has the host's real data.</summary>
+    private void ReleasePlayerSlotAcrossNetwork()
+    {
+        if (NetworkAuthority.IsPureClient)
+        {
+            NetworkGameBridge.Instance?.RequestReleaseSlot();
+            return;
+        }
+        BusScheduler.Instance?.ReleasePlayerSlot(PlayerBusID);
+    }
+
+    /// <summary>Public so ShiftRunner.AbandonShiftEarly can release the player's slot through the
+    /// same network-aware path instead of touching BusScheduler.Instance directly.</summary>
+    public void ReleasePlayerSlot() => ReleasePlayerSlotAcrossNetwork();
+
+    /// <summary>[ADD] Same pattern for BeginLeg's BusScheduler.RecordActualDeparture call -- also
+    /// a silent no-op on a client before this. No live TimetableSlot reference crosses the
+    /// network; the host-side RPC handler relies on RecordActualDeparture's own _slotByBus
+    /// lookup fallback instead (see NetworkGameBridge.RequestRecordActualDeparture's own comment).</summary>
+    private void RecordActualDepartureAcrossNetwork(float now)
+    {
+        if (NetworkAuthority.IsPureClient)
+        {
+            NetworkGameBridge.Instance?.RequestRecordActualDeparture(now);
+            return;
+        }
+        BusScheduler.Instance?.RecordActualDeparture(PlayerBusID, now, _activeSlot);
     }
 
     /// <summary>[ADD] Counterpart to OnReplacementFound for the case where
@@ -453,7 +536,7 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         }
 
         if (_activeSlot != null)
-            BusScheduler.Instance?.ReleasePlayerSlot(PlayerBusID);
+            ReleasePlayerSlotAcrossNetwork();
 
         _isBreakdown = false;
         _reliefRequested = false;
@@ -528,7 +611,7 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         }
 
         if (_activeSlot != null)
-            BusScheduler.Instance?.ReleasePlayerSlot(PlayerBusID);
+            ReleasePlayerSlotAcrossNetwork();
 
         _isBreakdown = false;
         _reliefRequested = false;
@@ -657,12 +740,12 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
                 return;
             }
 
-            scheduler?.CompleteSlotAndRetire(PlayerBusID);
+            CompleteSlotAcrossNetwork(retire: true);
             CompleteRelief();
             return;
         }
 
-        scheduler?.CompleteSlot(PlayerBusID);
+        CompleteSlotAcrossNetwork(retire: false);
         // [FIX D2] direct assignment -> SetShiftState() so this fires.
         SetShiftState(PlayerShiftState.ArrivedAtTerminal);
 
@@ -704,6 +787,25 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
     // "CONTINUE" button calls when a pre-assigned next leg exists.
     private void TryAutoContinueOrSignOff()
     {
+        // [FIX] Same client-parity gap as ContinueAssignedChain (see its own comment) --
+        // scheduler.TryGetAssignedSlot(PlayerBusID, ...) reads the client's own local,
+        // never-promoted _slotByBus dictionary, so this always disagreed with what the
+        // host actually decided. Ask the host the same way ContinueAssignedChain now does
+        // (TryGetAssignedSlot is read-only, so reusing RequestContinueChain here just to
+        // peek is safe -- ContinueAssignedChain will ask again when the player actually
+        // presses continue, which re-resolves fresh rather than trusting this snapshot).
+        if (NetworkAuthority.IsPureClient)
+        {
+            NetworkGameBridge.Instance?.RequestContinueChain((success, routeNumber, variantLetter, isOutbound, scheduledDeparture) =>
+            {
+                PrintTagged(success
+                    ? "Segment complete — type <b>continue</b> for your next assigned leg, or pick a different route from the board."
+                    : "This bus's scheduled run is finished — signing off.", "board");
+                if (!success) EndShiftFully();
+            });
+            return;
+        }
+
         var scheduler = BusScheduler.Instance;
         bool hasChainedLeg = scheduler != null && scheduler.TryGetAssignedSlot(PlayerBusID, out _);
 
@@ -749,6 +851,43 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
     /// it only ever runs from an explicit player button press.</summary>
     public void ContinueAssignedChain()
     {
+        // [FIX] This used to call scheduler.TryGetAssignedSlot(PlayerBusID, ...)
+        // directly on BusScheduler.Instance regardless of network mode -- on a
+        // pure client that reads the CLIENT's OWN local _slotByBus dictionary,
+        // which is never the one CompleteSlot/RequestRelief promote a next
+        // chain leg into (that happens on the HOST's scheduler, under this
+        // client's real sentinel, inside RequestCompleteSlotServerRpc's
+        // BeginPlayerContext). The periodic schedule-state broadcast keeps a
+        // client's AllSlots fields in sync, but _slotByBus is a separate
+        // busID->slot lookup that broadcast never touches -- so this could
+        // only ever see stale or outright wrong data on a client (the
+        // "told me Meridian Square when it should've said Parkview" report).
+        // Route through the host, exactly like JoinRoute/AdoptInServiceSlot
+        // already do, so a client has the same parity the host always had.
+        if (NetworkAuthority.IsPureClient)
+        {
+            NetworkGameBridge.Instance?.RequestContinueChain((success, routeNumber, variantLetter, isOutbound, scheduledDeparture) =>
+            {
+                if (!success)
+                {
+                    PrintTagged("No pending chain leg to continue — pick a route from the board instead.", "warn");
+                    return;
+                }
+                var snapshotSlot = new TimetableSlot
+                {
+                    routeNumber = routeNumber,
+                    variantLetter = variantLetter,
+                    isOutbound = isOutbound,
+                    scheduledDeparture = scheduledDeparture,
+                    dayNumber = Mathf.FloorToInt(scheduledDeparture / 1440f),
+                    state = SlotState.AssignedPlayer,
+                    assignedBusID = BusScheduler.PLAYER_BUS_ID,
+                };
+                ApplyContinueChainResult(snapshotSlot);
+            });
+            return;
+        }
+
         var scheduler = BusScheduler.Instance;
         if (scheduler == null || !scheduler.TryGetAssignedSlot(PlayerBusID, out var nextSlot))
         {
@@ -756,6 +895,15 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
             return;
         }
 
+        ApplyContinueChainResult(nextSlot);
+    }
+
+    /// <summary>Shared apply/print step for ContinueAssignedChain's two paths (direct single-
+    /// player/host call, or the network-client RPC callback) -- exact same messages either way,
+    /// factored out instead of duplicated so the two paths can't drift apart (same pattern as
+    /// JoinRoute/ApplyJoinRouteResult).</summary>
+    private void ApplyContinueChainResult(TimetableSlot nextSlot)
+    {
         // [FIX 07-30] This used to set _targetTerminal to the NEW leg's
         // destination and jump straight to InService — skipping the
         // WaitingToDepart gate entirely. That's why continuing a chain
@@ -785,14 +933,14 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
 
         PrintTagged($"🔁 Continuing on Fleet #{_cachedFleetNumber} — {BuildLapLabel()}, next departure <b>{depTime}</b> ({dir}).", "board");
 
-        float lateBy = scheduler != null ? scheduler.GameTimeMinutes - nextSlot.scheduledDeparture : 0f;
+        float lateBy = BusScheduler.Instance != null ? BusScheduler.Instance.GameTimeMinutes - nextSlot.scheduledDeparture : 0f;
         if (lateBy > 1f)
             PrintTagged($"⚠ You're <b>{Mathf.CeilToInt(lateBy)} min late</b> for the {depTime} departure. Still your leg, departing now.", "warn");
         else
             PrintTagged("  Type <b>depart</b> when time comes.", "info");
 
-        if (scheduler != null)
-            PrintTagged($"  Game time now: {scheduler.GameTimeString}", "info");
+        if (BusScheduler.Instance != null)
+            PrintTagged($"  Game time now: {BusScheduler.Instance.GameTimeString}", "info");
 
         DriverConsole.Instance?.RefreshStopHUD();
     }
@@ -827,8 +975,7 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
                           "that the shift board didn't ask for — releasing it so the board's actual pick can proceed. " +
                           "This means the depot bus you selected wasn't genuinely idle.");
 
-        if (BusScheduler.Instance != null)
-            BusScheduler.Instance.ReleasePlayerSlot(PlayerBusID);
+        ReleasePlayerSlotAcrossNetwork();
 
         _activeSlot          = null;
         _activeRoute         = null;
@@ -840,10 +987,27 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
     public bool HasPendingChainLeg =>
         BusScheduler.Instance != null && BusScheduler.Instance.TryGetAssignedSlot(PlayerBusID, out _);
 
-    public void AdoptInServiceSlot(int npcBusID, BusSimulationController bus, NPCBusController formerNpc)
+    /// <summary>onComplete (optional) fires with whether the scheduler transfer succeeded --
+    /// synchronously, before this call returns, for single-player/host (unchanged); after an RPC
+    /// round-trip to the host for a network client, since AdoptInServiceSlotNetworked's transfer
+    /// isn't resolved yet when this call returns. Callers that need to react to the outcome (e.g.
+    /// deciding which message to print) should use the callback instead of checking state right
+    /// after calling this -- that state may not have updated yet on a client.</summary>
+    public void AdoptInServiceSlot(int npcBusID, BusSimulationController bus, NPCBusController formerNpc, Action<bool> onComplete = null)
     {
+        // [ADD] Multiplayer: a network CLIENT's own local BusScheduler.Instance never ticks and
+        // has no real schedule data (see NetworkAuthority gating) -- the actual scheduler
+        // transfer has to happen on the HOST, via NetworkGameBridge's adopt-slot RPC, not by
+        // calling BusScheduler.Instance directly and locally here. Single-player and the host's
+        // own local play never take this branch -- this method is completely unchanged for them.
+        if (NetworkAuthority.IsPureClient)
+        {
+            AdoptInServiceSlotNetworked(npcBusID, bus, formerNpc, onComplete);
+            return;
+        }
+
         var scheduler = BusScheduler.Instance;
-        if (scheduler == null) return;
+        if (scheduler == null) { onComplete?.Invoke(false); return; }
 
         var slot = scheduler.TransferSlotToPlayer(npcBusID);
 
@@ -859,6 +1023,7 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
             int actualFleet = formerNpc != null ? formerNpc.fleetNumber : -1;
             PrintTagged($"Unable to adopt in-service slot: scheduler transfer failed. requested={npcBusID}, busID={actualBusID}, fleet={actualFleet}", "error");
             ResetForFreshPossession(bus, actualFleet, formerNpc);
+            onComplete?.Invoke(false);
             return;
         }
 
@@ -894,12 +1059,87 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
                     $"{BuildLapLabel()}, heading to <b>{dest}</b>.", "system");
 
         DriverConsole.Instance?.RefreshStopHUD();
+        onComplete?.Invoke(true);
+    }
+
+    /// <summary>The network-client half of AdoptInServiceSlot -- asks the host to do the real
+    /// scheduler transfer via NetworkGameBridge's RPC and applies the result once it comes back.
+    /// Async by nature (an RPC round-trip), unlike the synchronous single-player/host path above
+    /// -- the bus itself is possessed immediately either way (SetPlayerBus below), only the
+    /// "InService, on this schedule" state lags by the round-trip. Builds a local TimetableSlot
+    /// SNAPSHOT from the RPC's plain-field response rather than a live reference to the host's
+    /// real object (there's no way to hold a cross-network reference to it) -- good enough to
+    /// show the right route/direction/schedule, but it won't automatically track later host-side
+    /// changes (relief window, completion) the way single-player's real object reference does
+    /// (see RequestReliefAcrossNetwork/CompleteSlotAcrossNetwork for what still IS propagated:
+    /// the requests themselves, just not a live-tracking reference). onComplete fires from
+    /// inside the RPC's own callback, i.e. once the round-trip actually resolves.</summary>
+    private void AdoptInServiceSlotNetworked(int npcBusID, BusSimulationController bus, NPCBusController formerNpc, Action<bool> onComplete)
+    {
+        int fallbackFleet = formerNpc != null ? formerNpc.fleetNumber : -1;
+
+        if (NetworkGameBridge.Instance == null)
+        {
+            PrintTagged("Unable to adopt in-service slot: network bridge unavailable.", "error");
+            ResetForFreshPossession(bus, fallbackFleet, formerNpc);
+            onComplete?.Invoke(false);
+            return;
+        }
+
+        NetworkGameBridge.Instance.RequestAdoptSlot(npcBusID, (success, routeNumber, variantLetter, isOutbound, scheduledDeparture) =>
+        {
+            if (!success)
+            {
+                PrintTagged("Unable to adopt in-service slot: the host couldn't transfer this bus's schedule.", "error");
+                ResetForFreshPossession(bus, fallbackFleet, formerNpc);
+                onComplete?.Invoke(false);
+                return;
+            }
+
+            SetPlayerBus(bus);
+            SetActiveSlot(new TimetableSlot
+            {
+                routeNumber = routeNumber,
+                variantLetter = variantLetter,
+                isOutbound = isOutbound,
+                scheduledDeparture = scheduledDeparture,
+                dayNumber = Mathf.FloorToInt(scheduledDeparture / 1440f),
+                state = SlotState.InService,
+                assignedBusID = BusScheduler.PLAYER_BUS_ID,
+            });
+            SetShiftState(PlayerShiftState.InService);
+            _freeDriveOrigin = false;
+            _isBreakdown = false;
+            _reliefRequested = false;
+            _replacementBusID = -1;
+
+            formerNpc?.SetIdle(false);
+
+            var routeData = BusScheduler.Instance?.GetRouteData(_activeRoute);
+            if (routeData != null) SetTargetTerminal(_isOutbound, forStart: false);
+
+            string dir  = _isOutbound ? "A→Z" : "Z→A";
+            string dest = _targetTerminal != null ? _targetTerminal.StopName : "far terminal";
+            PrintTagged($"🚌 Possessed Fleet #{_cachedFleetNumber} — Route <b>{ActiveRouteLabel}</b> {dir}, heading to <b>{dest}</b>.", "system");
+
+            DriverConsole.Instance?.RefreshStopHUD();
+            onComplete?.Invoke(true);
+        });
     }
 
     public int CurrentStopIndex =>
         _shiftState == PlayerShiftState.InService ? _nextStopIndex : -1;
 
     public int PlayerBusID => BusScheduler.PLAYER_BUS_ID;
+
+    /// <summary>The REAL physical busID (BusManager/BusRegistry identity, e.g. NPCBusController.busID)
+    /// of whichever bus this machine is currently possessing, or -1 if none. Distinct from
+    /// PlayerBusID above, which is the scheduler's abstract slot-ownership sentinel (-2 or a
+    /// per-client one) -- NetworkGameBridge needs the PHYSICAL id to know which bus's simulation to
+    /// suppress host-side and which bus to skip when applying its own position broadcast back onto
+    /// the possessing client (skip-self, so a client doesn't rubber-band its own live input against
+    /// a slightly-stale echo of what it just sent).</summary>
+    public int PossessedPhysicalBusID => playerBus != null ? GetBusID(playerBus) : -1;
 
     // ═════════════════════════════════════════════════════════════════════════
     //  IBusDisplaySource -- for BusInteriorScrollBoard / BusInteriorLCDBoard.
@@ -1234,6 +1474,9 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         _                    => "STOWED",
     };
     bool IBusDriverDisplaySource.AdaPaxEventPending => AdaEventPending;
+    bool IBusDriverDisplaySource.AdaAlightRequested => AdaAlightRequested;
+    int  IBusDriverDisplaySource.OnboardAdaPax      => _onboardAdaPax;
+    int  IBusDriverDisplaySource.AdaCapacity        => ADA_CAPACITY;
 
     // ── Inspector ─────────────────────────────────────────────────────────────
     [Header("Player Bus Reference")]
@@ -1307,7 +1550,7 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
     private string           _activeVariantLetter= "";
     private RouteVariantData _activeVariant      = null;
 
-    public string ActiveRouteLabel => _activeRoute + _activeVariantLetter;
+    public string ActiveRouteLabel => BusRouteData.RouteLabel(_activeRoute, _activeVariantLetter);
     public string ActiveRoute      => _activeRoute;
     public string ActiveVariant    => _activeVariantLetter;
 
@@ -1385,7 +1628,11 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
     // it even was (hence "5 pax at 3am" being possible before this).
     private PaxRollPlan _playerPaxPlan;
 
-    public int  OnboardPax           => _onboardPax;
+    // [FIX] Was _onboardPax only -- capacity/percent-full/console readouts all read this one property,
+    // and a wheelchair rider is still a rider, so they need to count toward the bus's total. Internal
+    // boarding/alighting math below still reads the private _onboardPax field directly (regular pax
+    // only), which is intentionally untouched -- only this public/display-facing total changed.
+    public int  OnboardPax           => _onboardPax + _onboardAdaPax;
     /// <summary>Seated + standing capacity of the bus being driven, from its fleet series.</summary>
     public int  PassengerCapacity    => FleetMetadata.CapacityFor(FleetNumber);
     public bool StopRequested        => _stopRequested;
@@ -1622,6 +1869,37 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         CheckAutoArrival();
         CheckAutoDepart();
         UpdatePlayerBreakdowns();
+        CheckTransferArrivalsDuringDwell();
+    }
+
+    // ── custom51: transfer pax that arrive at the curb while we're dwelling ───
+    private float _transferDwellCheckTimer = 0f;
+    private void CheckTransferArrivalsDuringDwell()
+    {
+        if (playerBus == null || !playerBus.doorsOpen || SimClock.Instance == null) return;
+
+        _transferDwellCheckTimer += Time.deltaTime;
+        if (_transferDwellCheckTimer < 1f) return; // no need to poll every frame
+        _transferDwellCheckTimer = 0f;
+
+        string stopCode = ResolveCurrentStopCode();
+        if (string.IsNullOrEmpty(stopCode)) return;
+
+        int picked = PaxTransferSystem.PullArrivingTransfers(stopCode, _activeRoute, _isOutbound,
+                                                              SimClock.Instance.AbsoluteGameMinutes, FleetNumber);
+        if (picked <= 0) return;
+
+        _onboardPax += picked;
+        PointsManager.Instance.RegisterBoarding(picked);
+        var routeStops = GetActiveStops(_isOutbound);
+        int stopsRemaining = routeStops != null ? routeStops.Count - _nextStopIndex - 1 : 5;
+        for (int i = 0; i < picked; i++)
+            _passengerDestinations.Add(RollPassengerDestination(routeStops, stopsRemaining));
+
+        _shiftScore += picked;
+        PrintTagged($"🔁 {picked} transfer passenger{(picked > 1 ? "s" : "")} just arrived and boarded (+{picked} pts) — reopen the door if it already closed.", "info");
+        StopHUD.Instance?.Refresh();
+        DriverConsole.Instance?.RefreshStopHUD();
     }
 
     // ── Brake-hold auto door (slam brakes at a dead stop → doors pop) ─────────
@@ -1819,6 +2097,19 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
             route   = input.Substring(0, spaceIdx).Trim();
             variant = input.Substring(spaceIdx + 1).Trim();
             return;
+        }
+
+        // A LEADING letter followed only by digits is a letter-in-front variant ("N136" = route 136, variant N).
+        if (input.Length > 1 && char.IsLetter(input[0]))
+        {
+            bool restDigits = true;
+            for (int i = 1; i < input.Length; i++) if (!char.IsDigit(input[i])) { restDigits = false; break; }
+            if (restDigits)
+            {
+                route   = input.Substring(1);
+                variant = input[0].ToString();
+                return;
+            }
         }
 
         if (input.Length > 1)
@@ -2143,6 +2434,10 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         playerBus.doorsOpen    = !playerBus.doorsOpen;
         playerBus.parkingBrake = playerBus.doorsOpen || playerBus.rearDoorsOpen;
 
+        // Multiplayer: door state now rides along in NetworkGameBridge's periodic
+        // possessed-bus push (see PushMyPossessedBusState) instead of a dedicated RPC --
+        // no explicit call needed here, it'll go out within one tick interval.
+
         // [FIX] This only ever wrote BusSimulationController's own
         // doorsOpen/parkingBrake fields. Those fields exist, but nothing
         // reads them into audioEngine anymore while the player is actively
@@ -2206,6 +2501,9 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         playerBus.rearDoorsOpen = !playerBus.rearDoorsOpen;
         playerBus.parkingBrake  = playerBus.doorsOpen || playerBus.rearDoorsOpen;
 
+        // Multiplayer: same as HandleDoorToggle -- rides along in the periodic push, no
+        // dedicated RPC needed.
+
         // [FIX] Same reason as HandleDoorToggle above -- mirror onto the
         // sibling NPCBusController, the only script actually syncing
         // parkingBrake into audioEngine while the player is driving.
@@ -2258,6 +2556,8 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         PointsManager.Instance.RegisterAlighting(off);
         for (int i = 0; i < off && _passengerDestinations.Count > 0; i++)
             _passengerDestinations.RemoveAt(0);
+        if (SimClock.Instance != null)
+            PaxTransferSystem.RegisterAlighting(FleetNumber, off, SimClock.Instance.AbsoluteGameMinutes);
         _alightCount = 0;
 
         if (off > 0)
@@ -2326,6 +2626,10 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
                 else PrintTagged("System Error: BusScheduler unavailable.", "error");
                 break;
 
+            case "liveevent": case "le":
+                HandleLiveEventCommand(parts);
+                break;
+
             default:
                 {
                     var bm = System.Text.RegularExpressions.Regex.Match(cmd, @"^([a-z0-9_\-]+)/b(\d+)$");
@@ -2334,6 +2638,22 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
                 PrintTagged($"Unknown command: <b>{cmd}</b>. Type <b>help</b> or <b>?help</b> for the full command list.", "warn");
                 break;
         }
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    //  CMD: liveevent  --  console dispatch ONLY. Live events are authored
+    //  content (route + effect + duration), not a player-driving action, so
+    //  all the actual parsing/creation logic lives in LiveEventManager --
+    //  this is just the console's entry point into it, plus the one thing
+    //  only PlayerHandoff knows: where the player currently is, for
+    //  "liveevent add ... detour auto".
+    // ═════════════════════════════════════════════════════════════════════════
+    private void HandleLiveEventCommand(string[] parts)
+    {
+        if (LiveEventManager.Instance == null) { PrintTagged("System Error: LiveEventManager unavailable.", "error"); return; }
+        Vector3? playerPos = playerBus != null ? playerBus.transform.position : (Vector3?)null;
+        var (ok, message) = LiveEventManager.Instance.HandleConsoleCommand(parts, playerPos);
+        PrintTagged(message, ok ? "info" : "warn");
     }
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -2546,7 +2866,7 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
 
         _shiftScore -= 20f;
 
-        BusScheduler.Instance?.InitiateReliefSearch(GetNearestTerminalCode(), _activeRoute);
+        BusScheduler.Instance?.InitiateReliefSearch(GetNearestTerminalCode(), _activeRoute, PlayerBusID);
 
         DriverConsole.Instance?.RefreshStopHUD();
     }
@@ -2591,7 +2911,14 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
     private void CmdPax()
     {
         PrintTagged($"🧍 Passenger Report — Route <b>{ActiveRouteLabel}</b>", "info");
-        PrintTagged($"  Onboard:       <b>{_onboardPax}</b>", "info");
+        // [FIX] Was just _onboardPax -- wheelchair riders are still riders, so the total now includes
+        // them (matches PassengerCapacity/OnboardPax below), with a breakdown so "how many regular vs
+        // wheelchair" is still visible, and its own explicit line/category rather than none at all.
+        PrintTagged($"  Onboard:       <b>{_onboardPax + _onboardAdaPax}</b>/{PassengerCapacity}  ({_onboardPax} regular + {_onboardAdaPax} wheelchair)", "info");
+        string adaLine = $"  ♿ Wheelchair:  <b>{_onboardAdaPax}/{ADA_CAPACITY}</b>";
+        if (_adaAlightRequested) adaLine += "  — one wants OFF at " + NextStopName;
+        else if (_adaBoardingWaiting) adaLine += "  — one waiting to board at " + NextStopName;
+        PrintTagged(adaLine, "info");
 
         if (_stopRequested)
             PrintTagged($"  Stop requested: <b>{_alightCount}</b> want to alight at <b>{NextStopName}</b>", "info");
@@ -2662,12 +2989,14 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
             float now      = scheduler.GameTimeMinutes;
             float lateness = _activeSlot != null ? now - _activeSlot.scheduledDeparture : 0f;
 
-            // [FIX 07-30] Pass _activeSlot directly — this method already
-            // has the correct current slot right here; letting
-            // RecordActualDeparture re-look it up via _slotByBus[busID]
-            // was the gap that let the two drift apart. See
-            // RecordActualDeparture's own comment for the full mechanism.
-            scheduler.RecordActualDeparture(PlayerBusID, now, _activeSlot);
+            // [FIX 07-30] Pass _activeSlot directly (single-player/host path, inside
+            // RecordActualDepartureAcrossNetwork below) — this method already has the
+            // correct current slot right here; letting RecordActualDeparture re-look it
+            // up via _slotByBus[busID] was the gap that let the two drift apart. See
+            // RecordActualDeparture's own comment for the full mechanism. A network
+            // client can't hand the host a live _activeSlot reference, so it relies on
+            // that same lookup fallback instead — see RecordActualDepartureAcrossNetwork.
+            RecordActualDepartureAcrossNetwork(now);
 
             if      (Mathf.Abs(lateness) <= 1f)         { _shiftScore += 10f; _onTimeDepartures++;  }
             else if (lateness >  0f && lateness <= 5f)  { _shiftScore +=  5f; _lateDepartures++;    }
@@ -2781,9 +3110,42 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
             resolvedVariantLetter = variantLetter.ToUpper();
         }
 
+        // [ADD] Multiplayer: same reasoning as JoinRouteWithSlot's own comment -- a network
+        // client's local BusScheduler.Instance never ticks, so calling ReservePlayerSlot directly
+        // here would be a completely fake, host-invisible reservation. Route through the host;
+        // ApplyJoinRouteResult below prints the exact same messages the single-player/host path
+        // does either way, just from wherever the resulting slot data actually came from.
+        if (NetworkAuthority.IsPureClient)
+        {
+            NetworkGameBridge.Instance?.RequestReserveSlot(routeNumber, true, (success, gotRoute, gotVariant, isOutbound, scheduledDeparture) =>
+            {
+                if (!success) { PrintTagged($"No available outbound slots on Route {routeNumber}.", "warn"); return; }
+                var snapshotSlot = new TimetableSlot
+                {
+                    routeNumber = gotRoute,
+                    variantLetter = gotVariant,
+                    isOutbound = isOutbound,
+                    scheduledDeparture = scheduledDeparture,
+                    dayNumber = Mathf.FloorToInt(scheduledDeparture / 1440f),
+                    state = SlotState.AssignedPlayer,
+                    assignedBusID = BusScheduler.PLAYER_BUS_ID,
+                };
+                ApplyJoinRouteResult(routeNumber, resolvedVariantLetter, resolvedVariant, route, snapshotSlot);
+            });
+            return;
+        }
+
         var slot = scheduler.ReservePlayerSlot(routeNumber, true);
         if (slot == null) { PrintTagged($"No available outbound slots on Route {routeNumber}.", "warn"); return; }
 
+        ApplyJoinRouteResult(routeNumber, resolvedVariantLetter, resolvedVariant, route, slot);
+    }
+
+    /// <summary>Shared apply/print step for JoinRoute's two paths (direct single-player/host call,
+    /// or the network-client RPC callback) -- exact same messages either way, factored out instead
+    /// of duplicated so the two paths can't drift apart.</summary>
+    private void ApplyJoinRouteResult(string routeNumber, string resolvedVariantLetter, RouteVariantData resolvedVariant, BusRouteData route, TimetableSlot slot)
+    {
         _activeSlot          = slot;
         _activeRoute         = routeNumber;
         _activeVariantLetter = resolvedVariantLetter;
@@ -2822,7 +3184,7 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         }
         PrintTagged($"  Dead-run to: <b>{termName}</b>", "info");
         PrintTagged($"  First departure: <b>{depTime}</b> (A→Z)", "info");
-        PrintTagged($"  Game time now: {scheduler.GameTimeString}", "info");
+        PrintTagged($"  Game time now: {BusScheduler.Instance?.GameTimeString ?? "--:--"}", "info");
         PrintTagged("  Type <b>arrived</b> once you reach the terminal.", "info");
 
         DriverConsole.Instance?.RefreshStopHUD();
@@ -2854,6 +3216,37 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
                 return;
             }
             resolvedVariantLetter = variantLetter.ToUpper();
+        }
+
+        // [ADD] Multiplayer: a network client's own local BusScheduler.Instance never ticks and
+        // has no real schedule data (see NetworkAuthority gating) -- ReservePlayerSlotSpecific
+        // below would always "succeed" against fake local data while the host (and every other
+        // player) never learns about it at all, so two players could both silently "take" the
+        // exact same departure. Route it through the host instead. Deliberately ignores
+        // chosenSlot's exact scheduledDeparture (that TimetableSlot is the client's own,
+        // possibly-stale local guess, meaningless to the host) and only sends
+        // routeNumber/direction -- the host resolves the actual next-available slot itself, which
+        // naturally advances to the NEXT free departure if this exact one was already taken by
+        // someone else in the meantime (see RequestReserveSlot's own comment on NetworkGameBridge).
+        if (NetworkAuthority.IsPureClient)
+        {
+            NetworkGameBridge.Instance?.RequestReserveSlot(routeNumber, chosenSlot != null ? chosenSlot.isOutbound : true,
+                (success, gotRoute, gotVariant, isOutbound, scheduledDeparture) =>
+            {
+                if (!success) { PrintTagged("That slot is no longer available — pick another.", "warn"); return; }
+                var snapshotSlot = new TimetableSlot
+                {
+                    routeNumber = gotRoute,
+                    variantLetter = gotVariant,
+                    isOutbound = isOutbound,
+                    scheduledDeparture = scheduledDeparture,
+                    dayNumber = Mathf.FloorToInt(scheduledDeparture / 1440f),
+                    state = SlotState.AssignedPlayer,
+                    assignedBusID = BusScheduler.PLAYER_BUS_ID,
+                };
+                ApplyJoinedSlot(routeNumber, resolvedVariantLetter, resolvedVariant, route, snapshotSlot, fromBoard);
+            });
+            return;
         }
 
         // ROOT-CAUSE FIX: ReservePlayerSlotSpecific ONLY works on a slot
@@ -2943,7 +3336,7 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
 
         string depTime  = BusScheduler.MinutesToTimeString(slot.scheduledDeparture);
         string termName = _targetTerminal != null ? _targetTerminal.StopName : "Terminal";
-        string label    = string.IsNullOrEmpty(resolvedVariantLetter) ? routeNumber : $"{routeNumber}{resolvedVariantLetter}";
+        string label    = BusRouteData.RouteLabel(routeNumber, resolvedVariantLetter);
 
         PrintTagged($"✔ Route <b>{label}</b> confirmed — {slot.DirectionLabel} @ {depTime}.", fromBoard ? "board" : "success");
         PrintTagged($"  Dead-run to: <b>{termName}</b>. Type <b>arrived</b> once there.", fromBoard ? "board" : "info");
@@ -2984,8 +3377,7 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
     private void EndShift()
     {
         ReleasePlayerBay();
-        if (BusScheduler.Instance != null)
-            BusScheduler.Instance.ReleasePlayerSlot(PlayerBusID);
+        ReleasePlayerSlotAcrossNetwork();
 
         // [FIX] Same Free Drive check as ReturnToOffDuty above.
         if (_freeDriveOrigin && playerBus != null)
@@ -3127,7 +3519,9 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
 
         PrintTagged($"[{time}] Route <b>{ActiveRouteLabel}</b>{variantTag} | {dir} | Seg {_segmentsCompleted} | {lateStr}", "system");
         PrintTagged($"  Target: {nextTerm}{distStr}  |  Slot: {nextDep}", "info");
-        PrintTagged($"  Onboard: {_onboardPax} pax" + (_stopRequested ? $" | 🔔 {_alightCount} want off" : ""), "info");
+        // [FIX] Wheelchair riders weren't counted here either -- shown as its own tag, not folded silently in.
+        string adaTag = _onboardAdaPax > 0 ? $" | ♿ {_onboardAdaPax}" : "";
+        PrintTagged($"  Onboard: {_onboardPax} pax{adaTag}" + (_stopRequested ? $" | 🔔 {_alightCount} want off" : ""), "info");
         PrintTagged($"  Score: {_shiftScore:F0} pts  |  State: <b>{_shiftState}</b>" + (_isBreakdown ? " | 🔴 BREAKDOWN" : "") + (_reliefRequested ? " | RELIEF PENDING" : ""), "info");
         PrintTagged("  Commands: " + AvailableCommands(), "info");
     }
@@ -3385,6 +3779,8 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
             PointsManager.Instance.RegisterAlighting(off);
             for (int i = 0; i < off && _passengerDestinations.Count > 0; i++)
                 _passengerDestinations.RemoveAt(0);
+            if (SimClock.Instance != null)
+                PaxTransferSystem.RegisterAlighting(FleetNumber, off, SimClock.Instance.AbsoluteGameMinutes);
 
             _alightCount = 0;
         }
@@ -3416,7 +3812,12 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         var routeStops = GetActiveStops(_isOutbound);
         int stopsRemaining = routeStops != null ? routeStops.Count - _nextStopIndex - 1 : 5;
         for (int i = 0; i < boarding; i++)
-            _passengerDestinations.Add(UnityEngine.Random.Range(1, Mathf.Max(2, stopsRemaining + 1)));
+        {
+            int k = RollPassengerDestination(routeStops, stopsRemaining);
+            _passengerDestinations.Add(k);
+            string alightCode = (routeStops != null && _nextStopIndex + k < routeStops.Count) ? routeStops[_nextStopIndex + k].stopCode : null;
+            PaxTransferSystem.RegisterBoarding(FleetNumber, _activeRoute, _isOutbound, alightCode);
+        }
 
         // Cache the counts for ProcessDoorOpenAtCurrentStop's return value —
         // this method itself stays void (its original contract; its own
@@ -3469,6 +3870,13 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
     {
         if (_deferredBoardingPax <= 0) return;
         if (playerBus == null || !playerBus.doorsOpen) return;
+        // [FIX] This used to only check AdaEventPending having already cleared (which happens as soon
+        // as the ramp finishes LOADING, at the Loading->Deployed transition) and doorsOpen -- neither
+        // of which requires the lift to have actually come back up. So a door close/reopen (or any
+        // other HandleDoorToggle call) while the ramp sat in Deployed released regular boarding
+        // through the same door the wheelchair pax was still using. Now requires the ramp to be fully
+        // Stowed, matching this method's own doc comment ("once the ramp finishes retracting").
+        if (_rampState != RampState.Stowed) return;
 
         int boarding = _deferredBoardingPax;
         _deferredBoardingPax = 0;
@@ -3479,7 +3887,12 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         var routeStops = GetActiveStops(_isOutbound);
         int stopsRemaining = routeStops != null ? routeStops.Count - _nextStopIndex - 1 : 5;
         for (int i = 0; i < boarding; i++)
-            _passengerDestinations.Add(UnityEngine.Random.Range(1, Mathf.Max(2, stopsRemaining + 1)));
+        {
+            int k = RollPassengerDestination(routeStops, stopsRemaining);
+            _passengerDestinations.Add(k);
+            string alightCode = (routeStops != null && _nextStopIndex + k < routeStops.Count) ? routeStops[_nextStopIndex + k].stopCode : null;
+            PaxTransferSystem.RegisterBoarding(FleetNumber, _activeRoute, _isOutbound, alightCode);
+        }
 
         _shiftScore += boarding;
         PrintTagged($"🧍 {boarding} boarding now that the lift is stowed.", "info");
@@ -3490,6 +3903,36 @@ public class PlayerHandoff : MonoBehaviour, IBusDisplaySource, IBusDriverDisplay
         string stopCode = ResolveCurrentStopCode();
         if (PaxSimManager.Instance != null && !string.IsNullOrEmpty(stopCode))
             StartCoroutine(RunDoorBoardingSequence(stopCode, 0, boarding));
+    }
+
+    /// <summary>Rolls how many stops ahead a newly-boarded passenger rides ("their destination" flavor
+    /// value -- see _passengerDestinations). Flat random 1..stopsRemaining when no DesirableZone exists;
+    /// otherwise a candidate stop that falls inside a zone is desirabilityWeight-times more likely to be
+    /// picked than one that doesn't, same idea as a real rider being more likely headed downtown.</summary>
+    private int RollPassengerDestination(List<BusStopData> routeStops, int stopsRemaining)
+    {
+        int maxK = Mathf.Max(1, stopsRemaining);
+        if (routeStops == null || DesirableZone.All.Count == 0)
+            return UnityEngine.Random.Range(1, maxK + 1);
+
+        float totalWeight = 0f;
+        var weights = new float[maxK];
+        for (int k = 1; k <= maxK; k++)
+        {
+            int idx = _nextStopIndex + k;
+            float w = (idx >= 0 && idx < routeStops.Count) ? DesirableZone.WeightAt(routeStops[idx].GetWorldPosition()) : 1f;
+            weights[k - 1] = w;
+            totalWeight += w;
+        }
+
+        float roll = UnityEngine.Random.value * totalWeight;
+        float acc = 0f;
+        for (int k = 1; k <= maxK; k++)
+        {
+            acc += weights[k - 1];
+            if (roll <= acc) return k;
+        }
+        return maxK;
     }
 
     // ═════════════════════════════════════════════════════════════════════════

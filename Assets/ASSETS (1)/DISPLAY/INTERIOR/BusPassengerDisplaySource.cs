@@ -140,6 +140,15 @@ public interface IBusDriverDisplaySource : IBusDisplaySource
     /// wants off at the current stop -- drives the board's "ADA PAX"
     /// override the same way it drives the driver console/stop pill's.</summary>
     bool AdaPaxEventPending { get; }
+
+    /// <summary>True specifically when the pending ADA event is a wheelchair passenger wanting OFF
+    /// (as opposed to one waiting to board) -- lets every ADA readout say which one explicitly
+    /// instead of just a generic "ADA PAX" that could mean either.</summary>
+    bool AdaAlightRequested { get; }
+
+    /// <summary>Riders currently onboard via the wheelchair lift, out of AdaCapacity.</summary>
+    int OnboardAdaPax { get; }
+    int AdaCapacity { get; }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -173,6 +182,9 @@ public class BusDriverDisplayState
     public int    passengerCapacity = 1;
     public string rampStateLabel = "STOWED";
     public bool   adaPaxEventPending;
+    public bool   adaAlightRequested;
+    public int    onboardAdaPax;
+    public int    adaCapacity = 1;
     public bool   hasDriverExtras; // false when the source only implements IBusDisplaySource
 
     /// <summary>Load as a whole percent of capacity ("35% FULL"). May exceed 100 if something over-boards.</summary>
@@ -208,6 +220,9 @@ public class BusDriverDisplayState
             passengerCapacity        = Mathf.Max(1, driverSource.PassengerCapacity);
             rampStateLabel           = driverSource.RampStateLabel ?? "STOWED";
             adaPaxEventPending       = driverSource.AdaPaxEventPending;
+            adaAlightRequested       = driverSource.AdaAlightRequested;
+            onboardAdaPax            = driverSource.OnboardAdaPax;
+            adaCapacity              = Mathf.Max(1, driverSource.AdaCapacity);
         }
         else
         {

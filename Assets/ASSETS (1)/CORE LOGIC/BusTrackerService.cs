@@ -61,6 +61,8 @@ public class BusTrackerService : MonoBehaviour
     public int   maxResults               = 3;
     public float minsPerStop              = 2f;
     public float arrivingThresholdMinutes = 1f;
+    [Tooltip("A live bus within this many metres of its trip's first stop is treated as not yet departed: its ETA is the timetable plus how late it is, and its controller's stale next-stop index is ignored. 0 = off.")]
+    public float originRadiusMeters = 120f;
 
     [Header("ETA Smoothing")]
     [Range(0f, 1f)] public float etaSmoothWeight         = 0.22f;
@@ -772,12 +774,41 @@ public float GetMinutesUntilNextDayFirstTrip(string routeNumber, bool outbound)
 {
     if (busID < 0)
     {
-       if (BusScheduler.IsPlayer(busID) && PlayerHandoff.Instance != null)
-           return $"Bus #{PlayerHandoff.Instance.FleetNumber}";
+        // [FIX 2] The first fix here was still wrong -- "-2 means MY OWN local player" is only
+        // true on the machine that's actually hosting. -2 is BusScheduler.PLAYER_BUS_ID's DEFAULT
+        // value (what it resolves to on every machine when no BeginPlayerContext is active), so a
+        // CLIENT asked to resolve "-2" for a REMOTE (the HOST's own) bus was matching its own
+        // PlayerHandoff.Instance by pure coincidence of both being -2, not because it was actually
+        // the same bus -- showed the client's OWN fleet number for the host's bus instead.
+        // Confirmed exactly by repro: host driving fleet 1651, a client's tracker showed the
+        // CLIENT's own fleet (1006) for that same arrival. Compare against THIS machine's actual
+        // PlayerBusID instead of hardcoding -2 -- correct in every direction, since PlayerBusID
+        // already IS whatever this machine's own sentinel really is (-2 almost always, since
+        // BeginPlayerContext is only ever entered transiently inside a host-side RPC handler, not
+        // as this process's ambient state).
+        if (PlayerHandoff.Instance != null && busID == PlayerHandoff.Instance.PlayerBusID)
+            return $"Bus #{PlayerHandoff.Instance.FleetNumber}";
+
+        // Not mine -- resolve via NetworkGameBridge's possession registry regardless of whether
+        // the sentinel is -2 (the HOST's own bus, from a client's point of view) or a per-client
+        // one (some OTHER client's bus). SentinelToClientId handles both encodings.
+        if (NetworkGameBridge.Instance != null)
+        {
+            ulong clientId = NetworkGameBridge.SentinelToClientId(busID);
+            int physicalBusID = NetworkGameBridge.Instance.GetPossessedBusID(clientId);
+            var remoteCtrl = physicalBusID >= 0 ? BusManager.Instance?.GetRecord(physicalBusID)?.controller : null;
+            if (remoteCtrl != null) return $"Bus #{remoteCtrl.fleetNumber}";
+        }
         return null;
     }
-    if (BusRegistry.ActiveBuses.TryGetValue(busID, out var ctrl) && ctrl != null)
-        return $"Bus #{ctrl.fleetNumber}";
+    // [FIX] Was BusRegistry.ActiveBuses -- a possessed bus (local OR remote) is deliberately
+    // REMOVED from that dictionary the moment NetworkGameBridge registers it, so this lookup
+    // failed for any possessed bus and fell all the way through to the last-resort
+    // "Bus #{busID}" fallback below, showing the raw internal busID (e.g. 96) instead of the
+    // actual fleet number (e.g. 1909). BusManager's own records persist regardless of possession.
+    var rec = BusManager.Instance?.GetRecord(busID);
+    if (rec?.controller != null)
+        return $"Bus #{rec.controller.fleetNumber}";
     return $"Bus #{busID}";
 }
 
@@ -830,17 +861,17 @@ public float GetMinutesUntilNextDayFirstTrip(string routeNumber, bool outbound)
         // against Section 3. This replaces the old separate "Section 1 / Section 2".
         var liveBuses = new List<(int id, Transform t, bool isOutbound, string routeNum, string variant, int nextStopIdx)>();
 
-        if (player != null && player.playerBus != null
-            && player.ShiftState == PlayerHandoff.PlayerShiftState.InService)
+        // [FIX] Local player + every remote possessed bus used to be two separately-written
+        // blocks here (one reading PlayerHandoff.Instance directly, one manually scanning
+        // NetworkGameBridge.GetPossessedBusIDs() with its own copy of the sentinel-resolution
+        // logic) -- exactly the kind of duplicated, slightly-different lookup that kept causing
+        // the "-2 ambiguity"/fleet-label bugs to reappear in different places. PlayerRegistry is
+        // the one canonical source now (in single-player this is just the local player, same as
+        // before -- the list has at most 1 entry, nothing lost).
+        foreach (var p in PlayerRegistry.GetAll())
         {
-            liveBuses.Add((
-                player.PlayerBusID,
-                player.playerBus.transform,
-                player.IsOutbound,
-                player.ActiveRoute,
-                player.ActiveVariant,
-                player.CurrentStopIndex
-            ));
+            if (p.IsLocal && player.ShiftState != PlayerHandoff.PlayerShiftState.InService) continue;
+            liveBuses.Add((p.Sentinel, p.Transform, p.IsOutbound, p.RouteNumber, p.VariantLetter, p.NextStopIndex));
         }
 
         foreach (var kv in BusRegistry.ActiveBuses)
@@ -886,14 +917,25 @@ public float GetMinutesUntilNextDayFirstTrip(string routeNumber, bool outbound)
             int targetIndex = stops.IndexOf(stopCode);
             if (targetIndex < 0) continue;
 
-            if (lb.nextStopIdx > targetIndex) continue;
+            // [PRE-DEPARTURE] A bus still sitting at its origin has not started this trip, whatever its
+            // controller's next-stop index says. NPCs flip InService at the scheduled departure time but only
+            // reset their stop index when they actually pull out, so at a terminal that index is still the PREVIOUS
+            // trip's (the last stop) -- which made the bus look like it was nearly finished and showed
+            // "2 min" to a terminal that is a whole one-way trip (e.g. 34 min) away.
+            bool atOrigin = stops.Count > 0
+                && originRadiusMeters > 0f
+                && Vector2.Distance(new Vector2(lb.t.position.x, lb.t.position.z),
+                                    new Vector2(GetWorldPositionFromCode(stops[0]).x, GetWorldPositionFromCode(stops[0]).z)) <= originRadiusMeters;
+            int liveNextIdx = atOrigin ? 0 : lb.nextStopIdx;
+
+            if (liveNextIdx > targetIndex) continue;
 
             // Off route by a lot -> not a valid arrival for this route any more: drop it from the list.
             if (offRouteHideMeters > 0f && DistanceToStopPolylineXZ(lb.t.position, stops) > offRouteHideMeters) continue;
 
             string label      = ResolveFleetLabel(lb.id);
             float rawArrival  = CalculateHybridLiveEta(now, scheduledDep, lb.t.position,
-                                                        stops, targetIndex, route, outbound, variant, lb.nextStopIdx);
+                                                        stops, targetIndex, route, outbound, variant, liveNextIdx, atOrigin);
             float arrivalTime = SmoothedEta(label, stopCode, outbound, rawArrival, now);
 
             // [TRACK-9] Register this trip as live (suppresses Section 3 for same bus+trip)
@@ -1300,7 +1342,7 @@ public float GetMinutesUntilNextDayFirstTrip(string routeNumber, bool outbound)
     private float CalculateHybridLiveEta(
         float now, float scheduledDeparture, Vector3 busPos,
         List<string> stopCodes, int targetIndex, BusRouteData route,
-        bool outbound = true, string variant = "", int nextStopIdx = -1)
+        bool outbound = true, string variant = "", int nextStopIdx = -1, bool preDeparture = false)
     {
         if (stopCodes == null || stopCodes.Count == 0) return now;
         int last = Mathf.Clamp(targetIndex, 0, stopCodes.Count - 1);
@@ -1316,6 +1358,11 @@ public float GetMinutesUntilNextDayFirstTrip(string routeNumber, bool outbound)
                     if (bindings[b].stopCode == stopCodes[idx]) return bindings[b].minutesFromStart;
             return route.oneWayTripMinutes * ((float)idx / totalStops);
         }
+
+        // Not pulled out yet: the trip hasn't begun, so it can only be late (never "early"). Same rule the
+        // bus's own board uses (late-only offset before departure).
+        if (preDeparture)
+            return Mathf.Max(now, scheduledDeparture + OffsetFor(last) + Mathf.Max(0f, now - scheduledDeparture));
 
         // Where is the bus along the stops up to the target? -> the scheduled time the timetable expected it to be there.
         float expectedOffsetNow = 0f;

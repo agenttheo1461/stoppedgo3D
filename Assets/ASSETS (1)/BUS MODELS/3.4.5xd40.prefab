@@ -1378,6 +1378,7 @@ MonoBehaviour:
   diwaOpt1_5: 0
   diwaOpt1_6: 0
   diwaOpt1_7: 0
+  diwaOpt1_8: 0
   rpm: 0
   spd: 0
   accel: 0
@@ -1435,6 +1436,7 @@ MonoBehaviour:
   diwaOpt1_5: 0
   diwaOpt1_6: 0
   diwaOpt1_7: 0
+  diwaOpt1_8: 0
   isArticulated: 0
   ratedTierOverride: 280
   isGillig: 0
@@ -1483,12 +1485,6 @@ MonoBehaviour:
   trailerMeshRestOffset: {x: -90, y: 0, z: 0}
   trailerLateralTrim: 0
   pivotRelativeOffset: {x: 0, y: 0, z: 0}
-  bobStartKph: 45
-  bobFullKph: 85
-  frontBobAmplitude: 1.4
-  backBobAmplitude: 0.7
-  bobFrequencyHz: 3.2
-  bobBackPhaseOffsetDeg: 55
   bellowsMeshFilter: {fileID: 0}
   bellowsLength: 1.8
   maxBendDegrees: 45
@@ -1510,6 +1506,7 @@ MonoBehaviour:
   steerRateDegPerSec: 35
   maxLatAccel: 3.5
   articHingeSafetyMargin: 0.9
+  invertSteeringInReverse: 1
   economyMode: 0
   acLevel: 75
   hillMode: 0
@@ -1762,6 +1759,9 @@ MonoBehaviour:
   leftSignalLights: []
   rightSignalLights: []
   blinkInterval: 0.5
+  blinkClip: {fileID: 0}
+  blinkTskAmount: 0.4
+  blinkSoundVolume: 0.55
 --- !u!1 &686819477366283914
 GameObject:
   m_ObjectHideFlags: 0
@@ -4289,7 +4289,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 74399b983100f4fa9ac4da46e03ac291, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -8297,7 +8297,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 74399b983100f4fa9ac4da46e03ac291, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

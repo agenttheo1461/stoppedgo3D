@@ -215,7 +215,8 @@ public class BusDriverLCDBoard : MonoBehaviour
         }
         else if (_state.hasDriverExtras && _state.adaPaxEventPending)
         {
-            nextStop = "♿ " + nextStop;
+            // [FIX] Was always "♿ " + next stop regardless of boarding vs alighting -- say which.
+            nextStop = (_state.adaAlightRequested ? "♿ OFF: " : "♿ ON: ") + nextStop;
             _nextStopStyle.normal.textColor = adaBlue;
         }
         else

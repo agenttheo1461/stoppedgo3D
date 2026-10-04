@@ -5006,6 +5006,7 @@ MonoBehaviour:
   diwaOpt1_5: 0
   diwaOpt1_6: 0
   diwaOpt1_7: 0
+  diwaOpt1_8: 0
   rpm: 0
   spd: 0
   accel: 0
@@ -5063,6 +5064,7 @@ MonoBehaviour:
   diwaOpt1_5: 0
   diwaOpt1_6: 0
   diwaOpt1_7: 0
+  diwaOpt1_8: 0
   isArticulated: 0
   ratedTierOverride: 280
   isGillig: 0
@@ -5138,6 +5140,7 @@ MonoBehaviour:
   steerRateDegPerSec: 35
   maxLatAccel: 3.5
   articHingeSafetyMargin: 0.9
+  invertSteeringInReverse: 1
   economyMode: 0
   acLevel: 75
   hillMode: 0
@@ -5333,6 +5336,9 @@ MonoBehaviour:
   leftSignalLights: []
   rightSignalLights: []
   blinkInterval: 0.5
+  blinkClip: {fileID: 0}
+  blinkTskAmount: 0.4
+  blinkSoundVolume: 0.55
 --- !u!114 &620207368160432768
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -303,19 +303,17 @@ public bool kickdownKey;
     [Tooltip("Fine mesh trim relative to the physics placement. X = right/left, Y = up/down, Z = forward/back along the trailer's own axes. Should be near zero now -- reset via context menu if old hack values are serialized.")]
     public Vector3 pivotRelativeOffset = Vector3.zero;
 
-    [Header("Articulated High-Speed Bob (cosmetic)")]
-    [Tooltip("Only bobs when articulationMode != None. Speed (km/h) at which the bob effect starts ramping in.")]
-    public float bobStartKph = 45f;
-    [Tooltip("Speed (km/h) at which the bob effect reaches full amplitude. Above this, amplitude no longer increases.")]
-    public float bobFullKph = 85f;
-    [Tooltip("Front section bob amplitude at full speed, PITCH DEGREES (nose tilts up/down about local X) -- not a vertical translation. Front rides on the further-forward steer axle and visibly pitches more on real artics at speed -- kept stronger than the back by design.")]
-    public float frontBobAmplitude = 1.4f;
-    [Tooltip("Back/trailer section bob amplitude at full speed, PITCH DEGREES. Weaker than the front -- the trailer's own suspension and the hinge damp out most of what the tractor feels.")]
-    public float backBobAmplitude = 0.7f;
-    [Tooltip("Bob oscillation frequency at full speed, Hz. Scales down proportionally at lower speeds within the ramp band, same as real chassis/tire harmonics picking up with road speed.")]
-    public float bobFrequencyHz = 3.2f;
-    [Tooltip("Phase offset between front and back bob, degrees -- keeps them from moving in perfect lockstep, which reads as more mechanical/independent than a single shared wave.")]
-    public float bobBackPhaseOffsetDeg = 55f;
+    // Articulated High-Speed Bob (cosmetic) -- kept private for now so every
+    // bus uses these exact values instead of a stale per-prefab Inspector
+    // override from before the latest tuning pass.
+    private float bobStartKph = 45f;
+    private float bobFullKph = 55f;
+    private float frontBobAmplitude = 0.7f;
+    private float backBobAmplitude = 0.2f;
+    private float bobFrequencyHz = 3.2f;
+    private float bobBackPhaseOffsetDeg = 55f;
+    private float bobDownhillPitchForExtreme = 8f;
+    private float bobDownhillExtremeMultiplier = 1.5f;
 
     private Transform _frontVisualTransform;
     private Quaternion _frontVisualRestLocalRot;
@@ -950,12 +948,34 @@ private void Update()
 
         if (!_frontVisualCached)
         {
+            // [FIX] Was transform.Find("front") only -- an EXACT, case-sensitive,
+            // direct-children-only match. Any bus whose front visual isn't spelled
+            // exactly "front" (different case, "Front", a naming variant) silently
+            // found nothing here -- and since the whole method used to bail out
+            // right after ("no front child -- nothing to bob"), that ALSO killed the
+            // BACK/hinge bob for that bus, even though the back bob doesn't actually
+            // need this transform at all. Falls back to a case-insensitive substring
+            // search among direct children (same pattern BusKneelBody's own
+            // AutoDetectBodyGroup already uses) before giving up.
             _frontVisualTransform = transform.Find("front");
+            if (_frontVisualTransform == null)
+            {
+                foreach (Transform child in transform)
+                {
+                    if (child.name.ToLowerInvariant().Contains("front")) { _frontVisualTransform = child; break; }
+                }
+            }
             if (_frontVisualTransform != null)
                 _frontVisualRestLocalRot = _frontVisualTransform.localRotation;
+            else
+                Debug.LogWarning($"[{name}] UpdateArticulatedBob: no child transform named (or containing) \"front\" found -- the front bob will do nothing on this bus. The back/hinge bob below is unaffected.", this);
             _frontVisualCached = true;
         }
-        if (_frontVisualTransform == null) return; // no "front" child -- nothing to bob
+
+        // [FIX] Used to `return` here if no front child was found, which also skipped
+        // computing _currentBackBobPitchDeg below -- the back/hinge bob doesn't need
+        // _frontVisualTransform at all, so a missing front child shouldn't silence it
+        // too. Front-specific application is now its own guarded block further down.
 
         float speedFrac = Mathf.InverseLerp(bobStartKph, Mathf.Max(bobStartKph + 0.01f, bobFullKph), spd);
         speedFrac = Mathf.Clamp01(speedFrac);
@@ -969,7 +989,13 @@ private void Update()
         // ROTATION, not translation: nose pitches up/down about local X,
         // layered on top of whatever rest-pose rotation the "front" child
         // already had (so this doesn't fight its baked-in mesh orientation).
-        float frontPitchDeg = Mathf.Sin(_bobPhaseAccum * Mathf.Deg2Rad) * frontBobAmplitude * speedFrac;
+        // [ADD] Same downhill-extreme boost the back bob already gets, reusing
+        // _groundPitchDegSmoothed -- last FixedUpdate's real terrain pitch, already
+        // sitting on this instance -- so the front reacts to a bridge/steep grade
+        // too instead of only ever bobbing at its flat-road amplitude.
+        float frontTerrainFactor = Mathf.Clamp01(Mathf.Abs(_groundPitchDegSmoothed) / Mathf.Max(0.01f, bobDownhillPitchForExtreme));
+        float frontAmplitude = frontBobAmplitude * (1f + frontTerrainFactor * bobDownhillExtremeMultiplier);
+        float frontPitchDeg = Mathf.Sin(_bobPhaseAccum * Mathf.Deg2Rad) * frontAmplitude * speedFrac;
 
         // "Strained" engine (diwaOpt1_8): at high revs the whole body picks up a fast, rough tremor, the
         // physical side of the BRRRR in BusAudioEngine. Small random jitter in pitch and roll, growing with revs.
@@ -985,7 +1011,8 @@ private void Update()
                 strainRoll  = (UnityEngine.Random.value * 2f - 1f) * amp * 0.8f;
             }
         }
-        _frontVisualTransform.localRotation = _frontVisualRestLocalRot * Quaternion.Euler(frontPitchDeg + strainPitch, 0f, strainRoll);
+        if (_frontVisualTransform != null)
+            _frontVisualTransform.localRotation = _frontVisualRestLocalRot * Quaternion.Euler(frontPitchDeg + strainPitch, 0f, strainRoll);
 
         // Cache this frame's back bob pitch for UpdateTrailerRealPhysics to
         // fold into its own already-from-scratch world rotation each frame.
@@ -1586,18 +1613,34 @@ private void Update()
 
     /// <summary>Raycasts straight down at a world XZ point and returns the hit
     /// Y. Returns false (and the point's own Y) if nothing was hit, so callers
-    /// can fall back to flat instead of pitching off a bad sample.</summary>
+    /// can fall back to flat instead of pitching off a bad sample.
+    /// [FIX] Was a plain single Physics.Raycast -- on a road with traffic, the
+    /// rear-axle sample point can end up directly over another bus (overtaking,
+    /// merging, depot queue) and hit ITS roof instead of the road, reporting a
+    /// huge fake rise/fall and pitching this trailer's rear up toward the 20°
+    /// clamp ("rear leaves the ground and angles upward" at speed -- more
+    /// likely at high speed since this bus and traffic both cover more ground
+    /// between samples). NPCBusController.SampleGroundY already hit this exact
+    /// bug and fixed it by filtering out bus colliders via the shared
+    /// IsOwnCollider/GetCachedBus helpers on the paired NPCBusController
+    /// component (_npcForBusID, same GameObject) -- reusing that here instead
+    /// of duplicating a second collider list.</summary>
+    private readonly RaycastHit[] _groundHits = new RaycastHit[12];
     private bool SampleGroundY(Vector3 worldPt, out float groundY)
     {
         Vector3 origin = new Vector3(worldPt.x, worldPt.y + groundPitchRayHeight, worldPt.z);
-        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit,
-                             groundPitchRayHeight * 2f, groundPitchLayer, QueryTriggerInteraction.Ignore))
+        int n = Physics.RaycastNonAlloc(origin, Vector3.down, _groundHits,
+                                         groundPitchRayHeight * 2f, groundPitchLayer, QueryTriggerInteraction.Ignore);
+        float bestDist = float.MaxValue; bool found = false; groundY = worldPt.y;
+        for (int i = 0; i < n; i++)
         {
-            groundY = hit.point.y;
-            return true;
+            var col = _groundHits[i].collider;
+            if (col == null) continue;
+            if (_npcForBusID != null && _npcForBusID.IsOwnCollider(col)) continue;
+            if (NPCBusController.GetCachedBus(col) != null) continue;
+            if (_groundHits[i].distance < bestDist) { bestDist = _groundHits[i].distance; groundY = _groundHits[i].point.y; found = true; }
         }
-        groundY = worldPt.y;
-        return false;
+        return found;
     }
 
     /// <summary>Target pitch (deg, unsmoothed) from the slope between the
@@ -1745,7 +1788,6 @@ private void Update()
 
         Quaternion physRot   = Quaternion.LookRotation(trailerFwdWorld, Vector3.up);
         Quaternion restOff   = Quaternion.Euler(trailerMeshRestOffset);
-        Quaternion bobRot    = Quaternion.Euler(_currentBackBobPitchDeg, 0f, 0f);
 
         // ── Dynamic ground pitch (X) — added ONTO the rest offset ──────────
         // hitch/_rearAxleWorld are the two real contact-ish points of THIS
@@ -1756,6 +1798,18 @@ private void Update()
         _groundPitchDegSmoothed = Mathf.MoveTowards(
             _groundPitchDegSmoothed, groundPitchTarget, groundPitchSmoothDegPerSec * dt);
         Quaternion groundPitchRot = Quaternion.Euler(_groundPitchDegSmoothed, 0f, 0f);
+
+        // [ADD] QoL: downhill/bridge-descent EXTREME boost on the back bob -- reuses
+        // groundPitchTarget (this tick's real, unsmoothed terrain pitch) as the "how
+        // steep/extreme is the road right now" signal instead of a separate slope
+        // check, same reasoning as the ground-pitch system right above it.
+        // Reads the SMOOTHED pitch (same one actually applied to the mesh above),
+        // not the raw per-tick groundPitchTarget -- raw was spiking on a single
+        // noisy raycast (a bump, a mesh seam, one missed frame) and instantly
+        // multiplying the bob, which read as a sudden "kick" especially at high
+        // speed where the hitch/axle sample points move fastest.
+        float backBobTerrainFactor = Mathf.Clamp01(Mathf.Abs(_groundPitchDegSmoothed) / Mathf.Max(0.01f, bobDownhillPitchForExtreme));
+        Quaternion bobRot = Quaternion.Euler(_currentBackBobPitchDeg * (1f + backBobTerrainFactor * bobDownhillExtremeMultiplier), 0f, 0f);
         // restOff * groundPitchRot: the dynamic X pitch is layered ON TOP of
         // the mesh's baked rest offset, in the mesh's own local space -- it
         // does not replace or fight trailerMeshRestOffset, it rides on it.

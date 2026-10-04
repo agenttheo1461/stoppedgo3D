@@ -113,4 +113,19 @@ public class SimClock : MonoBehaviour
     /// set to.</summary>
     public static DateTime AbsoluteGameMinutesToRealLocalTime(float absoluteGameMinutes) =>
         Epoch.AddMinutes(absoluteGameMinutes / TIME_MULTIPLIER).ToLocalTime();
+
+    /// <summary>[ADD] Reverse of AbsoluteGameMinutesToRealLocalTime -- converts a real-world local
+    /// date/time into the ABSOLUTE game-minutes value (same scale as TimetableSlot.scheduledDeparture:
+    /// dayNumber * 1440 + minute-of-day) it corresponds to. Exact, not an estimate: the same fixed 2x
+    /// formula run forwards from UTC. For "I want to drive around 7pm my time" style planning, where the
+    /// player picks a LOCAL clock time and the game needs to know which game-minute that lands on --
+    /// the opposite direction from every other player-facing clock in this project, which only ever
+    /// converts game time TO local for display.</summary>
+    public static float RealLocalTimeToAbsoluteGameMinutes(DateTime localDateTime)
+    {
+        DateTime utc = localDateTime.Kind == DateTimeKind.Utc
+            ? localDateTime
+            : DateTime.SpecifyKind(localDateTime, DateTimeKind.Local).ToUniversalTime();
+        return (float)((utc - Epoch).TotalMinutes * TIME_MULTIPLIER);
+    }
 }

@@ -54,6 +54,9 @@ public class RouteVariantData
 {
     public string variantLetter = "A";
 
+    [Tooltip("Show this variant's letter BEFORE the route number (e.g. 'N136' instead of '136N') on consoles, menus, maps and the LCD boards. Off = the normal 'number then letter' (34A, 87A). Short turns ('~') ignore this.")]
+    public bool letterInFront = false;
+
     [Header("Short Turn")]
     [Tooltip("Marks this variant as THE short turn of the route: a trip pattern that turns back at an intermediate stop instead of running to the far terminal. It behaves exactly like any other variant (own stops, path, schedule, vehicle rules, destination) with three differences: its letter is always '~' (consoles and the 2D driver board show e.g. '116~'; LCD boards show the plain route number and this variant's destination), it always uses its own schedule and route data, and anything you leave empty is filled in from the mainline (see Turnback Stop Code).")]
     public bool isShortTurn = false;
@@ -394,6 +397,46 @@ public bool UsesTimeOfDayWindows => scheduleWindows != null && scheduleWindows.C
     /// ("116~" -> "116"). Consoles and the 2D driver board keep the symbol.</summary>
     public static string BoardRouteNumber(string routeLabel) =>
         string.IsNullOrEmpty(routeLabel) ? routeLabel : routeLabel.Replace(ShortTurnSymbol, "");
+
+    // ═════════════════════════════════════════════════════════════════════
+    //  ROUTE LABEL WITH THE VARIANT LETTER IN THE RIGHT PLACE
+    //  Normally the letter follows the number ("34A"). A variant with letterInFront shows it first ("N136").
+    //  Use these anywhere a route number and a variant letter are joined for DISPLAY. Keep plain concatenation for
+    //  dictionary keys and logs that need a stable key.
+    // ═════════════════════════════════════════════════════════════════════
+    /// <summary>The route asset with this number (looked up through CityManager's route list), or null.</summary>
+    public static BusRouteData FindByNumber(string routeNumber)
+    {
+        var cm = CityManager.Instance;
+        if (cm == null || cm.routes == null || string.IsNullOrEmpty(routeNumber)) return null;
+        for (int i = 0; i < cm.routes.Length; i++)
+            if (cm.routes[i] != null && cm.routes[i].routeNumber == routeNumber) return cm.routes[i];
+        return null;
+    }
+
+    /// <summary>"136N" normally, "N136" when that variant has letterInFront. Safe with a null/empty letter.</summary>
+    public static string RouteLabel(string routeNumber, string variantLetter)
+    {
+        if (string.IsNullOrEmpty(variantLetter)) return routeNumber;
+        return FindByNumber(routeNumber)?.LabelFor(variantLetter) ?? routeNumber + variantLetter;
+    }
+
+    /// <summary>Same as RouteLabel but for THIS route asset.</summary>
+    public string LabelFor(string variantLetter)
+    {
+        if (string.IsNullOrEmpty(variantLetter)) return routeNumber;
+        var v = GetVariant(variantLetter);
+        return (v != null && v.letterInFront && variantLetter != ShortTurnSymbol) ? variantLetter + routeNumber : routeNumber + variantLetter;
+    }
+
+    /// <summary>What an NPC bus's LCD board shows as the route number: the plain number, except that a letter-in-front
+    /// variant adds its letter ("N136"). Other variants keep the plain number, exactly as before.</summary>
+    public string BoardNumberFor(string variantLetter)
+    {
+        if (string.IsNullOrEmpty(variantLetter) || variantLetter == ShortTurnSymbol) return routeNumber;
+        var v = GetVariant(variantLetter);
+        return (v != null && v.letterInFront) ? variantLetter + routeNumber : routeNumber;
+    }
 
     /// <summary>Variants marked as short turns that actually carry the '~' symbol (max one per route).</summary>
     public List<RouteVariantData> GetShortTurnVariants()

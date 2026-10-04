@@ -115,6 +115,13 @@ public class DepotManager : MonoBehaviour
         return n;
     }
 
+    // [REMOVED 2026-09-29] DespawnLocalFleetForNetworkClient/RebuildLocalFleetAfterFailedJoin --
+    // multiplayer, rebuilt architecture: a network client now keeps its own full local fleet,
+    // spawned unconditionally here exactly like single-player/host. Nothing tears it down before
+    // connecting any more; see NetworkGameBridge's header comment for why every process having the
+    // SAME buses (deterministic busID assignment, nothing cloned/destroyed over the network) is
+    // what makes this safe.
+
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
